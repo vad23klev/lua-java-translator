@@ -28,21 +28,21 @@
 <STRING>\\n                   strcat(strconst, "\n"); 
 <STRING>\\\\                  strcat(strconst, "\\");
 <STRING>[^\\\n\"]+            strcat(strconst,yytext);
-<STRING>\"                    { printf("Found string: \"%s\"\n",strconst); BEGIN(INITIAL); }
+<STRING>\"                    { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
 
 [']                           { BEGIN(SHORTSTRING); strcpy(strconst,""); }
 <SHORTSTRING>\\\"             strcat(strconst, "\"");
 <SHORTSTRING>\\n              strcat(strconst, "\n"); 
 <SHORTSTRING>\\\\             strcat(strconst, "\\");
 <SHORTSTRING>[^\\\n\\"']+     strcat(strconst,yytext);
-<SHORTSTRING>\'               { printf("Found string: \"%s\"\n",strconst); BEGIN(INITIAL); }
+<SHORTSTRING>\'               { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
 
 "[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
 <MULTISTRING>\\\"             strcat(strconst, "\"");
 <MULTISTRING>\\n              strcat(strconst, "\n"); 
 <MULTISTRING>\\\\             strcat(strconst, "\\");
 <MULTISTRING>[^\\\n\\"\]\]]+  strcat(strconst,yytext);
-<MULTISTRING>"]]"             { printf("Found string: \"%s\"\n",strconst); BEGIN(INITIAL); }
+<MULTISTRING>"]]"             { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
 
 "while"                       printf("Found \"while\"\n");
 "end"                         printf("Found \"end\"\n");
@@ -62,8 +62,10 @@
 "or"                          printf("Found logical \"or\"\n");
 
 "nil"                         printf("Found \"nil\"\n");
-"true"                        printf("Found \"true\" boolean value\n");
-"false"                       printf("Found \"false\" boolean value\n");
+"true"                        printf("Found \"true\" constant\n");
+"false"                       printf("Found \"false\" constant\n");
+
+"self"                        printf("Found \"self\" (like this pointer)");
 
 "assert"                      printf("Found \"assert\" call\n");
 "collectgarbage"              printf("Found \"collectgarbage\" call\n");
@@ -91,7 +93,7 @@
 "/"                           printf("Found \"/\"\n");
 "%"                           printf("Found \"%\"\n");
 "=="                          printf("Found \"==\"\n");
-"=>"                          printf("Found \"=>\"\n");
+">="                          printf("Found \"=>\"\n");
 "<="                          printf("Found \"<=\"\n");
 "~="                          printf("Found \"~=\"\n");
 "="                           printf("Found \"=\"\n");
@@ -113,7 +115,8 @@
 ([_]|[a-z])+[a-zA-Z0-9_]*     printf("Found identifier: %s\n",yytext);
 [+-]?[0-9]+\.[0-9eE-]+        printf("Found double: %f\n",atof(yytext));
 [^ \f\n\r\t\v]                printf("Unknown symbol: %s\n",yytext);
-[ \f\n\r\t\v]                 ;
+
+.|[\n\r\t\f\v]                ;
 
 <<EOF>>                       { printf("<<END OF FILE>>\n"); return 0; }
 
