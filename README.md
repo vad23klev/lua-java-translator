@@ -1,4 +1,4 @@
-lua-compiler
-============
+Lua to Java Translator
+======================
 
-Lua compiler on java byte code
+Translates Lua to Java byte code. Semester work of 366 academic group (VSTU).
