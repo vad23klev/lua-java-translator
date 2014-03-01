@@ -31,14 +31,13 @@
 <STRING>\"                    { printf("Found string: \"%s\"\n",strconst); BEGIN(INITIAL); }
 
 [']                           { BEGIN(SHORTSTRING); strcpy(strconst,""); }
-"[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
-
 <SHORTSTRING>\\\"             strcat(strconst, "\"");
 <SHORTSTRING>\\n              strcat(strconst, "\n"); 
 <SHORTSTRING>\\\\             strcat(strconst, "\\");
 <SHORTSTRING>[^\\\n\\"']+     strcat(strconst,yytext);
 <SHORTSTRING>\'               { printf("Found string: \"%s\"\n",strconst); BEGIN(INITIAL); }
 
+"[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
 <MULTISTRING>\\\"             strcat(strconst, "\"");
 <MULTISTRING>\\n              strcat(strconst, "\n"); 
 <MULTISTRING>\\\\             strcat(strconst, "\\");
