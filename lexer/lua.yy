@@ -8,7 +8,6 @@
 
 %x COMMENT
 %x STRING
-%x SHORTSTRING
 %x MULTISTRING
 %x SHORTCOMMENT
 
@@ -24,29 +23,18 @@
 <COMMENT>--]]                 BEGIN(INITIAL);
 <COMMENT>.|[\n\r\f\t\v]       ;
 
-\"                            { BEGIN(STRING); strcpy(strconst, ""); }
+\"|\'                         { BEGIN(STRING); strcpy(strconst, ""); }
 <STRING>\\\"                  strcat(strconst, "\"");
 <STRING>\\n                   strcat(strconst, "\n"); 
 <STRING>\\\\                  strcat(strconst, "\\");
 <STRING>[^\\\n\"]+            strcat(strconst,yytext);
-<STRING>\"                    { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
+<STRING>\"|\'                 { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
 <STRING>.|[\n\r\f\t\v]        ;
 
-[']                           { BEGIN(SHORTSTRING); strcpy(strconst,""); }
-<SHORTSTRING>\\\"             strcat(strconst, "\\"");
-<SHORTSTRING>\\n              strcat(strconst, "\\n"); 
-<SHORTSTRING>\\\\             strcat(strconst, "\\\\");
-<SHORTSTRING>[^\\\n\\"']+     strcat(strconst,yytext);
-<SHORTSTRING>\'               { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
-<SHORTSTRING>.|[\n\r\f\t\v]   ;
-
 "[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
-<MULTISTRING>\\\"             strcat(strconst, "\"");
-<MULTISTRING>\\n              strcat(strconst, "\n"); 
-<MULTISTRING>\\\\             strcat(strconst, "\\");
-<MULTISTRING>[^\\\n"\]]+      strcat(strconst,yytext);
+<MULTISTRING>[^\]]*           strcat(strconst,yytext);
+<MULTISTRING>\][^\]]*         strcat(strconst,yytext);
 <MULTISTRING>"]]"             { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
-<MULTISTRING>.|[\n\r\f\t\v]   ;
 
 "while"                       printf("Found \"while\"\n");
 "end"                         printf("Found \"end\"\n");
