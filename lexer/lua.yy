@@ -1,7 +1,7 @@
 %{
   #include<stdio.h>
   #include<string.h>
-  char strconst[81] = {0};
+  char strconst[1281] = {0};
 %}
 
 %option noyywrap
