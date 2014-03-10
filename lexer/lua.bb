@@ -52,8 +52,25 @@ EXPR:
          | NUM
          | STRING '..' ID
          | ID '..' STRING
+         | (EXPR)
 ;
 
 ARGS:      EXPR
          | ARGS ',' EXPR
+;
+
+OP:
+           WHILE EXPR STMS
+         | IF EXPR STMS
+;
+
+STM:
+           OP
+         | ID
+         | ID (ARGS)
+;
+
+STMS:
+           STM
+         | STMS STM
 ;
