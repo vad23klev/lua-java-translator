@@ -54,6 +54,7 @@ EXPR:
          | ID '..' STRING
          | (EXPR)
          | STRING '..' STRING
+	 | ID '..' ID
 ;
 
 ARGS:      EXPR
