@@ -60,17 +60,15 @@ ARGS:      EXPR
 ;
 
 OP:
-           WHILE EXPR STMS
-         | IF EXPR STMS
-;
-
-STM:
-           OP
-         | ID
-         | ID (ARGS)
+           WHILE EXPR STMS END
+         | IF EXPR THEN STMS END
+         | IF EXPR THEN STMS ELSE STMS END
+         | IF EXPR THEN STMS ELSEIF EXPR STMS END
 ;
 
 STMS:
-           STM
-         | STMS STM
+           EXPR
+         | STMS EXPR
+         | STMS OP
+         | OP 
 ;
