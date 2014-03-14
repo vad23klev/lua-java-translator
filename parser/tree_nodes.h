@@ -2,7 +2,7 @@ struct NWhile
 {
 	struct NExpr * condition;
 	struct NStmt * body;
-}
+};
 
 struct NExpr
 {
@@ -11,7 +11,7 @@ struct NExpr
 	struct NExpr * right;
 	int num;
 	enum NExprType type;
-}
+};
 
 struct NStmt
 {
@@ -19,13 +19,13 @@ struct NStmt
 	struct NExpr * expr;
 	struct NStmtList * list;
 	struct NStmt * next;
-}
+};
 
 struct NStmtList
 {
 	struct NStmt * first;
 	struct Nstmt * second;
-}
+};
 
 enum NStmtType {OP,EXPR};
 
