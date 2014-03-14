@@ -26,3 +26,7 @@ struct NStmtList
 	struct NStmt * first;
 	struct Nstmt * second;
 }
+
+enum NStmtType {OP,EXPR};
+
+enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LT,GT,MOD};
