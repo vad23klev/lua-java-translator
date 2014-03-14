@@ -37,8 +37,7 @@ DIGIT:    '0' { $$=0; } | '1' { $$=1; } | '2' { $$=2; } | '3' { $$=3; }
         | '8' { $$=8; } | '9' { $$=9; }
 ;
 
-EXPR:
-           EXPR 'and' EXPR
+EXPR:    EXPR 'and' EXPR
          | EXPR 'or' EXPR
          | 'not' EXPR
          | EXPR '==' EXPR
@@ -48,7 +47,8 @@ EXPR:
          | EXPR '>=' EXPR
          | EXPR '<=' EXPR
          | ID (ARGS)
-         | ID
+         | ID ARGS
+	 | ID
          | NUM
          | STRING '..' ID
          | ID '..' STRING
