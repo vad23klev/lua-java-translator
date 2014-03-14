@@ -57,7 +57,8 @@ EXPR:
 	 | ID '..' ID
 ;
 
-ARGS:      EXPR
+ARGS:    
+  	 | EXPR
          | ARGS ',' EXPR
 ;
 
