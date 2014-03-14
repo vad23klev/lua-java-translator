@@ -57,20 +57,17 @@ EXPR:    EXPR 'and' EXPR
 	 | ID '..' ID
 ;
 
-ARGS:    
-  	 | EXPR
+ARGS:  	 | EXPR
          | ARGS ',' EXPR
 ;
 
-OP:
-           WHILE EXPR STMS END
+OP:      WHILE EXPR STMS END
          | IF EXPR THEN STMS END
          | IF EXPR THEN STMS ELSE STMS END
          | IF EXPR THEN STMS ELSEIF EXPR STMS END
 ;
 
-STMS:
-           EXPR
+STMS:    EXPR
          | STMS EXPR
          | STMS OP
          | OP 
