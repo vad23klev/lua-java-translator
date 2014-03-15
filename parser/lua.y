@@ -65,6 +65,10 @@ OP:      WHILE EXPR STMS END
          | IF EXPR THEN STMS END
          | IF EXPR THEN STMS ELSE STMS END
          | IF EXPR THEN STMS ELSEIF EXPR STMS END
+         | FOR ID '=' ID ',' ID DO STMS END
+         | FOR ID '=' ID ',' NUM DO STMS END
+         | FOR ID '=' NUM ',' ID DO STMS END
+         | FOR ID '=' NUM ',' NUM DO STMS END 
 ;
 
 STMS:    EXPR

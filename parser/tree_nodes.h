@@ -24,7 +24,7 @@ struct NStmt
 struct NStmtList
 {
 	struct NStmt * first;
-	struct Nstmt * second;
+	struct Nstmt * last;
 };
 
 enum NStmtType {OP,EXPR};
