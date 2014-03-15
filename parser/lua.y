@@ -1,6 +1,6 @@
 %{
     #include <stdio.h>
-	
+
 %}
 
 %token NUM
@@ -25,7 +25,7 @@
 
 NUM:    INTEGER
         | DOUBLE
-	| NUM '+' NUM
+        | NUM '+' NUM
         | NUM '-' NUM
         | NUM '*' NUM
         | NUM '\' NUM
@@ -54,16 +54,16 @@ EXPR:    EXPR 'and' EXPR
          | EXPR '<=' EXPR
          | ID (ARGS)
          | ID ARGS
-	 | ID
+         | ID
          | NUM
          | STRING '..' ID
          | ID '..' STRING
          | (EXPR)
          | STRING '..' STRING
-	 | ID '..' ID
+         | ID '..' ID
 ;
 
-ARGS:  	 | EXPR
+ARGS:    | EXPR
          | ARGS ',' EXPR
 ;
 
