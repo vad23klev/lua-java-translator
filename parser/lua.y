@@ -41,7 +41,7 @@ INTEGER: DIGIT
          | INTEGER DIGIT    { $$ = $1*10+$2; }
 ;
 
-DOUBLE:  INTEGER '.' INTEGER        
+DOUBLE:  INTEGER '.' INTEGER
 ;
 EXPR:    EXPR 'and' EXPR
          | EXPR 'or' EXPR
@@ -74,11 +74,11 @@ OP:      WHILE EXPR STMS END
          | FOR ID '=' ID ',' ID DO STMS END
          | FOR ID '=' ID ',' NUM DO STMS END
          | FOR ID '=' NUM ',' ID DO STMS END
-         | FOR ID '=' NUM ',' NUM DO STMS END 
+         | FOR ID '=' NUM ',' NUM DO STMS END
 ;
 
 STMS:    EXPR
          | STMS EXPR
          | STMS OP
-         | OP 
+         | OP
 ;
