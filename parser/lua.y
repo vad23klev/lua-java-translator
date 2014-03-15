@@ -3,7 +3,8 @@
 
 %}
 
-%token NUM
+%token INT
+%token DOUBLE
 %token FOR
 %token WHILE
 %token END
@@ -27,7 +28,7 @@
 %token AND
 %token NOT
 %token OR
-%token  CONC
+%token CONC
 
 %%
 
@@ -40,17 +41,6 @@ NUM:    INTEGER
         | NUM '%' NUM
 ;
 
-DIGIT:    '0' { $$=0; } | '1' { $$=1; } | '2' { $$=2; } | '3' { $$=3; }
-        | '4' { $$=4; } | '5' { $$=5; } | '6' { $$=6; } | '7' { $$=7; }
-        | '8' { $$=8; } | '9' { $$=9; }
-;
-
-INTEGER: DIGIT
-         | INTEGER DIGIT    { $$ = $1*10+$2; }
-;
-
-DOUBLE:  INTEGER '.' INTEGER
-;
 EXPR:    EXPR AND EXPR
          | EXPR OR EXPR
          | NOT EXPR
