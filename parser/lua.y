@@ -79,7 +79,8 @@ OP:      WHILE EXPR STMS END
          | FOR ID '=' NUM ',' NUM DO STMS END
 ;
 
-STMS:    EXPR
+STMS:
+         | EXPR
          | STMS EXPR
          | STMS OP
          | OP
