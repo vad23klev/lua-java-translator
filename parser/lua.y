@@ -61,8 +61,12 @@ EXPR:    EXPR AND EXPR
          | ID CONC ID
 ;
 
-ARGS:    | EXPR
-         | ARGS ',' EXPR
+ARGS:
+         | ARGSN
+;
+
+ARGSN:   EXPR
+         | ARGSN ',' EXPR
 ;
 
 OP:      WHILE EXPR STMS END
