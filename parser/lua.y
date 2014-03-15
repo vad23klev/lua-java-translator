@@ -23,9 +23,9 @@
 
 %%
 
-NUM:      DIGIT
-        | NUM DIGIT    { $$ = $1*10+$2; }
-        | NUM '+' NUM
+NUM:    INTEGER
+        | DOUBLE
+	| NUM '+' NUM
         | NUM '-' NUM
         | NUM '*' NUM
         | NUM '\' NUM
@@ -37,6 +37,12 @@ DIGIT:    '0' { $$=0; } | '1' { $$=1; } | '2' { $$=2; } | '3' { $$=3; }
         | '8' { $$=8; } | '9' { $$=9; }
 ;
 
+INTEGER: DIGIT
+         | INTEGER DIGIT    { $$ = $1*10+$2; }
+;
+
+DOUBLE:  INTEGER '.' INTEGER        
+;
 EXPR:    EXPR 'and' EXPR
          | EXPR 'or' EXPR
          | 'not' EXPR
