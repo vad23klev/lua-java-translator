@@ -20,6 +20,14 @@
 %token LOCAL
 %token STRING
 %token ID
+%token EQ
+%token NQ
+%token LT
+%token GT
+%token AND
+%token NOT
+%token OR
+%token  CONC
 
 %%
 
@@ -28,7 +36,7 @@ NUM:    INTEGER
         | NUM '+' NUM
         | NUM '-' NUM
         | NUM '*' NUM
-        | NUM '\' NUM
+        | NUM '\\' NUM
         | NUM '%' NUM
 ;
 
@@ -43,24 +51,24 @@ INTEGER: DIGIT
 
 DOUBLE:  INTEGER '.' INTEGER
 ;
-EXPR:    EXPR 'and' EXPR
-         | EXPR 'or' EXPR
-         | 'not' EXPR
-         | EXPR '==' EXPR
-         | EXPR '~=' EXPR
+EXPR:    EXPR AND EXPR
+         | EXPR OR EXPR
+         | NOT EXPR
+         | EXPR EQ EXPR
+         | EXPR NQ EXPR
          | EXPR '>' EXPR
          | EXPR '<' EXPR
-         | EXPR '>=' EXPR
-         | EXPR '<=' EXPR
+         | EXPR GT EXPR
+         | EXPR LT EXPR
          | ID (ARGS)
          | ID ARGS
          | ID
          | NUM
-         | STRING '..' ID
-         | ID '..' STRING
+         | STRING CONC ID
+         | ID CONC STRING
          | (EXPR)
-         | STRING '..' STRING
-         | ID '..' ID
+         | STRING CONC STRING
+         | ID CONC ID
 ;
 
 ARGS:    | EXPR
