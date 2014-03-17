@@ -2,6 +2,7 @@ struct NWhile
 {
 	struct NExpr * condition;
 	struct NStmt * body;
+        double step;
 };
 
 struct NExpr
