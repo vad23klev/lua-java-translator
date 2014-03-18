@@ -42,6 +42,11 @@
 %token OR
 %token CONC
 
+
+
+%type <Expr> EXPR;
+%type <SL> STMS;
+
 %%
 
 NUM:    INTEGER
