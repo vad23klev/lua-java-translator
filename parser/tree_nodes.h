@@ -2,7 +2,15 @@ struct NWhile
 {
 	struct NExpr * condition;
 	struct NStmt * body;
-        double step;
+};
+
+struct NFor
+{
+	char* name;
+	double start;
+	double end;
+	double step;
+	struct NStmt * body;
 };
 
 struct NExpr
