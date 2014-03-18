@@ -3,6 +3,14 @@
 
 %}
 
+%union {
+    int Int;
+    char* Id;
+    double Double;
+    struct NWhile * While;
+    struct NExpr * Expr;
+}
+
 %start ROOT
 %token INT
 %token DOUBLE
