@@ -10,6 +10,8 @@
     struct NWhile * While;
     struct NExpr * Expr;
     struct NFor * For;
+    struct NStmtList * SL;
+    struct NStmt * Stmt;
 }
 
 %start ROOT
