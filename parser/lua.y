@@ -9,6 +9,7 @@
     double Double;
     struct NWhile * While;
     struct NExpr * Expr;
+    struct NFor * For;
 }
 
 %start ROOT
@@ -94,3 +95,5 @@ STMS:
          | STMS OP
          | OP
 ;
+
+ROOT:    STMS;
