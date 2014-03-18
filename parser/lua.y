@@ -3,6 +3,7 @@
 
 %}
 
+%start ROOT
 %token INT
 %token DOUBLE
 %token FOR
