@@ -6,6 +6,7 @@
 %union {
     int Int;
     char* Id;
+    char* String;
     double Double;
     struct NWhile * While;
     struct NExpr * Expr;
@@ -15,8 +16,8 @@
 }
 
 %start ROOT
-%token INT
-%token DOUBLE
+%token <Int> INT
+%token <Double> DOUBLE
 %token FOR
 %token WHILE
 %token END
@@ -31,8 +32,8 @@
 %token BREAK
 %token FUNC
 %token LOCAL
-%token STRING
-%token ID
+%token <String> STRING
+%token <Id> ID
 %token EQ
 %token NQ
 %token LT
