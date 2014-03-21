@@ -50,7 +50,7 @@
 
 %%
 
-NUM:    INTEGER
+NUM:    INT
         | DOUBLE
         | NUM '+' NUM
         | NUM '-' NUM
