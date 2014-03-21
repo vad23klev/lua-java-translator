@@ -13,6 +13,7 @@
     struct NFor * For;
     struct NStmtList * SL;
     struct NStmt * Stmt;
+    struct NFunc * Func;
 }
 
 %start ROOT
@@ -47,6 +48,7 @@
 
 %type <Expr> EXPR;
 %type <SL> STMS;
+%type <Func> FUNCTION;
 
 %%
 
