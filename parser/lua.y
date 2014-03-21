@@ -68,13 +68,13 @@ EXPR:    EXPR AND EXPR
          | EXPR '<' EXPR
          | EXPR GT EXPR
          | EXPR LT EXPR
-         | ID (ARGS)
+         | ID '(' ARGS ')'
          | ID ARGS
          | ID
          | NUM
          | STRING CONC ID
          | ID CONC STRING
-         | (EXPR)
+         | '(' EXPR ')'
          | STRING CONC STRING
          | ID CONC ID
 ;
