@@ -104,6 +104,17 @@ STMS:
          | OP
 ;
 
-ROOT:    STMS;
+ROOT:    STMS
+;
 
-FUNCTION: FUNC ID '(' ID ')' STMS END 
+FUNCTION: FUNC ID '(' FARGSN ')' STMS END
+          | FUNC ID ':' ID '(' FARGSN ')' STMS END
+;
+
+FARGS:  ID
+        | FARGS ',' ID
+;
+
+FARGSN: 
+        | FARGSN
+;
