@@ -105,3 +105,5 @@ STMS:
 ;
 
 ROOT:    STMS;
+
+FUNCTION: FUNC ID '(' ID ')' STMS END 
