@@ -118,5 +118,5 @@ FARGS:  ID
 ;
 
 FARGSN: 
-        | FARGSN
+        | FARGS
 ;
