@@ -36,6 +36,13 @@ struct NStmtList
 	struct Nstmt * last;
 };
 
+struct func
+{
+       char* name;
+       char*[] args;
+       struct NStmt* body;
+};
+
 enum NStmtType {OP,EXPR};
 
 enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LT,GT,MOD};
