@@ -36,7 +36,7 @@ struct NStmtList
 	struct Nstmt * last;
 };
 
-struct func
+struct NFunc
 {
        char* name;
        char*[] args;
