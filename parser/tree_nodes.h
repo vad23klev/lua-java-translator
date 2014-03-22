@@ -43,9 +43,9 @@ struct NFunc
        struct NStmt* body;
 };
 
-enum NStmtType {OP,EXPR};
+enum NStmtType {OP,EXPR,FUNC};
 
-enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LT,GT,MOD};
+enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LT,GT,MOD,ID,NUM,CONC,STR,MET,AND,NOT,OR,MAS};
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 {
