@@ -18,7 +18,8 @@ struct NExpr
     char * name;
     struct NExpr * left;
     struct NExpr * right;
-    int num;
+    int *Int;
+    double *Double;
     enum NExprType type;
 };
 
