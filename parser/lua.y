@@ -42,47 +42,47 @@
 %token AND
 %token NOT
 %token OR
-%token CONC
+%token CONCAT
 %token TRUE
 %token FALSE
 %token NIL
 
 %type <Expr> expr;
 %type <SL> stmts;
-%type <Func> funct;
+%type <Func> func;
 
 %%
 
-num:    INT
+number: INT
         | DOUBLE
 ;
 
-expr:    expr AND expr
-         | expr OR expr
-         | NOT expr
-         | expr EQ expr
-         | expr NQ expr
-         | expr '>' expr
-         | expr '<' expr
-         | expr GT expr
-         | expr LT expr
-         | ID '(' args ')'
-         | ID args
-         | ID
-         | num
-         | num '+' num
-         | num '-' num
-         | num '*' num
-         | num '\\' num
-         | num '%' num
-         | STRING CONC ID
-         | ID CONC STRING
-         | '(' expr ')'
-         | STRING CONC STRING
-         | ID CONC ID
-         | ID '[' expr ']'
-         | ID '.' ID
-         | ID '.' ID '(' args ')'
+expr:   expr AND expr
+        | expr OR expr
+        | NOT expr
+        | expr EQ expr
+        | expr NQ expr
+        | expr '>' expr
+        | expr '<' expr
+        | expr GT expr
+        | expr LT expr
+        | ID '(' args ')'
+        | ID args
+        | ID
+        | number
+        | number '+' number
+        | number '-' number
+        | number '*' number
+        | number '\\' number
+        | number '%' number
+        | STRING CONCAT ID
+        | ID CONCAT STRING
+        | '(' expr ')'
+        | STRING CONCAT STRING
+        | ID CONCAT ID
+        | ID '[' expr ']'
+        | ID '.' ID
+        | ID '.' ID '(' args ')'
 ;
 
 args:
@@ -93,50 +93,50 @@ argsn:   expr
          | argsn ',' expr
 ;
 
-op:      WHILE expr stms END
-         | IF expr THEN stms END
-         | IF expr THEN stms ELSE stms END
-         | IF expr THEN stms ELSEIF expr stms END
-         | FOR ID '=' expr ',' expr DO stms END
-         | FOR ID '=' expr ',' expr ',' expr DO stms END
+op:      WHILE expr stmts END
+         | IF expr THEN stmts END
+         | IF expr THEN stmts ELSE stmts END
+         | IF expr THEN stmts ELSEIF expr stmts END
+         | FOR ID '=' expr ',' expr DO stmts END
+         | FOR ID '=' expr ',' expr ',' expr DO stmts END
 ;
 
-stms:
+stmts:
          | expr
-	 | stms expr
-         | stms op
+         | stmts expr
+         | stmts op
          | op
-         | funct
-         | stms funct
+         | func
+         | stmts func
 ;
 
-root:    stms
+root:    stmts
 ;
 
-funct: FUNC ID '(' fargsn ')' stms END
-          | FUNC ID ':' ID '(' fargsn ')' stms END
+func:    FUNC ID '(' func_argsn ')' stmts END
+         | FUNC ID ':' ID '(' func_argsn ')' stmts END
 ;
 
-fargs:  ID
-        | fargs ',' ID
+func_args:  ID
+            | func_args ',' ID
 ;
 
-fargs: 
-        | fargs
+func_args: 
+            | func_args
 ;
 
-telem: ID '=' expr 
-      | '[' expr ']' '=' expr
-      | expr
-      | funct
-      | ID '=' funct
-      | '[' expr ']' funct
+tbl_elem:   ID '=' expr 
+            | '[' expr ']' '=' expr
+            | expr
+            | func
+            | ID '=' func
+            | '[' expr ']' func
 ;
 
-telem_list:
-	  | telem_listn
+tbl_elem_list:
+	        | tbl_elem_listn
 ;
 
-telem_listn: telem
-	   | telem_listn ',' telem
+tbl_elem_listn: tbl_elem
+	            | tbl_elem_listn ',' tbl_elem
 ;
