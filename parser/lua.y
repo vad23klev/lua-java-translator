@@ -93,14 +93,12 @@ argsn:   expr
          | argsn ',' expr
 ;
 
-op:      WHILE expr STMS END
+op:      WHILE expr stms END
          | IF expr THEN stms END
          | IF expr THEN stms ELSE stms END
          | IF expr THEN stms ELSEIF expr stms END
-         | FOR ID '=' ID ',' ID DO stms END
-         | FOR ID '=' ID ',' num DO stms END
-         | FOR ID '=' num ',' ID DO stms END
-         | FOR ID '=' num ',' NUM DO stms END
+         | FOR ID '=' expr ',' expr DO stms END
+         | FOR ID '=' expr ',' expr ',' expr DO stms END
 ;
 
 stms:
