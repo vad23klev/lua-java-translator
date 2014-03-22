@@ -53,10 +53,6 @@
 
 %%
 
-number: INT
-        | DOUBLE
-;
-
 expr:    expr AND expr
          | expr OR expr
          | NOT expr
@@ -69,7 +65,8 @@ expr:    expr AND expr
          | ID '(' args ')'
          | ID args
          | ID
-         | number
+         | INT
+         | DOUBLE
          | expr '+' expr
          | expr '-' expr
          | expr '*' expr
@@ -86,7 +83,7 @@ expr:    expr AND expr
          | ID '.' ID '(' args ')'
 ;
 
-args:
+args: /* empty */
          | argsn
 ;
 
@@ -122,7 +119,7 @@ func_args:  ID
             | func_args ',' ID
 ;
 
-func_args: 
+func_args_e: 
             | func_args
 ;
 
