@@ -57,32 +57,32 @@ number: INT
         | DOUBLE
 ;
 
-expr:   expr AND expr
-        | expr OR expr
-        | NOT expr
-        | expr EQ expr
-        | expr NQ expr
-        | expr '>' expr
-        | expr '<' expr
-        | expr GT expr
-        | expr LT expr
-        | ID '(' args ')'
-        | ID args
-        | ID
-        | number
-        | number '+' number
-        | number '-' number
-        | number '*' number
-        | number '\\' number
-        | number '%' number
-        | STRING CONCAT ID
-        | ID CONCAT STRING
-        | '(' expr ')'
-        | STRING CONCAT STRING
-        | ID CONCAT ID
-        | ID '[' expr ']'
-        | ID '.' ID
-        | ID '.' ID '(' args ')'
+expr:    expr AND expr
+         | expr OR expr
+         | NOT expr
+         | expr EQ expr
+         | expr NQ expr
+         | expr '>' expr
+         | expr '<' expr
+         | expr GT expr
+         | expr LT expr
+         | ID '(' args ')'
+         | ID args
+         | ID
+         | num
+         | expr '+' expr
+         | expr '-' expr
+         | expr '*' expr
+         | expr '\\' expr
+         | expr '%' expr
+         | STRING CONC ID
+         | ID CONC STRING
+         | '(' expr ')'
+         | STRING CONC STRING
+         | ID CONC ID
+         | ID '[' expr ']'
+         | ID '.' ID
+         | ID '.' ID '(' args ')'
 ;
 
 args:
