@@ -123,3 +123,16 @@ FARGS:  ID
 FARGSN: 
         | FARGS
 ;
+
+TELEM: ID '=' EXPR 
+      | '[' EXPR ']' '=' EXPR
+      | EXPR
+;
+
+TELEM_LIST:
+	  | TELEM_LISTN
+;
+
+TELEM_LISTN: TELEM
+	   | TELEM_LISTN ',' TELEM
+;
