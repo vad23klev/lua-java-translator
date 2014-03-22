@@ -71,3 +71,11 @@ struct NExpr* create_expr_string(char* string)
     result->type = STR;
     return result;
 }
+
+struct NExpr* create_expr_int(int * value) 
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    result->Int = value;
+    result->type = INT;
+    return result;
+}
