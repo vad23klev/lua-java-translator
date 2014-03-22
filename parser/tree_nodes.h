@@ -79,3 +79,11 @@ struct NExpr* create_expr_int(int * value)
     result->type = INT;
     return result;
 }
+
+struct NExpr* create_expr_double(double * value) 
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    result->Int = value;
+    result->type = DOUBLE;
+    return result;
+}
