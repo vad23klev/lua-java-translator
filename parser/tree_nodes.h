@@ -63,3 +63,11 @@ struct NExpr* create_expr_id(char* id)
     result->type = ID;
     return result;
 }
+
+struct NExpr* create_expr_string(char* string) 
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    result->name = string;
+    result->type = STR;
+    return result;
+}
