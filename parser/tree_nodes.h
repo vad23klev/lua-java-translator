@@ -46,3 +46,12 @@ struct NFunc
 enum NStmtType {OP,EXPR};
 
 enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LT,GT,MOD};
+
+struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
+{
+	NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+	result->left = left;
+	result->right = right;
+	result->type = type;
+        return result;
+}
