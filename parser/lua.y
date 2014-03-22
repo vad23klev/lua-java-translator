@@ -69,12 +69,13 @@ expr:    expr AND expr
          | ID '(' args ')'
          | ID args
          | ID
-         | num
+         | number
          | expr '+' expr
          | expr '-' expr
          | expr '*' expr
          | expr '\\' expr
          | expr '%' expr
+         | STRING
          | STRING CONC ID
          | ID CONC STRING
          | '(' expr ')'
