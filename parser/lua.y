@@ -107,6 +107,8 @@ stms:
 	 | stms expr
          | stms op
          | op
+         | funct
+         | stms funct
 ;
 
 root:    stms
@@ -127,6 +129,9 @@ fargs:
 telem: ID '=' expr 
       | '[' expr ']' '=' expr
       | expr
+      | funct
+      | ID '=' funct
+      | '[' expr ']' funct
 ;
 
 telem_list:
