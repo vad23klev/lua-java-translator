@@ -79,6 +79,9 @@ EXPR:    EXPR AND EXPR
          | '(' EXPR ')'
          | STRING CONC STRING
          | ID CONC ID
+         | ID '[' EXPR ']'
+         | ID '.' ID
+         | ID '.' ID '(' ARGS ')'
 ;
 
 ARGS:
