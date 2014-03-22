@@ -99,6 +99,7 @@ stmt:    WHILE expr stmts END
          | FOR ID '=' expr ',' expr ',' expr DO stmts END
          | expr
          | func
+         | ID '=' tbl
 ;
 
 stmts:   /* empty */
@@ -135,4 +136,7 @@ tbl_elem_list: /* empty */
 
 tbl_elem_listn: tbl_elem
 	            | tbl_elem_listn ',' tbl_elem
+;
+
+tbl: '{' tbl_elem_list '}'
 ;
