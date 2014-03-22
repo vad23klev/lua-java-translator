@@ -43,8 +43,9 @@
 %token NOT
 %token OR
 %token CONC
-
-
+%token TRUE
+%token FALSE
+%token NIL
 
 %type <Expr> expr;
 %type <SL> stmts;
