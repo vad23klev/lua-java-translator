@@ -16,7 +16,7 @@
     struct NFunc * Func;
 }
 
-%start ROOT
+%start root
 %token <Int> INT
 %token <Double> DOUBLE
 %token FOR
@@ -46,93 +46,93 @@
 
 
 
-%type <Expr> EXPR;
-%type <SL> STMS;
-%type <Func> FUNCTION;
+%type <Expr> expr;
+%type <SL> stmts;
+%type <Func> funct;
 
 %%
 
-NUM:    INT
+num:    INT
         | DOUBLE
-        | NUM '+' NUM
-        | NUM '-' NUM
-        | NUM '*' NUM
-        | NUM '\\' NUM
-        | NUM '%' NUM
+        | num '+' num
+        | num '-' num
+        | num '*' num
+        | num '\\' num
+        | num '%' num
 ;
 
-EXPR:    EXPR AND EXPR
-         | EXPR OR EXPR
-         | NOT EXPR
-         | EXPR EQ EXPR
-         | EXPR NQ EXPR
-         | EXPR '>' EXPR
-         | EXPR '<' EXPR
-         | EXPR GT EXPR
-         | EXPR LT EXPR
-         | ID '(' ARGS ')'
-         | ID ARGS
+expr:    expr AND expr
+         | expr OR expr
+         | NOT expr
+         | expr EQ expr
+         | expr NQ expr
+         | expr '>' expr
+         | expr '<' expr
+         | expr GT expr
+         | expr LT expr
+         | ID '(' args ')'
+         | ID args
          | ID
-         | NUM
+         | num
          | STRING CONC ID
          | ID CONC STRING
-         | '(' EXPR ')'
+         | '(' expr ')'
          | STRING CONC STRING
          | ID CONC ID
-         | ID '[' EXPR ']'
+         | ID '[' expr ']'
          | ID '.' ID
-         | ID '.' ID '(' ARGS ')'
+         | ID '.' ID '(' args ')'
 ;
 
-ARGS:
-         | ARGSN
+args:
+         | argsn
 ;
 
-ARGSN:   EXPR
-         | ARGSN ',' EXPR
+argsn:   expr
+         | argsn ',' expr
 ;
 
-OP:      WHILE EXPR STMS END
-         | IF EXPR THEN STMS END
-         | IF EXPR THEN STMS ELSE STMS END
-         | IF EXPR THEN STMS ELSEIF EXPR STMS END
-         | FOR ID '=' ID ',' ID DO STMS END
-         | FOR ID '=' ID ',' NUM DO STMS END
-         | FOR ID '=' NUM ',' ID DO STMS END
-         | FOR ID '=' NUM ',' NUM DO STMS END
+op:      WHILE expr STMS END
+         | IF expr THEN stms END
+         | IF expr THEN stms ELSE stms END
+         | IF expr THEN stms ELSEIF expr stms END
+         | FOR ID '=' ID ',' ID DO stms END
+         | FOR ID '=' ID ',' num DO stms END
+         | FOR ID '=' num ',' ID DO stms END
+         | FOR ID '=' num ',' NUM DO stms END
 ;
 
-STMS:
-         | EXPR
-         | STMS EXPR
-         | STMS OP
-         | OP
+stms:
+         | expr
+	 | stms expr
+         | stms op
+         | op
 ;
 
-ROOT:    STMS
+root:    stms
 ;
 
-FUNCTION: FUNC ID '(' FARGSN ')' STMS END
-          | FUNC ID ':' ID '(' FARGSN ')' STMS END
+funct: FUNC ID '(' fargsn ')' stms END
+          | FUNC ID ':' ID '(' fargsn ')' stms END
 ;
 
-FARGS:  ID
-        | FARGS ',' ID
+fargs:  ID
+        | fargs ',' ID
 ;
 
-FARGSN: 
-        | FARGS
+fargs: 
+        | fargs
 ;
 
-TELEM: ID '=' EXPR 
-      | '[' EXPR ']' '=' EXPR
-      | EXPR
+telem: ID '=' expr 
+      | '[' expr ']' '=' expr
+      | expr
 ;
 
-TELEM_LIST:
-	  | TELEM_LISTN
+telem_list:
+	  | telem_listn
 ;
 
-TELEM_LISTN: TELEM
-	   | TELEM_LISTN ',' TELEM
+telem_listn: telem
+	   | telem_listn ',' telem
 ;
