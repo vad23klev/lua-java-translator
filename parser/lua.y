@@ -83,7 +83,7 @@ expr:    expr AND expr
          | ID '.' ID '(' args ')'
 ;
 
-args: /* empty */
+args:    /* empty */
          | argsn
 ;
 
@@ -91,36 +91,34 @@ argsn:   expr
          | argsn ',' expr
 ;
 
-op:      WHILE expr stmts END
+stmt:    WHILE expr stmts END
          | IF expr THEN stmts END
          | IF expr THEN stmts ELSE stmts END
          | IF expr THEN stmts ELSEIF expr stmts END
          | FOR ID '=' expr ',' expr DO stmts END
          | FOR ID '=' expr ',' expr ',' expr DO stmts END
+         | expr
+         | func
 ;
 
-stmts:
-         | expr
-         | stmts expr
-         | stmts op
-         | op
-         | func
-         | stmts func
+stmts:   /* empty */
+         | stmt
+         | stmts stmt
 ;
 
 root:    stmts
 ;
 
-func:    FUNC ID '(' func_argsn ')' stmts END
-         | FUNC ID ':' ID '(' func_argsn ')' stmts END
+func:    FUNC ID '(' func_args_e ')' stmts END
+         | FUNC ID ':' ID '(' func_args_e ')' stmts END
 ;
 
 func_args:  ID
             | func_args ',' ID
 ;
 
-func_args_e: 
-            | func_args
+func_args_e: /* empty */
+             | func_args
 ;
 
 tbl_elem:   ID '=' expr 
@@ -131,8 +129,8 @@ tbl_elem:   ID '=' expr
             | '[' expr ']' func
 ;
 
-tbl_elem_list:
-	        | tbl_elem_listn
+tbl_elem_list: /* empty */
+               | tbl_elem_listn
 ;
 
 tbl_elem_listn: tbl_elem
