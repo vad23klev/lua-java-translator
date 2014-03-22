@@ -70,11 +70,11 @@ expr:    expr AND expr
          | ID args
          | ID
          | num
-         | num '+' num
-         | num '-' num
-         | num '*' num
-         | num '\\' num
-         | num '%' num
+         | expr '+' expr
+         | expr '-' expr
+         | expr '*' expr
+         | expr '\\' expr
+         | expr '%' expr
          | STRING CONC ID
          | ID CONC STRING
          | '(' expr ')'
