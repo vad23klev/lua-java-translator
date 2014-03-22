@@ -73,11 +73,11 @@ expr:    expr AND expr
          | expr '\\' expr
          | expr '%' expr
          | STRING
-         | STRING CONC ID
-         | ID CONC STRING
+         | STRING CONCAT ID
+         | ID CONCAT STRING
          | '(' expr ')'
-         | STRING CONC STRING
-         | ID CONC ID
+         | STRING CONCAT STRING
+         | ID CONCAT ID
          | ID '[' expr ']'
          | ID '.' ID
          | ID '.' ID '(' args ')'
