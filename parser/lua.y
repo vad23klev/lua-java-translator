@@ -55,11 +55,6 @@
 
 num:    INT
         | DOUBLE
-        | num '+' num
-        | num '-' num
-        | num '*' num
-        | num '\\' num
-        | num '%' num
 ;
 
 expr:    expr AND expr
@@ -75,6 +70,11 @@ expr:    expr AND expr
          | ID args
          | ID
          | num
+         | num '+' num
+         | num '-' num
+         | num '*' num
+         | num '\\' num
+         | num '%' num
          | STRING CONC ID
          | ID CONC STRING
          | '(' expr ')'
