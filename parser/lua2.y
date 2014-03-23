@@ -46,8 +46,8 @@
 %token ENDL
 
 %type <Expr> expr
-%type <SL> stmts
-%type <Func> func
+%type <SL> stmt_list
+/* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
 %left  AND
@@ -70,20 +70,29 @@ root:                 stmt_list
 
 
 /* == Statements == */
-stmt_list:            stmt
+stmt_list:            /* empty */
                     | stmt_list stmt
 ;
 
 stmt:                 stmt_if
                     | stmt_while
                     | stmt_for
+                    | stmt_repeat
+                    | BREAK end_expr
+                    | RETURN end_expr
                     | expr end_expr
                     | var '=' expr end_expr
+                    | LOCAL var '=' expr end_expr
                     | func_decl_named
+                    | LOCAL func_decl_named
 ;
 
-stmt_if:              IF expr THEN stmt_list END
-                    | IF expr THEN stmt_list ELSE stmt_list END
+stmt_if:              IF expr THEN stmt_list elseif_list END
+                    | IF expr THEN stmt_list ELSE stmt_list elseif_list END
+;
+
+elseif_list:          /* empty */
+                    | elseif_list ELSEIF stmt_list
 ;
 
 stmt_while:           WHILE expr DO stmt_list END
@@ -93,9 +102,11 @@ stmt_for:             FOR ID '=' expr ',' expr          DO stmt_list END
                     | FOR ID '=' expr ',' expr ',' expr DO stmt_list END
 ;
 
+stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
+;
+
 
 /* == Expressions == */
-/* Костыль? В ANTLR-грамматике lua разделяют lvalue (var) и expr... */
 var:                  ID
                     | var '[' expr ']'
 ;
@@ -104,7 +115,11 @@ expr:                 var
                     | INT
                     | DOUBLE
                     | STRING
+                    | TRUE
+                    | FALSE
+                    | NIL
                     | NOT expr
+                    | '-' expr %prec UMINUS
                     | expr AND expr
                     | expr OR  expr
                     | expr '+' expr
@@ -112,6 +127,7 @@ expr:                 var
                     | expr '*' expr
                     | expr '/' expr
                     | expr '%' expr
+                    | expr '^' expr
                     | expr '>' expr
                     | expr '<' expr
                     | expr GE  expr
@@ -164,4 +180,5 @@ tbl_elems:            tbl_elem
 
 tbl_elem:             STRING '=' expr
                     | '[' expr ']' '=' expr
+                    | expr
 ;
