@@ -67,21 +67,6 @@
 "true"                        printf("Found \"true\" constant\n");
 "false"                       printf("Found \"false\" constant\n");
 
-"self"                        printf("Found \"self\" (like this pointer)");
-
-"assert"                      printf("Found \"assert\" call\n");
-"collectgarbage"              printf("Found \"collectgarbage\" call\n");
-"dofile"                      printf("Found \"dofile\" (include)\n");
-"error"                       printf("Found \"error\" call\n");
-"getmetatable"                printf("Found \"getmetatable\" call\n");
-"ipairs"                      printf("Found \"ipairs\" call (foreach)\n");
-"next"                        printf("Found \"next\" call (like foreach)\n");
-"pairs"                       printf("Found \"pairs\" call\n");
-"print"                       printf("Found \"print\" call\n");
-"setmetatable"                printf("Found \"setmetatable\" call\n");
-"tonumber"                    printf("Found \"tonumber\" call\n");
-"tostring"                    printf("Found \"tostring\" call\n");
-
 "local"                       printf("Found \"local\" (variable declaration)\n");
 "function"                    printf("Found \"function\" (function declaration)\n");
 "require"                     printf("Found \"require\" (include)\n");
