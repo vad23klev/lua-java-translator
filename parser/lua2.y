@@ -92,7 +92,7 @@ stmt_if:              IF expr THEN stmt_list elseif_list END
 ;
 
 elseif_list:          /* empty */
-                    | elseif_list ELSEIF stmt_list
+                    | elseif_list ELSEIF expr THEN stmt_list
 ;
 
 stmt_while:           WHILE expr DO stmt_list END
