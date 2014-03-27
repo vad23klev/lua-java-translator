@@ -109,6 +109,7 @@ stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
 /* == Expressions == */
 var:                  ID
                     | var '[' expr ']'
+                    | var '.' ID
 ;
 
 expr:                 var
@@ -144,6 +145,7 @@ expr:                 var
 
 /* == Function call == */
 func_call:            var '(' arg_list ')'
+                    | var ':' ID '(' arg_list ')'
 ;
 
 arg_list:             /* empty */
@@ -159,7 +161,8 @@ args:                 expr
 func_decl_anon:       FUNCTION func_body
 ;
 
-func_decl_named:      FUNCTION ID func_body
+func_decl_named:      FUNCTION var func_body
+                    | FUNCTION var ':' ID func_body
 ;
 
 func_body:            '(' arg_list ')' stmt_list END
@@ -178,7 +181,7 @@ tbl_elems:            tbl_elem
                     | tbl_elems ',' tbl_elem
 ;
 
-tbl_elem:             STRING '=' expr
+tbl_elem:             ID '=' expr
                     | '[' expr ']' '=' expr
                     | expr
 ;
