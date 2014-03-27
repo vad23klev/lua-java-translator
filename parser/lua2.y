@@ -74,7 +74,8 @@ stmt_list:            /* empty */
                     | stmt_list stmt
 ;
 
-stmt:                 stmt_if
+stmt:                 stmt_block
+                    | stmt_if
                     | stmt_while
                     | stmt_for
                     | stmt_repeat
@@ -87,6 +88,9 @@ stmt:                 stmt_if
                     | LOCAL func_decl_named
 ;
 
+stmt_block:           DO stmt_list END
+;
+
 stmt_if:              IF expr THEN stmt_list elseif_list END
                     | IF expr THEN stmt_list ELSE stmt_list elseif_list END
 ;
@@ -95,11 +99,11 @@ elseif_list:          /* empty */
                     | elseif_list ELSEIF expr THEN stmt_list
 ;
 
-stmt_while:           WHILE expr DO stmt_list END
+stmt_while:           WHILE expr block
 ;
 
-stmt_for:             FOR ID '=' expr ',' expr          DO stmt_list END
-                    | FOR ID '=' expr ',' expr ',' expr DO stmt_list END
+stmt_for:             FOR ID '=' expr ',' expr          block
+                    | FOR ID '=' expr ',' expr ',' expr block
 ;
 
 stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
