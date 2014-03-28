@@ -104,3 +104,14 @@ struct NExpr* create_expr_nil(bool* value)
     result->type = NIL;
     return result;
 }
+
+void set_null_field_expr(struct NExpr* expr)
+{
+    expr->Int = NULL;
+    expr->Double = NULL;
+    expr->Bool = NULL;
+    expr->name = NULL;
+    expr->left = NULL;
+    expr->right = NULL;
+    expr->type = NIL;
+}
