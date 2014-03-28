@@ -89,3 +89,11 @@ struct NExpr* create_expr_double(double * value)
     result->type = DOUBLE;
     return result;
 }
+
+struct NExpr* create_expr_boolean(bool* value)
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    result->Bool = value;
+    result->type = BOOL;
+    return result;
+}
