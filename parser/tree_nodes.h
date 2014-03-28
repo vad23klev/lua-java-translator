@@ -1,4 +1,4 @@
-struct NWhile 
+struct NWhile
 {
     struct NExpr * condition;
     struct NStmt * body;
@@ -58,7 +58,7 @@ struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
     return result;
 }
 
-struct NExpr* create_expr_id(char* id) 
+struct NExpr* create_expr_id(char* id)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     result->name = id;
@@ -66,7 +66,7 @@ struct NExpr* create_expr_id(char* id)
     return result;
 }
 
-struct NExpr* create_expr_string(char* string) 
+struct NExpr* create_expr_string(char* string)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     result->name = string;
@@ -74,7 +74,7 @@ struct NExpr* create_expr_string(char* string)
     return result;
 }
 
-struct NExpr* create_expr_int(int * value) 
+struct NExpr* create_expr_int(int * value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     result->Int = value;
@@ -82,7 +82,7 @@ struct NExpr* create_expr_int(int * value)
     return result;
 }
 
-struct NExpr* create_expr_double(double * value) 
+struct NExpr* create_expr_double(double * value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     result->Double = value;
