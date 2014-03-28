@@ -21,7 +21,7 @@ struct NExpr
     int *Int;
     double *Double;
     enum NExprType type;
-    bool Bool;
+    bool *Bool;
 };
 
 struct NStmt
