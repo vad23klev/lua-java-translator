@@ -169,7 +169,15 @@ func_decl_named:      FUNCTION var func_body
                     | FUNCTION var ':' ID func_body
 ;
 
-func_body:            '(' arg_list ')' stmt_list END
+func_body:            '(' arg_list_decl ')' stmt_list END
+;
+
+arg_list_decl:        /* empty */
+                    | args_decl
+;
+
+args_decl:            ID
+                    | args_decl ',' ID
 ;
 
 
