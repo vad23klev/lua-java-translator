@@ -52,6 +52,7 @@ enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LE,GE,LT,GT,MOD,ID,INT,DOUBLE,CONC,STR,
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->left = left;
     result->right = right;
     result->type = type;
@@ -61,6 +62,7 @@ struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 struct NExpr* create_expr_id(char* id)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->name = id;
     result->type = ID;
     return result;
@@ -69,6 +71,7 @@ struct NExpr* create_expr_id(char* id)
 struct NExpr* create_expr_string(char* string)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->name = string;
     result->type = STR;
     return result;
@@ -77,6 +80,7 @@ struct NExpr* create_expr_string(char* string)
 struct NExpr* create_expr_int(int * value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->Int = value;
     result->type = INT;
     return result;
@@ -85,6 +89,7 @@ struct NExpr* create_expr_int(int * value)
 struct NExpr* create_expr_double(double * value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->Double = value;
     result->type = DOUBLE;
     return result;
@@ -93,6 +98,7 @@ struct NExpr* create_expr_double(double * value)
 struct NExpr* create_expr_boolean(bool* value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->Bool = value;
     result->type = BOOL;
     return result;
@@ -101,6 +107,7 @@ struct NExpr* create_expr_boolean(bool* value)
 struct NExpr* create_expr_nil(bool* value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
     result->type = NIL;
     return result;
 }
