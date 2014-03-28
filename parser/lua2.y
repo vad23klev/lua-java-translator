@@ -99,11 +99,11 @@ elseif_list:          /* empty */
                     | elseif_list ELSEIF expr THEN stmt_list
 ;
 
-stmt_while:           WHILE expr block
+stmt_while:           WHILE expr stmt_block
 ;
 
-stmt_for:             FOR ID '=' expr ',' expr          block
-                    | FOR ID '=' expr ',' expr ',' expr block
+stmt_for:             FOR ID '=' expr ',' expr          stmt_block
+                    | FOR ID '=' expr ',' expr ',' expr stmt_block
 ;
 
 stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
