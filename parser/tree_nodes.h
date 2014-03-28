@@ -97,3 +97,10 @@ struct NExpr* create_expr_boolean(bool* value)
     result->type = BOOL;
     return result;
 }
+
+struct NExpr* create_expr_nil(bool* value)
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    result->type = NIL;
+    return result;
+}
