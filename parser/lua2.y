@@ -111,9 +111,12 @@ stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
 
 
 /* == Expressions == */
-var:                  ID
+id_chain:             ID
+                    | id_chain '.' ID
+;
+
+var:                  id_chain
                     | var '[' expr ']'
-                    | var '.' ID
 ;
 
 expr:                 var
@@ -165,8 +168,8 @@ args:                 expr
 func_decl_anon:       FUNCTION func_body
 ;
 
-func_decl_named:      FUNCTION var func_body
-                    | FUNCTION var ':' ID func_body
+func_decl_named:      FUNCTION id_chain func_body
+                    | FUNCTION id_chain ':' ID func_body
 ;
 
 func_body:            '(' arg_list_decl ')' stmt_list END
