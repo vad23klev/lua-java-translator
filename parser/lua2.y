@@ -14,6 +14,7 @@
     struct NStmtList * SL;
     struct NStmt * Stmt;
     struct NFunc * Func;
+    struct NExprList * Args;
 }
 
 %start root
