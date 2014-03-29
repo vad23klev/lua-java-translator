@@ -31,6 +31,8 @@ struct NStmt
     struct NFunc * func;
     struct NStmtList * list;
     struct NStmt * next;
+    struct NFor * for_loop;
+    struct NWhile * while_loop;
 };
 
 struct NStmtList
