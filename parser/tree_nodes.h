@@ -157,3 +157,11 @@ struct NStmt* create_stmt_while(struct NWhile* While)
     result->type = WHILE;
     return result;
 }
+
+struct NStmt* create_stmt_for(struct NFor* For)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->for_loop = For;
+    result->type = FOR;
+    return result;
+}
