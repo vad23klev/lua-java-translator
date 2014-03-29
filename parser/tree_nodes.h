@@ -141,3 +141,11 @@ struct NStmt* create_stmt_func(struct NFunc* func)
     result->type = FUNC;
     return result;
 }
+
+struct NStmt* create_stmt_expr(struct NExpr* expr)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->expr = expr;
+    result->type = EXPR;
+    return result;
+}
