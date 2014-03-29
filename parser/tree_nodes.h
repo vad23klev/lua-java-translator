@@ -131,6 +131,7 @@ void set_null_field_expr(struct NExpr* expr)
     expr->left = NULL;
     expr->right = NULL;
     expr->type = NIL;
+    expr->next = NULL;
 }
 
 struct NStmt* create_stmt_func(struct NFunc* func)
