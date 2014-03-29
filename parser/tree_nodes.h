@@ -123,3 +123,11 @@ void set_null_field_expr(struct NExpr* expr)
     expr->right = NULL;
     expr->type = NIL;
 }
+
+struct NStmt* create_stmt_func(struct NFunc* func)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->func = func;
+    result->type = FUNC;
+    return result;
+}
