@@ -92,7 +92,7 @@ stmt_block:           DO stmt_list END
 ;
 
 stmt_if:              IF expr THEN stmt_list elseif_list END
-                    | IF expr THEN stmt_list ELSE stmt_list elseif_list END
+                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END
 ;
 
 elseif_list:          /* empty */
