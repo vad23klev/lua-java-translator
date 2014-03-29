@@ -45,7 +45,7 @@ struct NStmtList
 struct NFunc
 {
     char* name;
-    char*[] args;
+    struct NExprList* args;
     struct NStmt* body;
 };
 
