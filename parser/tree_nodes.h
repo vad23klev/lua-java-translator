@@ -28,6 +28,7 @@ struct NStmt
 {
     enum NStmtType type;
     struct NExpr * expr;
+    struct NFunc * func;
     struct NStmtList * list;
     struct NStmt * next;
 };
