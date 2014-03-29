@@ -75,6 +75,12 @@ struct NTable
     struct NTblElem * last;
 }
 
+struct NTblElem
+{
+    struct NExpr* key;
+    struct NExpr* value;
+}
+
 enum NStmtType {WHILE,FOR,EXPR,FUNC};
 
 enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LE,GE,LT,GT,MOD,ID,INT,DOUBLE,CONC,STR,MET,AND,NOT,OR,MAS,BOOL,NIL};
