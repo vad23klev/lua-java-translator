@@ -69,6 +69,12 @@ struct NIfList
     struct NIf* last;
 }
 
+struct NTable
+{
+    struct NTblElem * first;
+    struct NTblElem * last;
+}
+
 enum NStmtType {WHILE,FOR,EXPR,FUNC};
 
 enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LE,GE,LT,GT,MOD,ID,INT,DOUBLE,CONC,STR,MET,AND,NOT,OR,MAS,BOOL,NIL};
