@@ -48,7 +48,7 @@ struct NFunc
     struct NStmt* body;
 };
 
-enum NStmtType {OP,EXPR,FUNC};
+enum NStmtType {WHILE,FOR,EXPR,FUNC};
 
 enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LE,GE,LT,GT,MOD,ID,INT,DOUBLE,CONC,STR,MET,AND,NOT,OR,MAS,BOOL,NIL};
 
