@@ -199,3 +199,17 @@ struct  NExprList* create_expr_list(struct NExpr* first)
     result->last = NULL;
     return result;
 }
+
+struct NExprList* add_expr_to_list(struct NExprList* list, struct NExpr* element )
+{
+    if(list->last == NULL)
+    {
+        list->first->next = element;
+    }
+    else
+    {
+        list->last->next = element;
+    }
+    list->last = element;
+    return list;
+}
