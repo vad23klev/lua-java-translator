@@ -221,3 +221,17 @@ struct NStmtList* create_stmt_list(struct NStmt* first)
     result->last;
     return result;
 }
+
+struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
+{
+    if(list->last == NULL)
+    {
+        list->first->next = element;
+    }
+    else
+    {
+        list->last->next = element;
+    }
+    list->last = element;
+    return list;
+}
