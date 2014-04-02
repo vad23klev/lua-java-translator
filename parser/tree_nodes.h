@@ -214,7 +214,7 @@ struct NExprList* add_expr_to_list(struct NExprList* list, struct NExpr* element
     return list;
 }
 
-struct NStmtList* creatr_stmt_list(struct NStmt* first)
+struct NStmtList* create_stmt_list(struct NStmt* first)
 {
     struct NStmtList* result = (NStmtList*)malloc(sizeof(NStmtList));
     result->first = first;
