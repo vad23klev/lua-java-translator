@@ -211,7 +211,7 @@ struct NStmtList* create_stmt_list(struct NStmt* first)
 {
     struct NStmtList* result = (NStmtList*)malloc(sizeof(NStmtList));
     result->first = first;
-    result->last;
+    result->last = first;
     return result;
 }
 
