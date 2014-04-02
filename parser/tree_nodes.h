@@ -217,9 +217,9 @@ struct NStmtList* create_stmt_list(struct NStmt* first)
 
 struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
 {
-    if(list->last == NULL)
+    if(list->first == NULL)
     {
-        list->first->next = element;
+        list->first = element;
     }
     else
     {
