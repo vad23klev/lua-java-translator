@@ -246,3 +246,11 @@ struct NFor* create_for(char* operand, double start, double end, double step, st
     result->body = body;
     return result;
 }
+
+struct NWhile* create_while(struct NExpr* condition, struct NStmt* body)
+{
+    struct NWhile* result = (NWhile*)malloc(sizeof(NWhile));
+    result->condition = condition;
+    result->body = body;
+    return result;
+}
