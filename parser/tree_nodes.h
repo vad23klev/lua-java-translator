@@ -191,3 +191,11 @@ struct NStmt* create_stmt_for(struct NFor* For)
     result->type = FOR;
     return result;
 }
+
+struct  NExprList* create_expr_list(struct NExpr* first)
+{
+    struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
+    result->first = first;
+    result->last = NULL;
+    return result;
+}
