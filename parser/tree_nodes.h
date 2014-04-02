@@ -235,3 +235,14 @@ struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
     list->last = element;
     return list;
 }
+
+struct NFor* create_for(char* operand, double start, double end, double step, struct NStmt* body)
+{
+    struct NFor* result = (NFor*)malloc(sizeof(NFor));
+    result->name = operand;
+    result->start = start;
+    result->end = endl;
+    result->step = step;
+    result->body = body;
+    return result;
+}
