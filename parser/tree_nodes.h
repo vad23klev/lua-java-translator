@@ -196,7 +196,7 @@ struct  NExprList* create_expr_list(struct NExpr* first)
 {
     struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
     result->first = first;
-    result->last = NULL;
+    result->last = result->first;
     return result;
 }
 
