@@ -8,10 +8,10 @@ struct NWhile
 
 struct NFor
 {
-    char* name;
-    double start;
-    double end;
-    double step;
+    struct NExpr* name;
+    struct NExpr* start;
+    struct NExpr* end;
+    struct NExpr* step;
     struct NStmt * body;
 };
 
@@ -83,9 +83,12 @@ struct NTblElem
     struct NExpr* value;
 }
 
-enum NStmtType {WHILE,FOR,EXPR,FUNC};
+enum NStmtType {STMT_WHILE,STMT_FOR,STMT_EXPR,STMT_FUNC,STMT_BLOCK,STMT_REPEAT,STMT_LFUNC,
+    STMT_BREAK,STMT_RETURN,STMT_ASSIGN,STMT_LASSIGN};
 
-enum NExprType {EQ,NQ,PLUS,MINUS,DIV,MUL,LE,GE,LT,GT,MOD,ID,INT,DOUBLE,CONC,STR,MET,AND,NOT,OR,MAS,BOOL,NIL,UMIN};
+enum NExprType {EXPR_EQ,EXPR_NQ,EXPR_PLUS,EXPR_MINUS,EXPR_DIV,EXPR_MUL,EXPR_LE,EXPR_GE,
+    EXPR_LT,EXPR_GT,EXPR_MOD,EXPR_ID,EXPR_INT,EXPR_DOUBLE,EXPR_CONC,EXPR_STR,EXPR_MET,
+    EXPR_AND,EXPR_NOT,EXPR_OR,EXPR_MAS,EXPR_BOOL,EXPR_NIL,EXPR_UMIN,EXPR_FUNC_DEC_ANON,EXPR_TABLE,EXPR_ID_LIST};
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 {
@@ -102,7 +105,7 @@ struct NExpr* create_expr_id(char* id)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->name = id;
-    result->type = ID;
+    result->type = EXPR_ID;
     return result;
 }
 
@@ -111,7 +114,7 @@ struct NExpr* create_expr_string(char* string)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->name = string;
-    result->type = STR;
+    result->type = EXPR_STR;
     return result;
 }
 
@@ -120,7 +123,7 @@ struct NExpr* create_expr_int(int * value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Int = value;
-    result->type = INT;
+    result->type = EXPR_INT;
     return result;
 }
 
@@ -129,7 +132,7 @@ struct NExpr* create_expr_double(double * value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Double = value;
-    result->type = DOUBLE;
+    result->type = EXPR_DOUBLE;
     return result;
 }
 
@@ -138,7 +141,7 @@ struct NExpr* create_expr_boolean(bool* value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Bool = value;
-    result->type = BOOL;
+    result->type = EXPR_BOOL;
     return result;
 }
 
@@ -146,7 +149,7 @@ struct NExpr* create_expr_nil(bool* value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
-    result->type = NIL;
+    result->type = EXPR_NIL;
     return result;
 }
 
@@ -158,7 +161,7 @@ void set_null_field_expr(struct NExpr* expr)
     expr->name = NULL;
     expr->left = NULL;
     expr->right = NULL;
-    expr->type = NIL;
+    expr->type = EXPR_NIL;
     expr->next = NULL;
 }
 
@@ -166,7 +169,7 @@ struct NStmt* create_stmt_func(struct NFunc* func)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->func = func;
-    result->type = FUNC;
+    result->type = STMT_FUNC;
     return result;
 }
 
@@ -174,7 +177,7 @@ struct NStmt* create_stmt_expr(struct NExpr* expr)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->expr = expr;
-    result->type = EXPR;
+    result->type = STMT_EXPR;
     return result;
 }
 
@@ -182,7 +185,7 @@ struct NStmt* create_stmt_while(struct NWhile* While)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->while_loop = While;
-    result->type = WHILE;
+    result->type = STMT_WHILE;
     return result;
 }
 
@@ -190,7 +193,7 @@ struct NStmt* create_stmt_for(struct NFor* For)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->for_loop = For;
-    result->type = FOR;
+    result->type = STMT_FOR;
     return result;
 }
 
@@ -231,7 +234,7 @@ struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
     return list;
 }
 
-struct NFor* create_for(char* operand, double start, double end, double step, struct NStmt* body)
+struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmt* body)
 {
     struct NFor* result = (NFor*)malloc(sizeof(NFor));
     result->name = operand;
