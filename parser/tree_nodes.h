@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 struct NWhile
 {
     struct NExpr * condition;
