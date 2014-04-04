@@ -67,13 +67,13 @@ struct NExpr
     int *Int;
     double *Double;
     enum NExprType type;
-    bool *Bool;
     struct NExpr * next;
 };
 
 struct NStmt
 {
     enum NStmtType type;
+    struct NExpr * var;
     struct NExpr * expr;
     struct NFunc * func;
     struct NStmtList * list;
@@ -138,7 +138,6 @@ void set_null_field_expr(struct NExpr* expr)
 {
     expr->Int = NULL;
     expr->Double = NULL;
-    expr->Bool = NULL;
     expr->name = NULL;
     expr->left = NULL;
     expr->right = NULL;
@@ -192,16 +191,16 @@ struct NExpr* create_expr_double(double * value)
     return result;
 }
 
-struct NExpr* create_expr_boolean(bool* value)
+struct NExpr* create_expr_boolean(int* value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
-    result->Bool = value;
+    result->Int = value;
     result->type = EXPR_BOOL;
     return result;
 }
 
-struct NExpr* create_expr_nil(bool* value)
+struct NExpr* create_expr_nil()
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
@@ -294,5 +293,14 @@ struct NWhile* create_while(struct NExpr* condition, struct NStmt* body)
     struct NWhile* result = (NWhile*)malloc(sizeof(NWhile));
     result->condition = condition;
     result->body = body;
+    return result;
+}
+
+struct NTblElem* create_tbl_elem(struct NExpr* key, struct NExpr* value)
+{
+    struct NTblElem* result = (NTblElem*)malloc(sizeof(NTblElem));
+    result->key = key;
+    result->value = value;
+    result->next = NULL;
     return result;
 }
