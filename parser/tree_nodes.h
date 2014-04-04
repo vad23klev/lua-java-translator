@@ -1,89 +1,5 @@
 #include <stdlib.h>
 
-struct NWhile
-{
-    struct NExpr * condition;
-    struct NStmt * body;
-};
-
-struct NFor
-{
-    struct NExpr* name;
-    struct NExpr* start;
-    struct NExpr* end;
-    struct NExpr* step;
-    struct NStmt * body;
-};
-
-struct NExpr
-{
-    char * name;
-    struct NExpr * left;
-    struct NExpr * right;
-    int *Int;
-    double *Double;
-    enum NExprType type;
-    bool *Bool;
-    struct NExpr * next;
-};
-
-struct NStmt
-{
-    enum NStmtType type;
-    struct NExpr * expr;
-    struct NFunc * func;
-    struct NStmtList * list;
-    struct NStmt * next;
-    struct NFor * for_loop;
-    struct NWhile * while_loop;
-};
-
-struct NStmtList
-{
-    struct NStmt * first;
-    struct Nstmt * last;
-};
-
-struct NFunc
-{
-    char* name;
-    struct NExprList* args;
-    struct NStmt* body;
-};
-
-struct NExprList
-{
-    struct NExpr * first;
-    struct NExpr * last;
-}
-
-struct NIf
-{
-    struct NExpr* condition;
-    struct NStmtList* body;
-    struct NStmtList* elsebody;
-    struct NIfList* elseiflist;
-    struct NIf* next;
-}
-
-struct NIfList
-{
-    struct NIf* first;
-    struct NIf* last;
-}
-
-struct NTable
-{
-    struct NTblElem * first;
-    struct NTblElem * last;
-}
-
-struct NTblElem
-{
-    struct NExpr* key;
-    struct NExpr* value;
-}
-
 enum NStmtType {
     STMT_WHILE,
     STMT_FOR,
@@ -127,6 +43,107 @@ enum NExprType {
     EXPR_TABLE,
     EXPR_ID_LIST
 };
+
+struct NWhile
+{
+    struct NExpr * condition;
+    struct NStmt * body;
+};
+
+struct NFor
+{
+    struct NExpr* name;
+    struct NExpr* start;
+    struct NExpr* end;
+    struct NExpr* step;
+    struct NStmt * body;
+};
+
+struct NExpr
+{
+    char * name;
+    struct NExpr * left;
+    struct NExpr * right;
+    int *Int;
+    double *Double;
+    enum NExprType type;
+    bool *Bool;
+    struct NExpr * next;
+};
+
+struct NStmt
+{
+    enum NStmtType type;
+    struct NExpr * expr;
+    struct NFunc * func;
+    struct NStmtList * list;
+    struct NStmt * next;
+    struct NFor * for_loop;
+    struct NWhile * while_loop;
+};
+
+struct NStmtList
+{
+    struct NStmt * first;
+    struct NStmt * last;
+};
+
+struct NFunc
+{
+    char* name;
+    struct NExprList* args;
+    struct NStmt* body;
+};
+
+struct NExprList
+{
+    struct NExpr * first;
+    struct NExpr * last;
+};
+
+struct NIf
+{
+    struct NExpr* condition;
+    struct NStmtList* body;
+    struct NStmtList* elsebody;
+    struct NIfList* elseiflist;
+    struct NIf* next;
+};
+
+struct NIfList
+{
+    struct NIf* first;
+    struct NIf* last;
+};
+
+struct NTable
+{
+    struct NTblElem * first;
+    struct NTblElem * last;
+};
+
+struct NTblElem
+{
+    struct NExpr* key;
+    struct NExpr* value;
+};
+
+
+/*
+ * Function definition
+ */
+
+void set_null_field_expr(struct NExpr* expr)
+{
+    expr->Int = NULL;
+    expr->Double = NULL;
+    expr->Bool = NULL;
+    expr->name = NULL;
+    expr->left = NULL;
+    expr->right = NULL;
+    expr->type = EXPR_NIL;
+    expr->next = NULL;
+}
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 {
@@ -189,18 +206,6 @@ struct NExpr* create_expr_nil(bool* value)
     set_null_field_expr(result);
     result->type = EXPR_NIL;
     return result;
-}
-
-void set_null_field_expr(struct NExpr* expr)
-{
-    expr->Int = NULL;
-    expr->Double = NULL;
-    expr->Bool = NULL;
-    expr->name = NULL;
-    expr->left = NULL;
-    expr->right = NULL;
-    expr->type = EXPR_NIL;
-    expr->next = NULL;
 }
 
 struct NStmt* create_stmt_func(struct NFunc* func)
