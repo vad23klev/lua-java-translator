@@ -17,6 +17,11 @@
     #include "tree_nodes.h"
     
     extern int yylex(void);
+    
+    void yyerror(char *s)
+    {
+        printf("yyerror: %s\n", s);
+    }
 %}
 
 %start root
