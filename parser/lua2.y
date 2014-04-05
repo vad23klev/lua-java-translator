@@ -6,7 +6,7 @@
     
     void yyerror(const char *s)
     {
-        printf("yyerror: %s\n", s);
+        fprintf(stderr, "Line %d: %s\n", yylloc.first_line, s);
     }
 
     struct NStmtList* root;
