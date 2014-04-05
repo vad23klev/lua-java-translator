@@ -74,6 +74,7 @@ struct NExpr
 struct NStmt
 {
     enum NStmtType type;
+    struct NExpr * var;
     struct NExpr * expr;
     struct NFunc * func;
     struct NStmtList * list;
