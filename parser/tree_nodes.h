@@ -12,6 +12,7 @@ enum NStmtType {
     STMT_RETURN,
     STMT_ASSIGN,
     STMT_LASSIGN
+    STMT_IF;
 };
 
 enum NExprType {
@@ -81,6 +82,7 @@ struct NStmt
     struct NStmt * next;
     struct NFor * for_loop;
     struct NWhile * while_loop;
+    struct NIf * if_tree;
 };
 
 struct NStmtList
@@ -247,6 +249,13 @@ struct NStmt* create_stmt_for(struct NFor* For)
     return result;
 }
 
+struct NStmt* create_stmt_if(struct NIf* if_tree)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->if_tree = if_tree;
+    result->type = STMT_IF;
+    return result;
+}
 struct  NExprList* create_expr_list(struct NExpr* first)
 {
     struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
