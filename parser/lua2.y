@@ -1,8 +1,3 @@
-%{
-    #include <stdio.h>
-    #include <tree_nodes.h>
-%}
-
 %union {
     int Int;
     char* Id;
@@ -16,6 +11,13 @@
     struct NFunc * Func;
     struct NExprList * Args;
 }
+
+%{
+    #include <stdio.h>
+    #include "tree_nodes.h"
+    
+    extern int yylex(void);
+%}
 
 %start root
 %token <Int> INT

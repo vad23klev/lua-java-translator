@@ -1,3 +1,49 @@
+#include <stdlib.h>
+
+enum NStmtType {
+    STMT_WHILE,
+    STMT_FOR,
+    STMT_EXPR,
+    STMT_FUNC,
+    STMT_BLOCK,
+    STMT_REPEAT,
+    STMT_LFUNC,
+    STMT_BREAK,
+    STMT_RETURN,
+    STMT_ASSIGN,
+    STMT_LASSIGN
+};
+
+enum NExprType {
+    EXPR_EQ,
+    EXPR_NQ,
+    EXPR_PLUS,
+    EXPR_MINUS,
+    EXPR_DIV,
+    EXPR_MUL,
+    EXPR_LE,
+    EXPR_GE,
+    EXPR_LT,
+    EXPR_GT,
+    EXPR_MOD,
+    EXPR_ID,
+    EXPR_INT,
+    EXPR_DOUBLE,
+    EXPR_CONC,
+    EXPR_STR,
+    EXPR_MET,
+    EXPR_AND,
+    EXPR_NOT,
+    EXPR_OR,
+    EXPR_MAS,
+    EXPR_BOOL,
+    EXPR_NIL,
+    EXPR_UMIN,
+    EXPR_FUNC_DEC_ANON,
+    EXPR_TABLE,
+    EXPR_ID_LIST
+};
+
 struct NWhile
 {
     struct NExpr * condition;
@@ -39,7 +85,7 @@ struct NStmt
 struct NStmtList
 {
     struct NStmt * first;
-    struct Nstmt * last;
+    struct NStmt * last;
 };
 
 struct NFunc
@@ -53,7 +99,7 @@ struct NExprList
 {
     struct NExpr * first;
     struct NExpr * last;
-}
+};
 
 struct NIf
 {
@@ -62,33 +108,43 @@ struct NIf
     struct NStmtList* elsebody;
     struct NIfList* elseiflist;
     struct NIf* next;
-}
+};
 
 struct NIfList
 {
     struct NIf* first;
     struct NIf* last;
-}
+};
 
 struct NTable
 {
     struct NTblElem * first;
     struct NTblElem * last;
-}
+};
 
 struct NTblElem
 {
     struct NExpr* key;
     struct NExpr* value;
     struct NTblElem * next;
+};
+
+
+/*
+ * Function definition
+ */
+
+void set_null_field_expr(struct NExpr* expr)
+{
+    expr->Int = NULL;
+    expr->Double = NULL;
+    expr->Bool = NULL;
+    expr->name = NULL;
+    expr->left = NULL;
+    expr->right = NULL;
+    expr->type = EXPR_NIL;
+    expr->next = NULL;
 }
-
-enum NStmtType {STMT_WHILE,STMT_FOR,STMT_EXPR,STMT_FUNC,STMT_BLOCK,STMT_REPEAT,STMT_LFUNC,
-    STMT_BREAK,STMT_RETURN,STMT_ASSIGN,STMT_LASSIGN};
-
-enum NExprType {EXPR_EQ,EXPR_NQ,EXPR_PLUS,EXPR_MINUS,EXPR_DIV,EXPR_MUL,EXPR_LE,EXPR_GE,
-    EXPR_LT,EXPR_GT,EXPR_MOD,EXPR_ID,EXPR_INT,EXPR_DOUBLE,EXPR_CONC,EXPR_STR,EXPR_MET,
-    EXPR_AND,EXPR_NOT,EXPR_OR,EXPR_MAS,EXPR_BOOL,EXPR_NIL,EXPR_UMIN,EXPR_FUNC_DEC_ANON,EXPR_TABLE,EXPR_ID_LIST};
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
 {
@@ -151,18 +207,6 @@ struct NExpr* create_expr_nil(bool* value)
     set_null_field_expr(result);
     result->type = EXPR_NIL;
     return result;
-}
-
-void set_null_field_expr(struct NExpr* expr)
-{
-    expr->Int = NULL;
-    expr->Double = NULL;
-    expr->Bool = NULL;
-    expr->name = NULL;
-    expr->left = NULL;
-    expr->right = NULL;
-    expr->type = EXPR_NIL;
-    expr->next = NULL;
 }
 
 struct NStmt* create_stmt_func(struct NFunc* func)
