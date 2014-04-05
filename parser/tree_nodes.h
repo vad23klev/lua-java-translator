@@ -82,6 +82,7 @@ struct NStmt
     struct NStmt * next;
     struct NFor * for_loop;
     struct NWhile * while_loop;
+    struct NIf * if_tree;
 };
 
 struct NStmtList
