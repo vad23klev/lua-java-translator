@@ -167,7 +167,7 @@ struct NStmt* create_stmt_func(struct NFunc* func)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->func = func;
-    result->type = FUNC;
+    result->type = STMT_FUNC;
     return result;
 }
 
@@ -175,7 +175,7 @@ struct NStmt* create_stmt_expr(struct NExpr* expr)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->expr = expr;
-    result->type = EXPR;
+    result->type = STMT_EXPR;
     return result;
 }
 
@@ -183,7 +183,7 @@ struct NStmt* create_stmt_while(struct NWhile* While)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->while_loop = While;
-    result->type = WHILE;
+    result->type = STMT_WHILE;
     return result;
 }
 
@@ -191,7 +191,7 @@ struct NStmt* create_stmt_for(struct NFor* For)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->for_loop = For;
-    result->type = FOR;
+    result->type = STMT_FOR;
     return result;
 }
 
