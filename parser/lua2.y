@@ -1,3 +1,15 @@
+%{
+    #include <stdio.h>
+    #include "tree_nodes.h"
+    
+    extern int yylex(void);
+    
+    void yyerror(const char *s)
+    {
+        printf("yyerror: %s\n", s);
+    }
+%}
+
 %union {
     int Int;
     char* Id;
@@ -12,18 +24,6 @@
     struct NExprList * Args;
     struct NIf * If;
 }
-
-%{
-    #include <stdio.h>
-    #include "tree_nodes.h"
-    
-    extern int yylex(void);
-    
-    void yyerror(char *s)
-    {
-        printf("yyerror: %s\n", s);
-    }
-%}
 
 %start root
 %token <Int> INT
@@ -83,13 +83,13 @@ end_expr:             ENDL
                     | ';'
 ;
 
-root:                 stmt_list {$$=$1;}
+root:                 stmt_list                                                 { $$ = $1; }
 ;
 
 
 /* == Statements == */
-stmt_list:            /* empty */ {$$=create_stmt_list(NULL);}
-                    | stmt_list stmt {$$=add_stmt_to_list($1,$2);}
+stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
+                    | stmt_list stmt                                            { $$ = add_stmt_to_list($1, $2); }
 ;
 
 stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
@@ -218,3 +218,5 @@ tbl_elem:             ID '=' expr
                     | '[' expr ']' '=' expr
                     | expr
 ;
+
+%%
