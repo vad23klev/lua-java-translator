@@ -312,3 +312,17 @@ struct NTable* create_table(struct NTblElem* first)
     result->last = first;
     return result;
 }
+
+struct NTable* add_elem_to_table(struct NTable* list, struct NTblElem* element)
+{
+    if(list->first == NULL)
+    {
+        list->first = element;
+    }
+    else
+    {
+        list->last->next = element;
+    }
+    list->last = element;
+    return list;
+}
