@@ -265,6 +265,16 @@ struct NStmt* create_stmt_block(struct NStmtList* stmtlist)
     return result;
 }
 
+struct NStmt* create_stmt_spec(int ret)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    if (ret)
+        result->type = STMT_RETURN;
+    else
+        result->type = STMT_BREAK;
+    return result;
+}
+
 struct  NExprList* create_expr_list(struct NExpr* first)
 {
     struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
