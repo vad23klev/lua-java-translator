@@ -1,14 +1,14 @@
 %{
-  #include <stdio.h>
-  #include <string.h>
-  
-  #include "lua2.tab.h"
-  
-  #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
-  
-  char strconst[1281] = {0};
-  
-  extern int yyparse(void);
+    #include <stdio.h>
+    #include <string.h>
+
+    #include "lua2.tab.h"
+
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
+
+    char strconst[1281] = {0};
+
+    extern int yyparse(void);
 %}
 
 %option noyywrap
