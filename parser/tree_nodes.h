@@ -241,6 +241,18 @@ struct NStmt* create_stmt_while(struct NWhile* While, int rep)
     return result;
 }
 
+struct NStmt* create_stmt_assign(struct NExpr* var, struct NExpr* expr, int local)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->var = var;
+    resutl->expr = expr;
+    if (local)
+        result->type = STMT_LASSIGN;
+    else
+        result->type = STMT_ASSIGN;
+    return result;
+}
+
 struct NStmt* create_stmt_for(struct NFor* For)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
