@@ -80,6 +80,7 @@ struct NTblElem
 {
     struct NExpr* key;
     struct NExpr* value;
+    struct NTblElem * next;
 }
 
 enum NStmtType {STMT_WHILE,STMT_FOR,STMT_EXPR,STMT_FUNC,STMT_BLOCK,STMT_REPEAT,STMT_LFUNC,
