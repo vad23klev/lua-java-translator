@@ -6,10 +6,10 @@ struct NWhile
 
 struct NFor
 {
-    char* name;
-    double start;
-    double end;
-    double step;
+    struct NExpr* name;
+    struct NExpr* start;
+    struct NExpr* end;
+    struct NExpr* step;
     struct NStmt * body;
 };
 
@@ -229,7 +229,7 @@ struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
     return list;
 }
 
-struct NFor* create_for(char* operand, double start, double end, double step, struct NStmt* body)
+struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmt* body)
 {
     struct NFor* result = (NFor*)malloc(sizeof(NFor));
     result->name = operand;
