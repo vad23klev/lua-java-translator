@@ -284,7 +284,7 @@ struct NStmtList* add_stmt_to_list(struct NStmtList* list, struct NStmt* element
     return list;
 }
 
-struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmt* body)
+struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmtList* body)
 {
     struct NFor* result = (NFor*)malloc(sizeof(NFor));
     result->name = operand;
@@ -295,7 +295,7 @@ struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr
     return result;
 }
 
-struct NWhile* create_while(struct NExpr* condition, struct NStmt* body)
+struct NWhile* create_while(struct NExpr* condition, struct NStmtList* body)
 {
     struct NWhile* result = (NWhile*)malloc(sizeof(NWhile));
     result->condition = condition;
