@@ -5,13 +5,11 @@
   #include "lua2.tab.h"
   
   char strconst[1281] = {0};
-  int line = 0;
   
   extern int yyparse(void);
 %}
 
 %option noyywrap
-%location
 
 %x COMMENT
 %x STRING_A
@@ -23,17 +21,13 @@
 
 "--"                          BEGIN(SHORTCOMMENT);
 <SHORTCOMMENT>[^\n]*          ;
-<SHORTCOMMENT>"\n"            {
-                                  line++;
-                                  BEGIN(INITIAL);
-                              }
+<SHORTCOMMENT>"\n"            BEGIN(INITIAL);
 
 "--[["                        BEGIN(COMMENT);
 <COMMENT>[^--]*               ;
 <COMMENT>--[^\]\]]            ;
 <COMMENT>--]]                 BEGIN(INITIAL);
-<COMMENT>.|[\r\f\t\v]         ;
-<COMMENT>[\n]                 line++;
+<COMMENT>.|[\n\r\f\t\v]       ;
 
 \"                            { BEGIN(STRING_Q); strcpy(strconst, ""); }
 <STRING_Q>\\\"                strcat(strconst, "\"");
@@ -44,11 +38,9 @@
                                   yylval.String = (char *)malloc(strlen(strconst) + 1);
                                   strcpy(yylval.String, strconst);
                                   BEGIN(INITIAL);
-                                  yyloc.first_line = line;
                                   return STRING;
                               }
-<STRING_Q>.|[\r\f\t\v]        ;
-<STRING_Q>[\n]                line++;
+<STRING_Q>.|[\n\r\f\t\v]      ;
 
 \'                            { BEGIN(STRING_A); strcpy(strconst, ""); }
 <STRING_A>\\\"                strcat(strconst, "\"");
@@ -59,107 +51,95 @@
                                   yylval.String = (char *)malloc(strlen(strconst) + 1);
                                   strcpy(yylval.String, strconst);
                                   BEGIN(INITIAL);
-                                  yyloc.first_line = line;
                                   return STRING;
                               }
-<STRING_A>.|[\r\f\t\v]        ;
-<STRING_A>[\n]                line++;
+<STRING_A>.|[\n\r\f\t\v]      ;
 
 
 "[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
-<MULTISTRING>[^\]\n]*         strcat(strconst,yytext);
-<MULTISTRING>\][^\]\n]*       strcat(strconst,yytext);
-<MULTISTRING>[\n]             {
-                                  strcat(strconst, "\n");
-                                  line++;
-                              }
+<MULTISTRING>[^\]]*           strcat(strconst,yytext);
+<MULTISTRING>\][^\]]*         strcat(strconst,yytext);
 <MULTISTRING>"]]"             {
                                   yylval.String = (char *)malloc(strlen(strconst) + 1);
                                   strcpy(yylval.String, strconst);
                                   BEGIN(INITIAL);
-                                  yyloc.first_line = line;
                                   return STRING;
                               }
 
-"while"                       { yyloc.first_line = line; return WHILE; }
-"end"                         { yyloc.first_line = line; return END; }
-"for"                         { yyloc.first_line = line; return FOR; }
-"if"                          { yyloc.first_line = line; return IF; }
-"elseif"                      { yyloc.first_line = line; return ELSEIF; }
-"else"                        { yyloc.first_line = line; return ELSE; }
-"do"                          { yyloc.first_line = line; return DO; }
-"then"                        { yyloc.first_line = line; return THEN; }
-"repeat"                      { yyloc.first_line = line; return REPEAT; }
-"until"                       { yyloc.first_line = line; return UNTIL; }
-"return"                      { yyloc.first_line = line; return RETURN; }
-"break"                       { yyloc.first_line = line; return BREAK; }
+"while"                       return WHILE;
+"end"                         return END;
+"for"                         return FOR;
+"if"                          return IF;
+"elseif"                      return ELSEIF;
+"else"                        return ELSE;
+"do"                          return DO;
+"then"                        return THEN;
+"repeat"                      return REPEAT;
+"until"                       return UNTIL;
+"return"                      return RETURN;
+"break"                       return BREAK;
 
-"not"                         { yyloc.first_line = line; return NOT; }
-"and"                         { yyloc.first_line = line; return AND; }
-"or"                          { yyloc.first_line = line; return OR; }
+"not"                         return NOT;
+"and"                         return AND;
+"or"                          return OR;
 
-"nil"                         { yyloc.first_line = line; return NIL; }
-"true"                        { yyloc.first_line = line; return TRUE; }
-"false"                       { yyloc.first_line = line; return FALSE; }
+"nil"                         return NIL;
+"true"                        return TRUE;
+"false"                       return FALSE;
 
-"local"                       { yyloc.first_line = line; return LOCAL; }
-"function"                    { yyloc.first_line = line; return FUNCTION; }
+"local"                       return LOCAL;
+"function"                    return FUNCTION;
 
 
-".."                          { yyloc.first_line = line; return CONCAT; }
-">"                           { yyloc.first_line = line; return '>'; }
-"<"                           { yyloc.first_line = line; return '<'; }
-"-"                           { yyloc.first_line = line; return '-'; }
-"\*"                          { yyloc.first_line = line; return '*'; }
-"/"                           { yyloc.first_line = line; return '/'; }
-"%"                           { yyloc.first_line = line; return '%'; }
-"=="                          { yyloc.first_line = line; return EQ; }
-">="                          { yyloc.first_line = line; return GE; }
-"<="                          { yyloc.first_line = line; return LE; }
-"~="                          { yyloc.first_line = line; return NE; }
-"="                           { yyloc.first_line = line; return '='; }
-","                           { yyloc.first_line = line; return ','; }
-"+"                           { yyloc.first_line = line; return '+'; }
-"."                           { yyloc.first_line = line; return '.'; }
-"("                           { yyloc.first_line = line; return '('; }
-")"                           { yyloc.first_line = line; return ')'; }
-"{"                           { yyloc.first_line = line; return '{'; }
-"}"                           { yyloc.first_line = line; return '}'; }
-"["                           { yyloc.first_line = line; return '['; }
-"]"                           { yyloc.first_line = line; return ']'; }
-";"                           { yyloc.first_line = line; return ';'; }
-"#"                           { yyloc.first_line = line; return '#'; }
-":"                           { yyloc.first_line = line; return ':'; }
+".."                          return CONCAT;
+">"                           return '>';
+"<"                           return '<';
+"-"                           return '-';
+"\*"                          return '*';
+"/"                           return '/';
+"%"                           return '%';
+"=="                          return EQ;
+">="                          return GE;
+"<="                          return LE;
+"~="                          return NE;
+"="                           return '=';
+","                           return ',';
+"+"                           return '+';
+"."                           return '.';
+"("                           return '(';
+")"                           return ')';
+"{"                           return '{';
+"}"                           return '}';
+"["                           return '[';
+"]"                           return ']';
+";"                           return ';';
+"#"                           return '#';
+":"                           return ':';
 
 "0x"[A-F0-9]+                 {
                                   yylval.Int = strtol(yytext,NULL,16);
-                                  yyloc.first_line = line;
                                   return INT;
                               }
 
 [+-]?[0-9]+                   {
                                   yylval.Int = atoi(yytext);
-                                  yyloc.first_line = line;
                                   return INT;
                               }
 
 ([_]|[a-z])+[a-zA-Z0-9_]*     {
                                   yylval.Id = (char *)malloc(sizeof(yytext)+1);
                                   strcpy(yylval.Id, yytext);
-                                  yyloc.first_line = line;
                                   return ID;
                               }
 
 [+-]?[0-9]+\.[0-9eE-]+        {
                                   yylval.Double = atof(yytext);
-                                  yyloc.first_line = line;
                                   return DOUBLE;
                               }
 
 [^ \f\n\r\t\v]                printf("Unknown symbol: %s\n",yytext);
 
-.|[\r\t\f\v]                  ;
-[\n]                          line++;
+.|[\n\r\t\f\v]                ;
 
 <<EOF>>                       return 0;
 
