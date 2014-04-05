@@ -264,7 +264,7 @@ struct NStmtList* create_stmt_list(struct NStmt* first)
     return result;
 }
 
-struct NStmtList* add_stmt_to_list(struct NStmtList, struct NStmt* element)
+struct NStmtList* add_stmt_to_list(struct NStmtList* list, struct NStmt* element)
 {
     if(list->first == NULL)
     {
@@ -283,7 +283,7 @@ struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr
     struct NFor* result = (NFor*)malloc(sizeof(NFor));
     result->name = operand;
     result->start = start;
-    result->end = endl;
+    result->end = end;
     result->step = step;
     result->body = body;
     return result;
