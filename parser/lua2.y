@@ -25,6 +25,7 @@
     struct NFunc * Func;
     struct NExprList * Args;
     struct NIf * If;
+    struct NIfList * IfL;
 }
 
 %start root
@@ -67,6 +68,7 @@
 %type <If> stmt_if
 %type <For> stmt_for
 %type <Func> func_decl_named
+%type <IfL> elseif_list
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
