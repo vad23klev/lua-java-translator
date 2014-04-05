@@ -256,6 +256,15 @@ struct NStmt* create_stmt_if(struct NIf* if_tree)
     result->type = STMT_IF;
     return result;
 }
+
+struct NStmt* create_stmt_block(struct NStmtList* stmtlist)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->list = stmtlist;
+    result->type = STMT_BLOCK;
+    return result;
+}
+
 struct  NExprList* create_expr_list(struct NExpr* first)
 {
     struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
