@@ -34,7 +34,12 @@
 <STRING_Q>\\n                 strcat(strconst, "\n"); 
 <STRING_Q>\\\\                strcat(strconst, "\\");
 <STRING_Q>[^\\\n\"]+          strcat(strconst,yytext);
-<STRING_Q>\"                  { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
+<STRING_Q>\"                  {
+                                  yylval.String = (char *)malloc(strlen(strconst) + 1);
+                                  strcpy(yylval.String, strconst);
+                                  BEGIN(INITIAL);
+                                  return STRING;
+                              }
 <STRING_Q>.|[\n\r\f\t\v]      ;
 
 \'                            { BEGIN(STRING_A); strcpy(strconst, ""); }
@@ -42,75 +47,101 @@
 <STRING_A>\\n                 strcat(strconst, "\n"); 
 <STRING_A>\\\\                strcat(strconst, "\\");
 <STRING_A>[^\\\n\']+          strcat(strconst,yytext);
-<STRING_A>\'                  { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
+<STRING_A>\'                  {
+                                  yylval.String = (char *)malloc(strlen(strconst) + 1);
+                                  strcpy(yylval.String, strconst);
+                                  BEGIN(INITIAL);
+                                  return STRING;
+                              }
 <STRING_A>.|[\n\r\f\t\v]      ;
 
 
 "[["                          { BEGIN(MULTISTRING); strcpy(strconst,""); }
 <MULTISTRING>[^\]]*           strcat(strconst,yytext);
 <MULTISTRING>\][^\]]*         strcat(strconst,yytext);
-<MULTISTRING>"]]"             { printf("Found string: %s\n",strconst); BEGIN(INITIAL); }
+<MULTISTRING>"]]"             {
+                                  yylval.String = (char *)malloc(strlen(strconst) + 1);
+                                  strcpy(yylval.String, strconst);
+                                  BEGIN(INITIAL);
+                                  return STRING;
+                              }
 
-"while"                       printf("Found \"while\"\n");
-"end"                         printf("Found \"end\"\n");
-"for"                         printf("Found \"for\"\n");
-"if"                          printf("Found \"if\"\n");
-"elseif"                      printf("Found \"elseif\"\n");
-"else"                        printf("Found \"else\"\n");
-"do"                          printf("Found \"do\"\n");
-"then"                        printf("Found \"then\"\n");
-"repeat"                      printf("Found \"repeat\"\n");
-"until"                       printf("Found \"until\"\n");
-"return"                      printf("Found \"return\"\n");
-"break"                       printf("Found \"break\"\n");
+"while"                       return WHILE;
+"end"                         return END;
+"for"                         return FOR;
+"if"                          return IF;
+"elseif"                      return ELSEIF;
+"else"                        return ELSE;
+"do"                          return DO;
+"then"                        return THEN;
+"repeat"                      return REPEAT;
+"until"                       return UNTIL;
+"return"                      return RETURN;
+"break"                       return BREAK;
 
-"not"                         printf("Found logical \"not\"\n");
-"and"                         printf("Found logical \"and\"\n");
-"or"                          printf("Found logical \"or\"\n");
+"not"                         return NOT;
+"and"                         return AND;
+"or"                          return OR;
 
-"nil"                         printf("Found \"nil\"\n");
-"true"                        printf("Found \"true\" constant\n");
-"false"                       printf("Found \"false\" constant\n");
+"nil"                         return NIL;
+"true"                        return TRUE;
+"false"                       return FALSE;
 
-"local"                       printf("Found \"local\" (variable declaration)\n");
-"function"                    printf("Found \"function\" (function declaration)\n");
-"require"                     printf("Found \"require\" (include)\n");
+"local"                       return LOCAL;
+"function"                    return FUNCTION;
 
 
-".."                          printf("Found \"..\" like strcat \n");
-">"                           printf("Found \">\"\n");
-"<"                           printf("Found \"<\"\n");
-"-"                           printf("Found \"-\"\n");
-"\*"                          printf("Found \"*\"\n");
-"/"                           printf("Found \"/\"\n");
-"%"                           printf("Found \"%\"\n");
-"=="                          printf("Found \"==\"\n");
-">="                          printf("Found \"=>\"\n");
-"<="                          printf("Found \"<=\"\n");
-"~="                          printf("Found \"~=\"\n");
-"="                           printf("Found \"=\"\n");
-","                           printf("Found \",\"\n");
-"+"                           printf("Found \"+\"\n");
-"."                           printf("Found \".\"\n");
-"("                           printf("Found \"(\"\n");
-")"                           printf("Found \")\"\n");
-"{"                           printf("Found \"{\"\n");
-"}"                           printf("Found \"}\"\n");
-"["                           printf("Found \"[\"\n");
-"]"                           printf("Found \"]\"\n");
-";"                           printf("Found \";\"\n");
-"#"                           printf("Found \"#\"\n");
-":"                           printf("Found \":\"\n");
+".."                          return CONCAT;
+">"                           return '>';
+"<"                           return '<';
+"-"                           return '-';
+"\*"                          return '*';
+"/"                           return '/';
+"%"                           return '%';
+"=="                          return EQ;
+">="                          return GE;
+"<="                          return LE;
+"~="                          return NE;
+"="                           return '=';
+","                           return ',';
+"+"                           return '+';
+"."                           return '.';
+"("                           return '(';
+")"                           return ')';
+"{"                           return '{';
+"}"                           return '}';
+"["                           return '[';
+"]"                           return ']';
+";"                           return ';';
+"#"                           return '#';
+":"                           return ':';
 
-"0x"[A-F0-9]+                 printf("Found hexadecimal: %d\n",strtol(yytext,NULL,16));
-[+-]?[0-9]+                   printf("Found decimal: %d\n",atoi(yytext));
-([_]|[a-z])+[a-zA-Z0-9_]*     printf("Found identifier: %s\n",yytext);
-[+-]?[0-9]+\.[0-9eE-]+        printf("Found double: %f\n",atof(yytext));
+"0x"[A-F0-9]+                 {
+                                  yylval.Int = strtol(yytext,NULL,16);
+                                  return INT;
+                              }
+
+[+-]?[0-9]+                   {
+                                  yylval.Int = atoi(yytext);
+                                  return INT;
+                              }
+
+([_]|[a-z])+[a-zA-Z0-9_]*     {
+                                  yylval.Id = (char *)malloc(sizeof(yytext)+1);
+                                  strcpy(yylval.Id, yytext);
+                                  return ID;
+                              }
+
+[+-]?[0-9]+\.[0-9eE-]+        {
+                                  yylval.Double = atof(yytext);
+                                  return DOUBLE;
+                              }
+
 [^ \f\n\r\t\v]                printf("Unknown symbol: %s\n",yytext);
 
 .|[\n\r\t\f\v]                ;
 
-<<EOF>>                       { printf("<<END OF FILE>>\n"); return 0; }
+<<EOF>>                       return 0;
 
 %%
 
@@ -119,7 +150,7 @@ int main(int argc,char* argv[])
     if (argc > 1) 
     {
         yyin = fopen(argv[1], "r");
-        yylex();
+        yyparse();
     }
     return 0;
 }
