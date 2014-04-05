@@ -10,6 +10,7 @@
     struct NStmt * Stmt;
     struct NFunc * Func;
     struct NExprList * Args;
+    struct NIf * If;
 }
 
 %{
@@ -62,6 +63,7 @@
 %type <While> stmt_repeat
 %type <Stmt> stmt
 %type <If> stmt_if
+%type <For> stmt_for
 %type <Func> func_decl_named
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
@@ -86,8 +88,8 @@ root:                 stmt_list {$$=$1;}
 
 
 /* == Statements == */
-stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
-                    | stmt_list stmt                                            { $$ = add_stmt_to_list($1, $2); }
+stmt_list:            /* empty */ {$$=create_stmt_list(NULL);}
+                    | stmt_list stmt {$$=add_stmt_to_list($1,$2);}
 ;
 
 stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
