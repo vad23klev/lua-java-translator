@@ -63,6 +63,7 @@
 %type <While> stmt_repeat
 %type <Stmt> stmt
 %type <If> stmt_if
+%type <For> stmt_for
 %type <Func> func_decl_named
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
@@ -94,7 +95,7 @@ stmt_list:            /* empty */ {$$=create_stmt_list(NULL);}
 stmt:                 stmt_block {$$=create_stmt_block($1);}
                     | stmt_if {$$=create_stmt_if($1);}
                     | stmt_while {$$=create_stmt_while($1,0);}
-                    | stmt_for {$$=create_stmt_for;}
+                    | stmt_for {$$=create_stmt_for($1);}
                     | stmt_repeat {$$=create_stmt_while($1,1);}
                     | BREAK end_expr {$$=create_stmt_spec(0);}
                     | RETURN end_expr {$$=create_stmt_spec(1);}
