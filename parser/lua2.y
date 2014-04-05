@@ -54,7 +54,15 @@
 %token ENDL
 
 %type <Expr> expr
+%type <Expr> var
 %type <SL> stmt_list
+%type <SL> root
+%type <SL> stmt_block
+%type <While> stmt_while
+%type <While> stmt_repeat
+%type <Stmt> stmt
+%type <If> stmt_if
+%type <Func> func_decl_named
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
