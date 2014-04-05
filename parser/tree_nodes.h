@@ -47,7 +47,7 @@ enum NExprType {
 struct NWhile
 {
     struct NExpr * condition;
-    struct NStmt * body;
+    struct NStmtList * body;
 };
 
 struct NFor
@@ -56,7 +56,7 @@ struct NFor
     struct NExpr* start;
     struct NExpr* end;
     struct NExpr* step;
-    struct NStmt * body;
+    struct NStmtList * body;
 };
 
 struct NExpr
@@ -68,6 +68,7 @@ struct NExpr
     double *Double;
     enum NExprType type;
     struct NExpr * next;
+    struct NExprList* idlist;
 };
 
 struct NStmt
@@ -92,7 +93,7 @@ struct NFunc
 {
     char* name;
     struct NExprList* args;
-    struct NStmt* body;
+    struct NStmtList* body;
 };
 
 struct NExprList
@@ -208,11 +209,14 @@ struct NExpr* create_expr_nil()
     return result;
 }
 
-struct NStmt* create_stmt_func(struct NFunc* func)
+struct NStmt* create_stmt_func(struct NFunc* func, int local)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->func = func;
-    result->type = STMT_FUNC;
+    if (local)
+        result->type = STMT_LFUNC;
+    else
+        result->type = STMT_FUNC;
     return result;
 }
 
@@ -224,11 +228,14 @@ struct NStmt* create_stmt_expr(struct NExpr* expr)
     return result;
 }
 
-struct NStmt* create_stmt_while(struct NWhile* While)
+struct NStmt* create_stmt_while(struct NWhile* While, int rep)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->while_loop = While;
-    result->type = STMT_WHILE;
+    if (rep)
+        result->type = STMT_REPEAT;
+    else
+        result->type = STMT_WHILE;
     return result;
 }
 
@@ -277,7 +284,7 @@ struct NStmtList* add_stmt_to_list(struct NStmtList* list, struct NStmt* element
     return list;
 }
 
-struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmt* body)
+struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr* end, struct NExpr* step, struct NStmtList* body)
 {
     struct NFor* result = (NFor*)malloc(sizeof(NFor));
     result->name = operand;
@@ -288,7 +295,7 @@ struct NFor* create_for(struct NExpr* operand, struct NExpr* start, struct NExpr
     return result;
 }
 
-struct NWhile* create_while(struct NExpr* condition, struct NStmt* body)
+struct NWhile* create_while(struct NExpr* condition, struct NStmtList* body)
 {
     struct NWhile* result = (NWhile*)malloc(sizeof(NWhile));
     result->condition = condition;
@@ -303,4 +310,26 @@ struct NTblElem* create_tbl_elem(struct NExpr* key, struct NExpr* value)
     result->value = value;
     result->next = NULL;
     return result;
+}
+
+struct NTable* create_table(struct NTblElem* first)
+{
+    struct NTable* result = (NTable*)malloc(sizeof(NTable));
+    result->first = first;
+    result->last = first;
+    return result;
+}
+
+struct NTable* add_elem_to_table(struct NTable* list, struct NTblElem* element)
+{
+    if(list->first == NULL)
+    {
+        list->first = element;
+    }
+    else
+    {
+        list->last->next = element;
+    }
+    list->last = element;
+    return list;
 }

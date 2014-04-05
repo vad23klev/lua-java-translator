@@ -54,7 +54,15 @@
 %token ENDL
 
 %type <Expr> expr
+%type <Expr> var
 %type <SL> stmt_list
+%type <SL> root
+%type <SL> stmt_block
+%type <While> stmt_while
+%type <While> stmt_repeat
+%type <Stmt> stmt
+%type <If> stmt_if
+%type <Func> func_decl_named
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
@@ -73,27 +81,27 @@ end_expr:             ENDL
                     | ';'
 ;
 
-root:                 stmt_list
+root:                 stmt_list {$$=$1;}
 ;
 
 
 /* == Statements == */
-stmt_list:            /* empty */
-                    | stmt_list stmt
+stmt_list:            /* empty */ {$$=create_stmt_list(NULL);}
+                    | stmt_list stmt {$$=add_stmt_to_list($1,$2);}
 ;
 
-stmt:                 stmt_block
-                    | stmt_if
-                    | stmt_while
-                    | stmt_for
-                    | stmt_repeat
-                    | BREAK end_expr
-                    | RETURN end_expr
-                    | expr end_expr
-                    | var '=' expr end_expr
-                    | LOCAL var '=' expr end_expr
-                    | func_decl_named
-                    | LOCAL func_decl_named
+stmt:                 stmt_block {$$=create_stmt_block($1);}
+                    | stmt_if {$$=create_stmt_if($1);}
+                    | stmt_while {$$=create_stmt_while($1,0);}
+                    | stmt_for {$$=create_stmt_for;}
+                    | stmt_repeat {$$=create_stmt_while($1,1);}
+                    | BREAK end_expr {$$=create_stmt_spec(0);}
+                    | RETURN end_expr {$$=create_stmt_spec(1);}
+                    | expr end_expr {$$=create_stmt_expr($1);}
+                    | var '=' expr end_expr {$$=create_stmt_assign($1,$3,0);}
+                    | LOCAL var '=' expr end_expr {$$=create_stmt_assign($2,$4,1);}
+                    | func_decl_named {$$=create_stmt_func($1,0);}
+                    | LOCAL func_decl_named {$$=create_stmt_func($2,1);}
 ;
 
 stmt_block:           DO stmt_list END
