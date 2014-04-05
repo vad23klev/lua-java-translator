@@ -11,8 +11,8 @@ enum NStmtType {
     STMT_BREAK,
     STMT_RETURN,
     STMT_ASSIGN,
-    STMT_LASSIGN
-    STMT_IF;
+    STMT_LASSIGN,
+    STMT_IF
 };
 
 enum NExprType {
