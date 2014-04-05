@@ -103,7 +103,7 @@ struct NExpr* create_expr_id(char* id)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->name = id;
-    result->type = ID;
+    result->type = EXPR_ID;
     return result;
 }
 
@@ -112,7 +112,7 @@ struct NExpr* create_expr_string(char* string)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->name = string;
-    result->type = STR;
+    result->type = EXPR_STR;
     return result;
 }
 
@@ -121,7 +121,7 @@ struct NExpr* create_expr_int(int * value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Int = value;
-    result->type = INT;
+    result->type = EXPR_INT;
     return result;
 }
 
@@ -130,7 +130,7 @@ struct NExpr* create_expr_double(double * value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Double = value;
-    result->type = DOUBLE;
+    result->type = EXPR_DOUBLE;
     return result;
 }
 
@@ -139,7 +139,7 @@ struct NExpr* create_expr_boolean(bool* value)
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
     result->Bool = value;
-    result->type = BOOL;
+    result->type = EXPR_BOOL;
     return result;
 }
 
@@ -147,7 +147,7 @@ struct NExpr* create_expr_nil(bool* value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
-    result->type = NIL;
+    result->type = EXPR_NIL;
     return result;
 }
 
@@ -159,7 +159,7 @@ void set_null_field_expr(struct NExpr* expr)
     expr->name = NULL;
     expr->left = NULL;
     expr->right = NULL;
-    expr->type = NIL;
+    expr->type = EXPR_NIL;
     expr->next = NULL;
 }
 
