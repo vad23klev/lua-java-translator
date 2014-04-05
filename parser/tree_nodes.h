@@ -295,3 +295,12 @@ struct NWhile* create_while(struct NExpr* condition, struct NStmt* body)
     result->body = body;
     return result;
 }
+
+struct NTblElem* create_tbl_elem(struct NExpr* key, struct NExpr* value)
+{
+    struct NTblElem* result = (NTblElem*)malloc(sizeof(NTblElem));
+    result->key = key;
+    result->value = value;
+    result->next = NULL;
+    return result;
+}
