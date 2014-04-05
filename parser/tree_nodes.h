@@ -343,6 +343,17 @@ struct NWhile* create_while(struct NExpr* condition, struct NStmtList* body)
     return result;
 }
 
+struct NIf* create_if(struct NExpr* condition, struct NStmtList* body, struct NIfList* elseif_list, struct NStmtList* elsebody)
+{
+    struct NIf* result = (NIf*)malloc(sizeof(NIf));
+    result->condition = condition;
+    result->elsebody = elsebody;
+    result->body = body;
+    result->elseiflist = elseif_list;
+    result->next = NULL;
+    return result;
+}
+
 struct NTblElem* create_tbl_elem(struct NExpr* key, struct NExpr* value)
 {
     struct NTblElem* result = (NTblElem*)malloc(sizeof(NTblElem));
