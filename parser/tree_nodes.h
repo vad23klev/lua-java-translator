@@ -209,11 +209,14 @@ struct NExpr* create_expr_nil()
     return result;
 }
 
-struct NStmt* create_stmt_func(struct NFunc* func)
+struct NStmt* create_stmt_func(struct NFunc* func, int local)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->func = func;
-    result->type = STMT_FUNC;
+    if (local)
+        result->type = STMT_LFUNC;
+    else
+        result->type = STMT_FUNC;
     return result;
 }
 
