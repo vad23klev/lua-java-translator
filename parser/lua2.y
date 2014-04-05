@@ -108,25 +108,25 @@ stmt:                 stmt_block                                                
                     | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
 ;
 
-stmt_block:           DO stmt_list END
+stmt_block:           DO stmt_list END                                          { $$ = $1; }
 ;
 
-stmt_if:              IF expr THEN stmt_list elseif_list END
-                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END
+stmt_if:              IF expr THEN stmt_list elseif_list END                    { $$ = create_if($2, $4, $5, NULL); }
+                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END     { $$ = create_if($2, $4, $5, $7); }
 ;
 
-elseif_list:          /* empty */
-                    | elseif_list ELSEIF expr THEN stmt_list
+elseif_list:          /* empty */                                               { $$ = create_if_list(NULL); }
+                    | elseif_list ELSEIF expr THEN stmt_list                    { $$ = add_if_to_list($1, create_if($3, $5, NULL, NULL)); }
 ;
 
-stmt_while:           WHILE expr stmt_block
+stmt_while:           WHILE expr stmt_block                                     { $$ = create_while($2, $3); }
 ;
 
-stmt_for:             FOR ID '=' expr ',' expr          stmt_block
-                    | FOR ID '=' expr ',' expr ',' expr stmt_block
+stmt_for:             FOR ID '=' expr ',' expr          stmt_block              { $$ = create_for(create_expr_id(yyval.Id), $4, $6, create_expr_int(yyval.Int), $7); }
+                    | FOR ID '=' expr ',' expr ',' expr stmt_block              { $$ = create_for((create_expr_id(yyval.Id), $4, $6, $8, $9); }
 ;
 
-stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr
+stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      { $$ = create_while($4, $2); }
 ;
 
 
