@@ -47,7 +47,7 @@ enum NExprType {
 struct NWhile
 {
     struct NExpr * condition;
-    struct NStmt * body;
+    struct NStmtList * body;
 };
 
 struct NFor
@@ -56,7 +56,7 @@ struct NFor
     struct NExpr* start;
     struct NExpr* end;
     struct NExpr* step;
-    struct NStmt * body;
+    struct NStmtList * body;
 };
 
 struct NExpr
@@ -93,7 +93,7 @@ struct NFunc
 {
     char* name;
     struct NExprList* args;
-    struct NStmt* body;
+    struct NStmtList* body;
 };
 
 struct NExprList
