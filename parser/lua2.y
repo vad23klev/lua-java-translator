@@ -8,6 +8,8 @@
     {
         printf("yyerror: %s\n", s);
     }
+
+    struct NStmtList* root;
 %}
 
 %union {
@@ -83,7 +85,7 @@ end_expr:             ENDL
                     | ';'
 ;
 
-root:                 stmt_list                                                 { $$ = $1; }
+root:                 stmt_list                                                 {root=$1;$$=$1;}
 ;
 
 

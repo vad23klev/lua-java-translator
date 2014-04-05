@@ -241,6 +241,18 @@ struct NStmt* create_stmt_while(struct NWhile* While, int rep)
     return result;
 }
 
+struct NStmt* create_stmt_assign(struct NExpr* var, struct NExpr* expr, int local)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->var = var;
+    result->expr = expr;
+    if (local)
+        result->type = STMT_LASSIGN;
+    else
+        result->type = STMT_ASSIGN;
+    return result;
+}
+
 struct NStmt* create_stmt_for(struct NFor* For)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
@@ -256,6 +268,25 @@ struct NStmt* create_stmt_if(struct NIf* if_tree)
     result->type = STMT_IF;
     return result;
 }
+
+struct NStmt* create_stmt_block(struct NStmtList* stmtlist)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->list = stmtlist;
+    result->type = STMT_BLOCK;
+    return result;
+}
+
+struct NStmt* create_stmt_spec(int ret)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    if (ret)
+        result->type = STMT_RETURN;
+    else
+        result->type = STMT_BREAK;
+    return result;
+}
+
 struct  NExprList* create_expr_list(struct NExpr* first)
 {
     struct NExprList* result = (NExprList*)malloc(sizeof(NExprList));
