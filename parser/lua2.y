@@ -92,18 +92,18 @@ stmt_list:            /* empty */ {$$=create_stmt_list(NULL);}
                     | stmt_list stmt {$$=add_stmt_to_list($1,$2);}
 ;
 
-stmt:                 stmt_block {$$=create_stmt_block($1);}
-                    | stmt_if {$$=create_stmt_if($1);}
-                    | stmt_while {$$=create_stmt_while($1,0);}
-                    | stmt_for {$$=create_stmt_for($1);}
-                    | stmt_repeat {$$=create_stmt_while($1,1);}
-                    | BREAK end_expr {$$=create_stmt_spec(0);}
-                    | RETURN end_expr {$$=create_stmt_spec(1);}
-                    | expr end_expr {$$=create_stmt_expr($1);}
-                    | var '=' expr end_expr {$$=create_stmt_assign($1,$3,0);}
-                    | LOCAL var '=' expr end_expr {$$=create_stmt_assign($2,$4,1);}
-                    | func_decl_named {$$=create_stmt_func($1,0);}
-                    | LOCAL func_decl_named {$$=create_stmt_func($2,1);}
+stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
+                    | stmt_if                                                   { $$ = create_stmt_if($1); }
+                    | stmt_while                                                { $$ = create_stmt_while($1, 0); }
+                    | stmt_for                                                  { $$ = create_stmt_for($1); }
+                    | stmt_repeat                                               { $$ = create_stmt_while($1, 1); }
+                    | BREAK end_expr                                            { $$ = create_stmt_spec(0); }
+                    | RETURN end_expr                                           { $$ = create_stmt_spec(1); }
+                    | expr end_expr                                             { $$ = create_stmt_expr($1); }
+                    | var '=' expr end_expr                                     { $$ = create_stmt_assign($1, $3, 0); }
+                    | LOCAL var '=' expr end_expr                               { $$ = create_stmt_assign($2, $4, 1); }
+                    | func_decl_named                                           { $$ = create_stmt_func($1, 0); }
+                    | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
 ;
 
 stmt_block:           DO stmt_list END
