@@ -19,4 +19,4 @@ lua2.tab.c:
 
 
 clean:
-	rm -rf *.o *.h *.c
+	rm -rf *.o *.h *.c lualp
