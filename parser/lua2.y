@@ -27,6 +27,8 @@
     struct NIf * If;
 }
 
+%locations
+
 %start root
 %token <Int> INT
 %token <Double> DOUBLE
