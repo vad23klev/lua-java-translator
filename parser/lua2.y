@@ -28,6 +28,8 @@
     struct NIfList * IfL;
 }
 
+%locations
+
 %start root
 %token <Int> INT
 %token <Double> DOUBLE
