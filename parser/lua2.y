@@ -110,7 +110,7 @@ stmt:                 stmt_block                                                
                     | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
 ;
 
-stmt_block:           DO stmt_list END                                          { $$ = $1; }
+stmt_block:           DO stmt_list END                                          { $$ = $2; }
 ;
 
 stmt_if:              IF expr THEN stmt_list elseif_list END                    { $$ = create_if($2, $4, $5, NULL); }
