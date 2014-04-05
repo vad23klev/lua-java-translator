@@ -304,3 +304,11 @@ struct NTblElem* create_tbl_elem(struct NExpr* key, struct NExpr* value)
     result->next = NULL;
     return result;
 }
+
+struct NTable* create_table(struct NTblElem* first)
+{
+    struct NTable* result = (NTable*)malloc(sizeof(NTable));
+    result->first = first;
+    result->last = first;
+    return result;
+}
