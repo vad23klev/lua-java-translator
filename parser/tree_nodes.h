@@ -228,11 +228,14 @@ struct NStmt* create_stmt_expr(struct NExpr* expr)
     return result;
 }
 
-struct NStmt* create_stmt_while(struct NWhile* While)
+struct NStmt* create_stmt_while(struct NWhile* While, int rep)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->while_loop = While;
-    result->type = STMT_WHILE;
+    if (rep)
+        result->type = STMT_REPEAT;
+    else
+        result->type = STMT_WHILE;
     return result;
 }
 
