@@ -85,7 +85,7 @@ end_expr:             ENDL
                     | ';'
 ;
 
-root:                 stmt_list                                                 {root=$1;$$=$1;}
+root:                 stmt_list                                                 { root=$1; $$=$1; }
 ;
 
 
