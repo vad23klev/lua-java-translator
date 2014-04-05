@@ -200,7 +200,7 @@ struct NExpr* create_expr_boolean(int* value)
     return result;
 }
 
-struct NExpr* create_expr_nil(bool* value)
+struct NExpr* create_expr_nil()
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
