@@ -61,6 +61,7 @@ struct NIf
     struct NStmtList* body;
     struct NStmtList* elsebody;
     struct NIfList* elseiflist;
+    struct NIf* next;
 }
 
 struct NIfList
