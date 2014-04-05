@@ -68,6 +68,7 @@ struct NExpr
     double *Double;
     enum NExprType type;
     struct NExpr * next;
+    struct NExprList* idlist;
 };
 
 struct NStmt
