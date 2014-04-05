@@ -10,6 +10,7 @@
     struct NStmt * Stmt;
     struct NFunc * Func;
     struct NExprList * Args;
+    struct NIf * If;
 }
 
 %{
