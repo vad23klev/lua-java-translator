@@ -245,7 +245,7 @@ struct NStmt* create_stmt_assign(struct NExpr* var, struct NExpr* expr, int loca
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
     result->var = var;
-    resutl->expr = expr;
+    result->expr = expr;
     if (local)
         result->type = STMT_LASSIGN;
     else
