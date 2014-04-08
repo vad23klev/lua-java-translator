@@ -71,6 +71,7 @@ struct NExpr
     enum NExprType type;
     struct NExpr * next;
     struct NExprList* idlist;
+    struct NTable* table;
 };
 
 struct NStmt
