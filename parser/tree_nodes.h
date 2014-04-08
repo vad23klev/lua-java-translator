@@ -214,6 +214,15 @@ struct NExpr* create_expr_exprlist(struct NExprList* value)
     return result;
 }
 
+struct NExpr* create_expr_table(struct NTable* value)
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
+    result->table = value;
+    result->type = EXPR_TABLE;
+    return result;
+}
+
 struct NExpr* create_expr_nil()
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
