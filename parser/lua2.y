@@ -136,42 +136,42 @@ stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      
 
 
 /* == Expressions == */
-id_chain:             ID
-                    | id_chain '.' ID
+id_chain:             ID                                                        { $$ = create_expr_list(create_expr_id(yyval.id)); }
+                    | id_chain '.' ID                                           { $$ = add_expr_to_list($1, create_expr_id(yyval.id)); }
 ;
 
-var:                  id_chain
-                    | var '[' expr ']'
+var:                  id_chain                                                  { $$ = create_expr_exprlist($1); }
+                    | var '[' expr ']'                                          { $$ = create_op_expr(EXPR_MAS, $1, $3); }
 ;
 
-expr:                 var
-                    | INT
-                    | DOUBLE
-                    | STRING
-                    | TRUE
-                    | FALSE
-                    | NIL
-                    | NOT expr
-                    | '-' expr %prec UMINUS
-                    | expr AND expr
-                    | expr OR  expr
-                    | expr '+' expr
-                    | expr '-' expr
-                    | expr '*' expr
-                    | expr '/' expr
-                    | expr '%' expr
-                    | expr '^' expr
-                    | expr '>' expr
-                    | expr '<' expr
-                    | expr GE  expr
-                    | expr LE  expr
-                    | expr EQ  expr
-                    | expr NE  expr
-                    | expr CONCAT expr
-                    | '(' expr ')'
-                    | func_call
-                    | tableconstructor
-                    | func_decl_anon
+expr:                 var                                                       { $$ = $1; }
+                    | INT                                                       { $$ = create_expr_int(yyval.Int); }
+                    | DOUBLE                                                    { $$ = create_expr_double(yyval.Double); }
+                    | STRING                                                    { $$ = create_expr_string(yyval.String); }
+                    | TRUE                                                      { $$ = create_expr_bool(1); }
+                    | FALSE                                                     { $$ = create_expr_bool(0); }
+                    | NIL                                                       { $$ = create_expr_nil(); }
+                    | NOT expr                                                  { $$ = create_op_expr(EXPR_NOT, $2, NULL); }
+                    | '-' expr %prec UMINUS                                     { $$ = create_op_expr(EXPR_UMIN, $2, NULL); }
+                    | expr AND expr                                             { $$ = create_op_expr(EXPR_AND, $1, $3); }
+                    | expr OR  expr                                             { $$ = create_op_expr(EXPR_OR, $1, $3); }
+                    | expr '+' expr                                             { $$ = create_op_expr(EXPR_PLUS, $1, $3); }
+                    | expr '-' expr                                             { $$ = create_op_expr(EXPR_MINUS, $1, $3); }
+                    | expr '*' expr                                             { $$ = create_op_expr(EXPR_MUL, $1, $3); }
+                    | expr '/' expr                                             { $$ = create_op_expr(EXPR_DIV, $1, $3); }
+                    | expr '%' expr                                             { $$ = create_op_expr(EXPR_MOD, $1, $3); }
+                    | expr '^' expr                                             { $$ = create_op_expr(EXPR_POW, $1, $3); }
+                    | expr '>' expr                                             { $$ = create_op_expr(EXPR_GT, $1, $3); }
+                    | expr '<' expr                                             { $$ = create_op_expr(EXPR_LT, $1, $3); }
+                    | expr GE  expr                                             { $$ = create_op_expr(EXPR_GE, $1, $3); }
+                    | expr LE  expr                                             { $$ = create_op_expr(EXPR_LE, $1, $3); }
+                    | expr EQ  expr                                             { $$ = create_op_expr(EXPR_EQ, $1, $3); }
+                    | expr NE  expr                                             { $$ = create_op_expr(EXPR_NE, $1, $3); }
+                    | expr CONCAT expr                                          { $$ = create_op_expr(EXPR_CONC, $1, $3); }
+                    | '(' expr ')'                                              { $$ = $2; }
+                    | func_call                                                 { $$ = $1; }
+                    | tableconstructor                                          { $$ = create_expr_tbl($1); }
+                    | func_decl_anon                                            { $$ = create_expr_anon_func_decl($1); }
 ;
 
 
