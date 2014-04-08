@@ -224,6 +224,15 @@ struct NExpr* create_expr_table(struct NTable* value)
     return result;
 }
 
+struct NExpr* create_expr_func(struct NFunc* value)
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
+    result->func = value;
+    result->type = EXPR_DEC_ANON;
+    return result;
+}
+
 struct NExpr* create_expr_nil()
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
