@@ -72,6 +72,7 @@ struct NExpr
     struct NExpr * next;
     struct NExprList* idlist;
     struct NTable* table;
+    struct NFunc* func;
 };
 
 struct NStmt
