@@ -27,6 +27,7 @@
     struct NExprList * Args;
     struct NIf * If;
     struct NIfList * IfL;
+    struct NTable* Table;
 }
 
 %locations
@@ -62,6 +63,7 @@
 
 %type <Expr> expr
 %type <Expr> var
+%type <Expr> func_call
 %type <SL> stmt_list
 %type <SL> root
 %type <SL> stmt_block
@@ -71,7 +73,10 @@
 %type <If> stmt_if
 %type <For> stmt_for
 %type <Func> func_decl_named
+%type <Func> func_decl_anon
 %type <IfL> elseif_list
+%type <Args> id_chain
+%type <Table> tableconstructor
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
