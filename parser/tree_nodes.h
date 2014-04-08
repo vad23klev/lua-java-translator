@@ -22,6 +22,7 @@ enum NExprType {
     EXPR_MINUS,
     EXPR_DIV,
     EXPR_MUL,
+    EXPR_POW,
     EXPR_LE,
     EXPR_GE,
     EXPR_LT,
