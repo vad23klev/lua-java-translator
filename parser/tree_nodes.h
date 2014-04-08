@@ -204,6 +204,15 @@ struct NExpr* create_expr_boolean(int* value)
     return result;
 }
 
+struct NExpr* create_expr_exprlist(struct NExprList* value)
+{
+    NExpr* result = (NExpr*)malloc(sizeof(NExpr));
+    set_null_field_expr(result);
+    result->idlist = value;
+    result->type = EXPR_ID_LIST;
+    return result;
+}
+
 struct NExpr* create_expr_nil()
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
