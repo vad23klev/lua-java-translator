@@ -96,7 +96,7 @@ struct NStmtList
 
 struct NFunc
 {
-    char* name;
+    struct NExprList* name;
     struct NExprList* args;
     struct NStmtList* body;
 };
