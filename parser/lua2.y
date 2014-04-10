@@ -28,6 +28,7 @@
     struct NIf * If;
     struct NIfList * IfL;
     struct NTable* Table;
+    struct NTblElem* TblElem;
 }
 
 %locations
@@ -82,6 +83,9 @@
 %type <Args> arg_list_decl
 %type <Args> args_decl
 %type <Table> tableconstructor
+%type <Table> tbl_elem_list
+%type <Table> tbl_elems
+%type <TblElem> tbl_elem
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
 %left  OR
