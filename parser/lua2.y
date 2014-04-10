@@ -181,36 +181,36 @@ expr:                 var                                                       
 
 
 /* == Function call == */
-func_call:            var '(' arg_list ')'
-                    | var ':' ID '(' arg_list ')'
+func_call:            var '(' arg_list ')'                                      { $$ = create_op_expr(EXPR_MET, $1, $3); }
+                    | var ':' ID '(' arg_list ')'                               { add_expr_to_list($1, create_expr_id(yyval.Id)); $$ = create_op_expr(EXPR_MET, $1, $5); }
 ;
 
-arg_list:             /* empty */
-                    | args
+arg_list:             /* empty */                                               { $$ = create_expr_list(NULL); }
+                    | args                                                      { $$ = $1; }
 ;
 
-args:                 expr
-                    | args ',' expr
+args:                 expr                                                      { $$ = create_expr_list($1); }
+                    | args ',' expr                                             { $$ = add_expr_to_list($1, $3); }
 ;
 
 
 /* == Function declaration == */
-func_decl_anon:       FUNCTION func_body
+func_decl_anon:       FUNCTION func_body                                        { $$ = $2; }
 ;
 
-func_decl_named:      FUNCTION id_chain func_body
-                    | FUNCTION id_chain ':' ID func_body
+func_decl_named:      FUNCTION id_chain func_body                               { $$ = set_func_name($2, $3); }
+                    | FUNCTION id_chain ':' ID func_body                        { $$ = set_func_name(add_expr_to_list($2, create_expr_id(yyval.id), $5); }
 ;
 
-func_body:            '(' arg_list_decl ')' stmt_list END
+func_body:            '(' arg_list_decl ')' stmt_list END                       { $$ = create_func($2, $4); }
 ;
 
-arg_list_decl:        /* empty */
-                    | args_decl
+arg_list_decl:        /* empty */                                               { $$ = create_expr_list(NULL); }
+                    | args_decl                                                 { $$ = $1; }
 ;
 
-args_decl:            ID
-                    | args_decl ',' ID
+args_decl:            ID                                                        { $$ = create_expr_list($1); }
+                    | args_decl ',' ID                                          { $$ = add_expr_to_list($1, create_expr_id(yyval.Id)); }
 ;
 
 
