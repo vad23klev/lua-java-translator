@@ -150,8 +150,8 @@ stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      
 
 
 /* == Expressions == */
-id_chain:             ID                                                        { $$ = create_expr_list(create_expr_id(yyval.id)); }
-                    | id_chain '.' ID                                           { $$ = add_expr_to_list($1, create_expr_id(yyval.id)); }
+id_chain:             ID                                                        { $$ = create_expr_list(create_expr_id(yyval.Id)); }
+                    | id_chain '.' ID                                           { $$ = add_expr_to_list($1, create_expr_id(yyval.Id)); }
 ;
 
 var:                  id_chain                                                  { $$ = create_expr_exprlist($1); }
@@ -180,7 +180,7 @@ expr:                 var                                                       
                     | expr GE  expr                                             { $$ = create_op_expr(EXPR_GE, $1, $3); }
                     | expr LE  expr                                             { $$ = create_op_expr(EXPR_LE, $1, $3); }
                     | expr EQ  expr                                             { $$ = create_op_expr(EXPR_EQ, $1, $3); }
-                    | expr NE  expr                                             { $$ = create_op_expr(EXPR_NE, $1, $3); }
+                    | expr NE  expr                                             { $$ = create_op_expr(EXPR_NQ, $1, $3); }
                     | expr CONCAT expr                                          { $$ = create_op_expr(EXPR_CONC, $1, $3); }
                     | '(' expr ')'                                              { $$ = $2; }
                     | func_call                                                 { $$ = $1; }
