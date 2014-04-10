@@ -66,8 +66,8 @@ struct NExpr
     char * name;
     struct NExpr * left;
     struct NExpr * right;
-    int *Int;
-    double *Double;
+    int Int;
+    double Double;
     enum NExprType type;
     struct NExpr * next;
     struct NExprList* idlist;
