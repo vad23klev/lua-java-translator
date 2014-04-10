@@ -162,8 +162,8 @@ expr:                 var                                                       
                     | INT                                                       { $$ = create_expr_int(yyval.Int); }
                     | DOUBLE                                                    { $$ = create_expr_double(yyval.Double); }
                     | STRING                                                    { $$ = create_expr_string(yyval.String); }
-                    | TRUE                                                      { $$ = create_expr_bool(1); }
-                    | FALSE                                                     { $$ = create_expr_bool(0); }
+                    | TRUE                                                      { $$ = create_expr_boolean(1); }
+                    | FALSE                                                     { $$ = create_expr_boolean(0); }
                     | NIL                                                       { $$ = create_expr_nil(); }
                     | NOT expr                                                  { $$ = create_op_expr(EXPR_NOT, $2, NULL); }
                     | '-' expr %prec UMINUS                                     { $$ = create_op_expr(EXPR_UMIN, $2, NULL); }
@@ -184,8 +184,8 @@ expr:                 var                                                       
                     | expr CONCAT expr                                          { $$ = create_op_expr(EXPR_CONC, $1, $3); }
                     | '(' expr ')'                                              { $$ = $2; }
                     | func_call                                                 { $$ = $1; }
-                    | tableconstructor                                          { $$ = create_expr_tbl($1); }
-                    | func_decl_anon                                            { $$ = create_expr_anon_func_decl($1); }
+                    | tableconstructor                                          { $$ = create_expr_table($1); }
+                    | func_decl_anon                                            { $$ = create_expr_func($1); }
 ;
 
 
