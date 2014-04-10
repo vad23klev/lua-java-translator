@@ -179,7 +179,7 @@ struct NExpr* create_expr_string(char* string)
     return result;
 }
 
-struct NExpr* create_expr_int(int * value)
+struct NExpr* create_expr_int(int value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
@@ -188,7 +188,7 @@ struct NExpr* create_expr_int(int * value)
     return result;
 }
 
-struct NExpr* create_expr_double(double * value)
+struct NExpr* create_expr_double(double value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
@@ -197,7 +197,7 @@ struct NExpr* create_expr_double(double * value)
     return result;
 }
 
-struct NExpr* create_expr_boolean(int* value)
+struct NExpr* create_expr_boolean(int value)
 {
     NExpr* result = (NExpr*)malloc(sizeof(NExpr));
     set_null_field_expr(result);
