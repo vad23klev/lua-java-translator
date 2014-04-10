@@ -384,6 +384,13 @@ struct NIf* create_if(struct NExpr* condition, struct NStmtList* body, struct NI
     return result;
 }
 
+struct NIfList* create_if_list(struct NIf* element)
+{
+    struct NIfList* result = (NIfList*)malloc(sizeof(NIfList));
+    result->first = element;
+    result->last = element;
+    return result;
+}
 struct NIfList* add_if_to_list(struct NIfList* list, struct NIf* element)
 {
     if(list->first == NULL)
