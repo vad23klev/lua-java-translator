@@ -428,3 +428,17 @@ struct NTable* add_elem_to_table(struct NTable* list, struct NTblElem* element)
     list->last = element;
     return list;
 }
+
+struct NFunc* create_func(struct NExprList* args, struct NStmtList* body)
+{
+    struct NFunc* result = (NFunc*)malloc(sizeof(NFunc));
+    result->name = NULL;
+    result->args = args;
+    result->body = body;
+}
+
+struct NFunc* set_name_func(struct NExprList* name, struct NFunc* result)
+{
+    result->name = name;
+    return result;
+}
