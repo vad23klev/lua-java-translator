@@ -220,20 +220,20 @@ args_decl:            ID                                                        
 
 
 /* == Table declaration == */
-tableconstructor:     '{' tbl_elem_list '}'
+tableconstructor:     '{' tbl_elem_list '}'                                     { $$ = $2; }
 ;
 
-tbl_elem_list:        /* empty */
-                    | tbl_elems
+tbl_elem_list:        /* empty */                                               { $$ = create_table(NULL); }
+                    | tbl_elems                                                 { $$ = $1; }
 ;
 
-tbl_elems:            tbl_elem
-                    | tbl_elems ',' tbl_elem
+tbl_elems:            tbl_elem                                                  { $$ = create_table($1); }
+                    | tbl_elems ',' tbl_elem                                    { $$ = add_elem_to_table($1, $3); }
 ;
 
-tbl_elem:             ID '=' expr
-                    | '[' expr ']' '=' expr
-                    | expr
+tbl_elem:             ID '=' expr                                               { $$ = create_tbl_elem(create_expr_id(yyval.Id), $3); }
+                    | '[' expr ']' '=' expr                                     { $$ = create_tbl_elem($2, $5); }
+                    | expr                                                      { $$ = create_tbl_elem(NULL, $1); }
 ;
 
 %%
