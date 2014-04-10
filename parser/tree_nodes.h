@@ -142,13 +142,15 @@ struct NTblElem
 
 void set_null_field_expr(struct NExpr* expr)
 {
-    expr->Int = NULL;
-    expr->Double = NULL;
+    expr->Int = 0;
+    expr->Double = 0;
     expr->name = NULL;
     expr->left = NULL;
     expr->right = NULL;
-    expr->type = EXPR_NIL;
     expr->next = NULL;
+    expr->idlist = NULL;
+    expr->table = NULL;
+    expr->func = NULL;
 }
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
