@@ -74,8 +74,13 @@
 %type <For> stmt_for
 %type <Func> func_decl_named
 %type <Func> func_decl_anon
+%type <Func> func_body
 %type <IfL> elseif_list
 %type <Args> id_chain
+%type <Args> arg_list
+%type <Args> args
+%type <Args> arg_list_decl
+%type <Args> args_decl
 %type <Table> tableconstructor
 /* %type <Func> func    какое именно объявление тут должно быть? */
 
