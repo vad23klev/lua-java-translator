@@ -446,7 +446,7 @@ struct NFunc* create_func(struct NExprList* args, struct NStmtList* body)
     result->body = body;
 }
 
-struct NFunc* set_name_func(struct NExprList* name, struct NFunc* result)
+struct NFunc* set_func_name(struct NExprList* name, struct NFunc* result)
 {
     result->name = name;
     return result;
