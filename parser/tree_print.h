@@ -14,13 +14,38 @@ int table_count;
 int if_count;
 FILE* output;
 
+void print_while(char* parent, struct NWhile* while_loop);
+void print_for(char* parent, struct NFor* for_loop);
+char* print_expr(char* parent, struct NExpr* expr);
+void print_stmt(char* parent, struct NStmt* stmt);
+void print_stmt_list(char* parent, struct NStmtList* stmtlist);
+void print_func(char* parent, struct NFunc* func);
+void print_expr_list(char* parent, struct NExprList* exprlist);
+void print_if(char* parent, struct NIf* if_tree);
+void print_table(char* parent, struct NTable* table);
+void print_table_elem(char* parent, struct NTblElem* elem, int num);
+void print_if_list(char* parent, struct NIfList* iflist);
+void print_tree(struct NStmtList* stmtlist);
+void print_func_name(char* parent, struct NExprList* exprlist);
+
 
 void print_while(char* parent, struct NWhile* while_loop)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat("while",itoa(while_count,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"while\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer,"%d", while_count);
+    current_node = (char*)malloc(sizeof(char)*33);
+    strcpy(current_node, "while");
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "[label = \"while\"];");
+    fprintf(output,"%s", buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s",buffer);
     while_count++;
     print_expr(current_node, while_loop->condition);
     print_stmt_list(current_node, while_loop->body);
@@ -28,10 +53,20 @@ void print_while(char* parent, struct NWhile* while_loop)
 
 void print_for(char* parent, struct NFor* for_loop)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat("for",itoa(for_count,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"for\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    current_node = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer,"%d",for_count);
+    strcpy(current_node, "for");
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    fprintf(output,"%s", strcat(buffer, "[label = \"for\"];"));
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s", buffer);
     for_count++;
     print_stmt_list(current_node, for_loop->body);
     print_expr(current_node, for_loop->name);
@@ -40,132 +75,153 @@ void print_for(char* parent, struct NFor* for_loop)
     print_expr(current_node, for_loop->step);
 }
 
-void print_expr(char* parent, struct NExpr* expr)
+char* print_expr(char* parent, struct NExpr* expr)
 {
     char* current;
     char* current_node;
-    char buffer [33];
+    char* buffer;
     switch (expr->type)
     {
         case EXPR_EQ:
-            current = new char[3];
-            current = "==";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"==");
             break;
         case EXPR_NQ:
-            current = new char[3];
-            current = "!=";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"!=");
             break;
         case EXPR_PLUS:
-            current = new char[2];
-            current = "+";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"+");
             break;
         case EXPR_MINUS:
-            current = new char[2];
-            current = "-";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"-");
             break;
         case EXPR_DIV:
-            current = new char[2];
-            current = "/";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"/");
             break;
         case EXPR_MUL:
-            current = new char[2];
-            current = "*";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"*");
             break;
         case EXPR_LE:
-            current = new char[3];
-            current = "<=";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"<=");
             break;
         case EXPR_GE:
-            current = new char[3];
-            current = ">=";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,">=");
             break;
         case EXPR_LT:
-            current = new char[2];
-            current = "<";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"<");
             break;
         case EXPR_GT:
-            current = new char[2];
-            current = ">";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,">");
             break;
         case EXPR_MOD:
-            current = new char[2];
-            current = "%";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"%");
             break;
         case EXPR_ID:
             current = expr->name;
             break;
         case EXPR_INT:
-            current = new char[33];
-            current = itoa(expr->Int,buffer,10);
+            current = (char*)malloc(sizeof(char)*33);
+            sprintf(current, "%d", expr->Int);
             break;
         case EXPR_DOUBLE:
-            current = new char[33];
-            sprintf(current, sizeof(current), "%g", expr->Double);
+            current = (char*)malloc(sizeof(char)*33);
+            sprintf(current, "%g", expr->Double);
             break;
         case EXPR_CONC:
-            current = new char[3];
-            current = "..";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"..");
             break;
         case EXPR_STR:
             current = expr->name;
             break;
         case EXPR_MET:
-            current = new char[5];
-            current = "fcall";
+            current = (char*)malloc(sizeof(char)*5);
+            strcpy(current,"fcall");
             break;
         case EXPR_AND:
-            current = new char[3];
-            current = "&&";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"&&");
             break;
         case EXPR_NOT:
-            current = new char[2];
-            current = "!";
+            current = (char*)malloc(sizeof(char)*2);
+            strcpy(current,"!");
             break;
         case EXPR_OR:
-            current = new char[3];
-            current = "||";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"||");
             break;
         case EXPR_MAS:
-            current = new char[3];
-            current = "[]";
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"[]");
             break;
         case EXPR_BOOL:
-            current = new char[6];
+            current = (char*)malloc(sizeof(char)*6);
             if(expr->Int)
-            {
-                current = "true";
-            } else
-            {
-                current = "false";
+                strcpy(current,"true");
+            else
+                strcpy(current,"false");
             break;
         case EXPR_NIL:
-            current = new char[4];
-            current = "nil";
+            current = (char*)malloc(sizeof(char)*4);
+            strcpy(current,"nil");
             break;
         case EXPR_UMIN:
-            current = new char[4];
-            current = "(-)";
+            current = (char*)malloc(sizeof(char)*4);
+            strcpy(current,"(-)");
             break;
     }
-    current_node = strcat("expr",itoa(expr_count,buffer,10));
-    fprintf(output,"%s",strcat(strcat(current_node,strcat(strcat("[label = \"",current), "\"]"),";"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    buffer = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer, "%d", expr_count);
+    strcpy(current_node,"expr");
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "[label = \"");
+    strcat(buffer, current);
+    strcat(buffer, "\"];");
+    fprintf(output,"%s", buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s",buffer);
     expr_count++;
-    if (expr->type == EQ || expr->type == NQ || expr->type == PLUS || expr->type == MINUS || expr->type == DIV || expr->type == MUL
-        || expr->type == LE || expr->type == GE || expr->type == LT || expr->type == GT || expr->type == MOD || expr->type == CONC
-        || expr->type == MET || expr->type == AND || expr->type == OR || expr->type == MAS)
+    if (expr->type == EXPR_EQ || expr->type == EXPR_NQ || expr->type == EXPR_PLUS || expr->type == EXPR_MINUS || expr->type == EXPR_DIV || expr->type == EXPR_MUL
+        || expr->type == EXPR_LE || expr->type == EXPR_GE || expr->type == EXPR_LT || expr->type == EXPR_GT || expr->type == EXPR_MOD || expr->type == EXPR_CONC
+        || expr->type == EXPR_MET || expr->type == EXPR_AND || expr->type == EXPR_OR || expr->type == EXPR_MAS)
     {
-        print_expr(&current_node,expr->left);
-        print_expr(&current_node,expr->right);
-    } else if (expr->type == NOT || expr->type == UMIN)
+        print_expr(current_node,expr->left);
+        print_expr(current_node,expr->right);
+    } else if (expr->type == EXPR_NOT || expr->type == EXPR_UMIN)
     {
-        print_expr(&current_node,expr->left);
+        print_expr(current_node,expr->left);
+    } else if (expr->type == EXPR_FUNC_DEC_ANON)
+    {
+        print_func(current_node, expr->func);
+    } else if (expr->type == EXPR_TABLE)
+    {
+        print_table(current_node, expr->table);
+    } else if (expr->type == EXPR_ID_LIST)
+    {
+        print_expr_list(current_node, expr->idlist);
     }
+    return current_node;
 }
 
 void print_stmt(char* parent, struct NStmt* stmt)
 {
-    char* current_node, * buffer = new char[33];
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
     switch(stmt->type)
     {
         case STMT_WHILE:
@@ -183,41 +239,78 @@ void print_stmt(char* parent, struct NStmt* stmt)
         case STMT_BLOCK:
             print_stmt_list(parent,stmt->list);
             break;
-        case STMT_STMT_LFUNC:
-            print_fuc(parent,stmt->func);
-            break;
-        case STMT_REPEAT:
-            print_while(parent,stmt->while_loop);
+        case STMT_LFUNC:
+            print_func(parent,stmt->func);
             break;
         case STMT_REPEAT:
             print_while(parent,stmt->while_loop);
             break;
         case STMT_ASSIGN:
-            current_node = strcat("assign",itoa(stmt_count,buffer,10));
-            fprintf(output,"%s",strcat(current_node, "[label = \"=\"];"));
-            fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+            current_node = (char*)malloc(sizeof(char)*33);
+            strcpy(current_node, "assign");
+            sprintf(buffer, "%d", stmt_count);
+            strcat(current_node,buffer);
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, current_node);
+            fprintf(output,"%s",strcat(buffer, "[label = \"=\"];"));
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, parent);
+            strcat(buffer, "--");
+            strcat(buffer, current_node);
+            strcat(buffer, ";");
+            fprintf(output,"%s",buffer);
             print_expr(current_node,stmt->var);
             print_expr(current_node,stmt->expr);
             stmt_count++;
             break;
         case STMT_LASSIGN:
-            current_node = strcat("lassign",itoa(stmt_count,buffer,10));
-            fprintf(output,"%s",strcat(current_node, "[label = \"=\"];"));
-            fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+            current_node = (char*)malloc(sizeof(char)*33);
+            strcpy(current_node, "lassign");
+            sprintf(buffer, "%d", stmt_count);
+            strcat(current_node, buffer);
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, current_node);
+            fprintf(output,"%s",strcat(buffer, "[label = \"=\"];"));
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, parent);
+            strcat(buffer, "--");
+            strcat(buffer, current_node);
+            strcat(buffer, ";");
+            fprintf(output,"%s",buffer);
             print_expr(current_node,stmt->var);
             print_expr(current_node,stmt->expr);
             stmt_count++;
             break;
         case STMT_RETURN:
-            current_node = strcat("return",itoa(stmt_count,buffer,10));
-            fprintf(output,"%s",strcat(current_node, "[label = \"return\"];"));
-            fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+            current_node = (char*)malloc(sizeof(char)*33);
+            strcpy(current_node, "return");
+            sprintf(buffer, "%d", stmt_count);
+            current_node = strcat(current_node,buffer);
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, current_node);
+            fprintf(output,"%s",strcat(buffer, "[label = \"return\"];"));
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, parent);
+            strcat(buffer, "--");
+            strcat(buffer, current_node);
+            strcat(buffer, ";");
+            fprintf(output,"%s",buffer);
             stmt_count++;
             break;
         case STMT_BREAK:
-            current_node = strcat("break",itoa(stmt_count,buffer,10));
-            fprintf(output,"%s",strcat(current_node, "[label = \"break\"];"));
-            fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+            current_node = (char*)malloc(sizeof(char)*33);
+            strcpy(current_node, "break");
+            sprintf(buffer, "%d", stmt_count);
+            strcat(current_node,buffer);
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, current_node);
+            fprintf(output,"%s",strcat(buffer, "[label = \"break\"];"));
+            buffer = (char*)malloc(sizeof(char)*33);
+            strcpy(buffer, parent);
+            strcat(buffer, "--");
+            strcat(buffer, current_node);
+            strcat(buffer, ";");
+            fprintf(output,"%s",buffer);
             stmt_count++;
             break;
     }
@@ -225,7 +318,7 @@ void print_stmt(char* parent, struct NStmt* stmt)
 
 void print_stmt_list(char* parent, struct NStmtList* stmtlist)
 {
-    struct NStmt current = stmtlist->first;
+    struct NStmt* current = stmtlist->first;
     while (current != NULL)
     {
         print_stmt(parent,current);
@@ -235,15 +328,37 @@ void print_stmt_list(char* parent, struct NStmtList* stmtlist)
 
 void print_func(char* parent, struct NFunc* func)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat("func",itoa(func_count,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"func\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node = (char*)malloc(sizeof(char)*33);
+    char* buffer = (char*)malloc(sizeof(char)*33);
+    char* buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(current_node, "func");
+    sprintf(buffer, "%d", func_count);
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    fprintf(output,"%s",strcat(buffer, "[label = \"func\"];"));
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s", buffer);
     func_count++;
     if( func->name != NULL)
     {
-        fprintf(output,"%s",strcat(strcat(current_node, "name"), strcat(strcat("[label = \"name =", func->name),"\"];")));
-        fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(strcat(current_node, "name"),";")));
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "name");
+        strcpy(buffer1, buffer);
+        strcat(buffer1, "[label = \"func_name\"];");
+        fprintf(output,"%s", buffer1);
+        print_func_name(buffer, func->name);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, parent);
+        strcat(buffer1, "--");
+        strcat(buffer1, buffer);
+        strcat(buffer1, "name;");
+        fprintf(output,"%s", buffer1);
     }
     print_expr_list(current_node,func->args);
     print_stmt_list(current_node, func->body);
@@ -251,7 +366,7 @@ void print_func(char* parent, struct NFunc* func)
 
 void print_expr_list(char* parent, struct NExprList* exprlist)
 {
-    struct NExpr current = exprlist->first;
+    struct NExpr* current = exprlist->first;
     while (current != NULL)
     {
         print_expr(parent,current);
@@ -259,12 +374,34 @@ void print_expr_list(char* parent, struct NExprList* exprlist)
     }
 }
 
+void print_func_name(char* parent, struct NExprList* exprlist)
+{
+    struct NExpr* current = exprlist->first;
+    char* current_parent = parent;
+    while (current != NULL)
+    {
+        current_parent = print_expr(current_parent ,current);
+        current = current->next;
+    }
+}
+
 void print_if(char* parent, struct NIf* if_tree)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat("if",itoa(if_count,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"if\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    current_node = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer, "%d", if_count);
+    strcpy(current_node, "if");
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "[label = \"if\"];");
+    fprintf(output,"%s", buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s",buffer);
     if_count++;
     print_expr(current_node,if_tree->condition);
     print_if_list(current_node,if_tree->elseiflist);
@@ -273,12 +410,23 @@ void print_if(char* parent, struct NIf* if_tree)
 
 void print_table(char* parent, struct NTable* table)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat("table",itoa(table_count,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"table\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    current_node = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer, "%d", table_count);
+    strcpy(current_node, "table");
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "[label = \"table\"];");
+    fprintf(output,"%s", buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s",buffer);
     table_count++;
-    struct NExpr current = table->first;
+    struct NTblElem* current = table->first;
     int i = 0;
     while (current != NULL)
     {
@@ -287,21 +435,32 @@ void print_table(char* parent, struct NTable* table)
     }
 }
 
-void print_table_elem(char* parent, struct NTblElem elem, int num)
+void print_table_elem(char* parent, struct NTblElem* elem, int num)
 {
-    char* current_node, * buffer = new char[33];
-    current_node = strcat(parent,itoa(num,buffer,10));
-    fprintf(output,"%s",strcat(current_node, "[label = \"tblelem\"];"));
-    fprintf(output,"%s",strcat(strcat(parent,"--"),strcat(current_node,";")));
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    sprintf(buffer, "%d", num);
+    current_node = (char*)malloc(sizeof(char)*33);
+    strcpy(current_node, parent);
+    strcat(current_node, buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "[label = \"tblelem\"];");
+    fprintf(output,"%s", buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, parent);
+    strcat(buffer, "--");
+    strcat(buffer, current_node);
+    strcat(buffer, ";");
+    fprintf(output,"%s",buffer);
     table_count++;
-    if(key != NULL) {
+    if(elem->key != NULL) {
         print_expr(current_node,elem->key);
     }
     print_expr(current_node,elem->value);
 }
 void print_if_list(char* parent, struct NIfList* iflist)
 {
-    struct NIf current = exprlist->first;
+    struct NIf* current = iflist->first;
     while (current != NULL)
     {
         print_if(parent,current);
@@ -318,12 +477,12 @@ void print_tree(struct NStmtList* stmtlist)
     func_count = 0;
     table_count = 0;
     if_count = 0;
-    char* start = "graph graphname {";
-    char* end = "}";
+    char* start = (char*)malloc(sizeof(char)*5);
+    strcpy(start, "root");
     output = fopen("file.dot","w");
-    fprintf(output, "%s\n", start);
+    fprintf(output, "%s\n", "graph graphname {");
     fprintf(output, "%s\n", "root;");
-    print_stmt_list("root",root);
-    fprintf(output, "%s\n", end);
-    close(output);
+    print_stmt_list(start,root);
+    fprintf(output, "%s\n", "}");
+    fclose(output);
 }
