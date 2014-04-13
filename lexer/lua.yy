@@ -1,8 +1,10 @@
 %{
+
     #include <stdio.h>
     #include <string.h>
 
     #include "lua2.tab.h"
+    #include "tree_print.h"
 
     #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 
@@ -154,6 +156,7 @@ int main(int argc,char* argv[])
     {
         yyin = fopen(argv[1], "r");
         yyparse();
+        print_tree(root);
     }
     return 0;
 }

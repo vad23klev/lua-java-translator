@@ -1,7 +1,7 @@
 %{
     #include <stdio.h>
     #include "lua2.tab.h"
-    #include "tree_nodes.h"
+    #include "tree_nodes_funcs.h"
     
     extern int yylex(void);
     
