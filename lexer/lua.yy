@@ -3,7 +3,7 @@
     #include <stdio.h>
     #include <string.h>
 
-    #include "lua2.tab.h"
+    #include "lua.tab.h"
     #include "tree_print.h"
 
     #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;

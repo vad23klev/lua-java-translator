@@ -1,6 +1,16 @@
 %{
     #include <stdio.h>
-    #include <tree_nodes.h>
+    #include "lua.tab.h"
+    #include "tree_nodes_funcs.h"
+    
+    extern int yylex(void);
+    
+    void yyerror(const char *s)
+    {
+        fprintf(stderr, "Line %d: %s\n", yylloc.first_line, s);
+    }
+
+    struct NStmtList* root;
 %}
 
 %union {
@@ -14,7 +24,14 @@
     struct NStmtList * SL;
     struct NStmt * Stmt;
     struct NFunc * Func;
+    struct NExprList * Args;
+    struct NIf * If;
+    struct NIfList * IfL;
+    struct NTable* Table;
+    struct NTblElem* TblElem;
 }
+
+%locations
 
 %start root
 %token <Int> INT
@@ -31,112 +48,204 @@
 %token UNTIL
 %token RETURN
 %token BREAK
-%token FUNC
+%token FUNCTION
 %token LOCAL
 %token <String> STRING
 %token <Id> ID
 %token EQ
-%token NQ
-%token LT
-%token GT
-%token AND
-%token NOT
-%token OR
+%token NE
+%token LE
+%token GE
 %token CONCAT
 %token TRUE
 %token FALSE
 %token NIL
+%token ENDL
 
-%type <Expr> expr;
-%type <SL> stmts;
-%type <Func> func;
+%type <Expr> expr
+%type <Expr> var
+%type <Expr> func_call
+%type <SL> stmt_list
+%type <SL> root
+%type <SL> stmt_block
+%type <While> stmt_while
+%type <While> stmt_repeat
+%type <Stmt> stmt
+%type <If> stmt_if
+%type <For> stmt_for
+%type <Func> func_decl_named
+%type <Func> func_decl_anon
+%type <Func> func_body
+%type <IfL> elseif_list
+%type <Args> id_chain
+%type <Args> arg_list
+%type <Args> args
+%type <Args> arg_list_decl
+%type <Args> args_decl
+%type <Table> tableconstructor
+%type <Table> tbl_elem_list
+%type <Table> tbl_elems
+%type <TblElem> tbl_elem
+/* %type <Func> func    какое именно объявление тут должно быть? */
+
+%left  OR
+%left  AND
+%left  '<' '>' LE GE EQ NE
+%right CONCAT
+%left  '+' '-'
+%left  '*' '/' '%'
+%left  NOT UMINUS
+%right '^'
+%nonassoc ')'
 
 %%
 
-expr:    expr AND expr
-         | expr OR expr
-         | NOT expr
-         | expr EQ expr
-         | expr NQ expr
-         | expr '>' expr
-         | expr '<' expr
-         | expr GT expr
-         | expr LT expr
-         | ID '(' args ')'
-         | ID args
-         | ID
-         | INT
-         | DOUBLE
-         | expr '+' expr
-         | expr '-' expr
-         | expr '*' expr
-         | expr '\\' expr
-         | expr '%' expr
-         | STRING
-         | STRING CONCAT ID
-         | ID CONCAT STRING
-         | '(' expr ')'
-         | STRING CONCAT STRING
-         | ID CONCAT ID
-         | ID '[' expr ']'
-         | ID '.' ID
-         | ID '.' ID '(' args ')'
+end_expr:             ENDL
+                    | ';'
 ;
 
-args:    /* empty */
-         | argsn
+opt_endl:             /* empty */
+                    | ENDL
 ;
 
-argsn:   expr
-         | argsn ',' expr
 ;
 
-stmt:    WHILE expr stmts END
-         | IF expr THEN stmts END
-         | IF expr THEN stmts ELSE stmts END
-         | IF expr THEN stmts ELSEIF expr stmts END
-         | FOR ID '=' expr ',' expr DO stmts END
-         | FOR ID '=' expr ',' expr ',' expr DO stmts END
-         | expr
-         | func
-         | ID '=' tbl
+root:                 stmt_list                                                 { root=$1; $$=$1; }
 ;
 
-stmts:   /* empty */
-         | stmt
-         | stmts stmt
+
+/* == Statements == */
+stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
+                    | stmt_list stmt                                            { $$ = add_stmt_to_list($1, $2); }
 ;
 
-root:    stmts
+stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
+                    | stmt_if                                                   { $$ = create_stmt_if($1); }
+                    | stmt_while                                                { $$ = create_stmt_while($1, 0); }
+                    | stmt_for                                                  { $$ = create_stmt_for($1); }
+                    | stmt_repeat                                               { $$ = create_stmt_while($1, 1); }
+                    | BREAK end_expr                                            { $$ = create_stmt_spec(0); }
+                    | RETURN end_expr                                           { $$ = create_stmt_spec(1); }
+                    | RETURN expr end_expr                                      { $$ = create_stmt_return($2); }
+                    | expr end_expr                                             { $$ = create_stmt_expr($1); }
+                    | var '=' expr end_expr                                     { $$ = create_stmt_assign($1, $3, 0); }
+                    | LOCAL var '=' expr end_expr                               { $$ = create_stmt_assign($2, $4, 1); }
+                    | func_decl_named                                           { $$ = create_stmt_func($1, 0); }
+                    | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
+                    | ENDL                                                      { $$ = create_stmt_spec(2); }
 ;
 
-func:    FUNC ID '(' func_args_e ')' stmts END
-         | FUNC ID ':' ID '(' func_args_e ')' stmts END
+stmt_block:           DO stmt_list END opt_endl                                 { $$ = $2; }
 ;
 
-func_args:  ID
-            | func_args ',' ID
+stmt_if:              IF expr THEN stmt_list elseif_list END opt_endl  { $$ = create_if($2, $4, $5, NULL); }
+                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END opt_endl { $$ = create_if($2, $4, $5, $7); }
 ;
 
-func_args_e: /* empty */
-             | func_args
+elseif_list:          /* empty */                                               { $$ = create_if_list(NULL); }
+                    | elseif_list ELSEIF expr THEN stmt_list                    { $$ = add_if_to_list($1, create_if($3, $5, NULL, NULL)); }
 ;
 
-tbl_elem:   ID '=' expr 
-            | '[' expr ']' '=' expr
-            | expr
-            | func
-            | ID '=' func
-            | '[' expr ']' func
+stmt_while:           WHILE expr stmt_block                                     { $$ = create_while($2, $3); }
 ;
 
-tbl_elem_list: /* empty */
-               | tbl_elem_listn
+stmt_for:             FOR ID '=' expr ',' expr          stmt_block              { $$ = create_for(create_expr_id(yyval.Id), $4, $6, create_expr_int(yyval.Int), $7); }
+                    | FOR ID '=' expr ',' expr ',' expr stmt_block              { $$ = create_for(create_expr_id(yyval.Id), $4, $6, $8, $9); }
 ;
 
-tbl_elem_listn: tbl_elem
-	            | tbl_elem_listn ',' tbl_elem
+stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      { $$ = create_while($4, $2); }
 ;
 
-tbl: '{' tbl_elem_list '}'
+
+/* == Expressions == */
+id_chain:             ID                                                        { $$ = create_expr_list(create_expr_id(yyval.Id)); }
+                    | id_chain '.' ID                                           { $$ = add_expr_to_list($1, create_expr_id(yyval.Id)); }
 ;
+
+var:                  id_chain                                                  { $$ = create_expr_exprlist($1); }
+                    | var '[' expr ']'                                          { $$ = create_op_expr(EXPR_MAS, $1, $3); }
+;
+
+expr:                 var                                                       { $$ = $1; }
+                    | INT                                                       { $$ = create_expr_int(yyval.Int); }
+                    | DOUBLE                                                    { $$ = create_expr_double(yyval.Double); }
+                    | STRING                                                    { $$ = create_expr_string(yyval.String); }
+                    | TRUE                                                      { $$ = create_expr_boolean(1); }
+                    | FALSE                                                     { $$ = create_expr_boolean(0); }
+                    | NIL                                                       { $$ = create_expr_nil(); }
+                    | NOT expr                                                  { $$ = create_op_expr(EXPR_NOT, $2, NULL); }
+                    | '-' expr %prec UMINUS                                     { $$ = create_op_expr(EXPR_UMIN, $2, NULL); }
+                    | expr AND expr                                             { $$ = create_op_expr(EXPR_AND, $1, $3); }
+                    | expr OR  expr                                             { $$ = create_op_expr(EXPR_OR, $1, $3); }
+                    | expr '+' expr                                             { $$ = create_op_expr(EXPR_PLUS, $1, $3); }
+                    | expr '-' expr                                             { $$ = create_op_expr(EXPR_MINUS, $1, $3); }
+                    | expr '*' expr                                             { $$ = create_op_expr(EXPR_MUL, $1, $3); }
+                    | expr '/' expr                                             { $$ = create_op_expr(EXPR_DIV, $1, $3); }
+                    | expr '%' expr                                             { $$ = create_op_expr(EXPR_MOD, $1, $3); }
+                    | expr '^' expr                                             { $$ = create_op_expr(EXPR_POW, $1, $3); }
+                    | expr '>' expr                                             { $$ = create_op_expr(EXPR_GT, $1, $3); }
+                    | expr '<' expr                                             { $$ = create_op_expr(EXPR_LT, $1, $3); }
+                    | expr GE  expr                                             { $$ = create_op_expr(EXPR_GE, $1, $3); }
+                    | expr LE  expr                                             { $$ = create_op_expr(EXPR_LE, $1, $3); }
+                    | expr EQ  expr                                             { $$ = create_op_expr(EXPR_EQ, $1, $3); }
+                    | expr NE  expr                                             { $$ = create_op_expr(EXPR_NQ, $1, $3); }
+                    | expr CONCAT expr                                          { $$ = create_op_expr(EXPR_CONC, $1, $3); }
+                    | '(' expr ')'                                              { $$ = $2; }
+                    | func_call                                                 { $$ = $1; }
+                    | tableconstructor                                          { $$ = create_expr_table($1); }
+                    | func_decl_anon                                            { $$ = create_expr_func($1); }
+;
+
+
+/* == Function call == */
+func_call:            var '(' arg_list ')'                                      { $$ = create_op_expr(EXPR_MET, $1, create_expr_exprlist($3)); }
+                    | var ':' ID '(' arg_list ')'                               { add_expr_to_list($1->idlist, create_expr_id(yyval.Id)); $$ = create_op_expr(EXPR_MET, $1, create_expr_exprlist($5)); }
+;
+
+arg_list:             /* empty */                                               { $$ = create_expr_list(NULL); }
+                    | args                                                      { $$ = $1; }
+;
+
+args:                 expr                                                      { $$ = create_expr_list($1); }
+                    | args ',' expr                                             { $$ = add_expr_to_list($1, $3); }
+;
+
+
+/* == Function declaration == */
+func_decl_anon:       FUNCTION func_body                               { $$ = $2; }
+;
+
+func_decl_named:      FUNCTION id_chain func_body                      { $$ = set_func_name($2, $3); }
+                    | FUNCTION id_chain ':' ID func_body               { $$ = set_func_name(add_expr_to_list($2, create_expr_id(yyval.Id)), $5); }
+;
+
+func_body:            '(' arg_list_decl ')' stmt_list END              { $$ = create_func($2, $4); }
+;
+
+arg_list_decl:        /* empty */                                               { $$ = create_expr_list(NULL); }
+                    | args_decl                                                 { $$ = $1; }
+;
+
+args_decl:            ID                                                        { $$ = create_expr_list(create_expr_id(yyval.Id)); }
+                    | args_decl ',' ID                                          { $$ = add_expr_to_list($1, create_expr_id(yyval.Id)); }
+;
+
+
+/* == Table declaration == */
+tableconstructor:     '{' tbl_elem_list '}'                                     { $$ = $2; }
+;
+
+tbl_elem_list:        /* empty */                                               { $$ = create_table(NULL); }
+                    | tbl_elems                                                 { $$ = $1; }
+;
+
+tbl_elems:            tbl_elem                                                  { $$ = create_table($1); }
+                    | tbl_elems ',' tbl_elem                                    { $$ = add_elem_to_table($1, $3); }
+;
+
+tbl_elem:             ID '=' expr                                               { $$ = create_tbl_elem(create_expr_id(yyval.Id), $3); }
+                    | '[' expr ']' '=' expr                                     { $$ = create_tbl_elem($2, $5); }
+                    | expr                                                      { $$ = create_tbl_elem(NULL, $1); }
+;
+
+%%
