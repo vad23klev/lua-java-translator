@@ -144,7 +144,8 @@
 
 [^ \f\n\r\t\v]                printf("Unknown symbol: %s\n",yytext);
 
-.|[\n\r\t\f\v]                ;
+.|[\r\t\f\v]                  ;
+\n                            return ENDL;
 
 <<EOF>>                       return 0;
 
