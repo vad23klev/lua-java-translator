@@ -315,3 +315,11 @@ struct NFunc* set_func_name(struct NExprList* name, struct NFunc* result)
     result->name = name;
     return result;
 }
+
+struct NStmt* create_stmt_return(struct NExpr* expr)
+{
+    struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
+    result->type = STMT_RETURN;
+    result->expr = expr;
+    return result;
+}
