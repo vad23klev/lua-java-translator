@@ -176,10 +176,12 @@ struct NStmt* create_stmt_block(struct NStmtList* stmtlist)
 struct NStmt* create_stmt_spec(int ret)
 {
     struct NStmt* result = (NStmt*)malloc(sizeof(NStmt));
-    if (ret)
+    if (ret == 1)
         result->type = STMT_RETURN;
-    else
+    else if (ret == 0)
         result->type = STMT_BREAK;
+    else
+        result->type = STMT_ENDL;
     return result;
 }
 
