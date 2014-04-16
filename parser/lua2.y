@@ -104,6 +104,12 @@ end_expr:             ENDL
                     | ';'
 ;
 
+opt_endl:             /* empty */
+                    | ENDL
+;
+
+;
+
 root:                 stmt_list                                                 { root=$1; $$=$1; }
 ;
 
@@ -120,18 +126,20 @@ stmt:                 stmt_block                                                
                     | stmt_repeat                                               { $$ = create_stmt_while($1, 1); }
                     | BREAK end_expr                                            { $$ = create_stmt_spec(0); }
                     | RETURN end_expr                                           { $$ = create_stmt_spec(1); }
+                    | RETURN expr end_expr                                      { $$ = create_stmt_return($2); }
                     | expr end_expr                                             { $$ = create_stmt_expr($1); }
                     | var '=' expr end_expr                                     { $$ = create_stmt_assign($1, $3, 0); }
                     | LOCAL var '=' expr end_expr                               { $$ = create_stmt_assign($2, $4, 1); }
                     | func_decl_named                                           { $$ = create_stmt_func($1, 0); }
                     | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
+                    | ENDL                                                      { $$ = create_stmt_spec(2); }
 ;
 
-stmt_block:           DO stmt_list END                                          { $$ = $2; }
+stmt_block:           DO stmt_list END opt_endl                                 { $$ = $2; }
 ;
 
-stmt_if:              IF expr THEN stmt_list elseif_list END                    { $$ = create_if($2, $4, $5, NULL); }
-                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END     { $$ = create_if($2, $4, $5, $7); }
+stmt_if:              IF expr THEN stmt_list elseif_list END opt_endl  { $$ = create_if($2, $4, $5, NULL); }
+                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END opt_endl { $$ = create_if($2, $4, $5, $7); }
 ;
 
 elseif_list:          /* empty */                                               { $$ = create_if_list(NULL); }
@@ -204,14 +212,14 @@ args:                 expr                                                      
 
 
 /* == Function declaration == */
-func_decl_anon:       FUNCTION func_body                                        { $$ = $2; }
+func_decl_anon:       FUNCTION func_body                               { $$ = $2; }
 ;
 
-func_decl_named:      FUNCTION id_chain func_body                               { $$ = set_func_name($2, $3); }
-                    | FUNCTION id_chain ':' ID func_body                        { $$ = set_func_name(add_expr_to_list($2, create_expr_id(yyval.Id)), $5); }
+func_decl_named:      FUNCTION id_chain func_body                      { $$ = set_func_name($2, $3); }
+                    | FUNCTION id_chain ':' ID func_body               { $$ = set_func_name(add_expr_to_list($2, create_expr_id(yyval.Id)), $5); }
 ;
 
-func_body:            '(' arg_list_decl ')' stmt_list END                       { $$ = create_func($2, $4); }
+func_body:            '(' arg_list_decl ')' stmt_list END              { $$ = create_func($2, $4); }
 ;
 
 arg_list_decl:        /* empty */                                               { $$ = create_expr_list(NULL); }
