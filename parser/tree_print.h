@@ -302,6 +302,10 @@ void print_stmt(char* parent, struct NStmt* stmt)
             strcat(buffer, current_node);
             strcat(buffer, ";\n");
             fprintf(output,"%s",buffer);
+            if (stmt->expr!=NULL)
+            {
+                print_expr(current_node, stmt->expr);
+            }
             stmt_count++;
             break;
         case STMT_BREAK:
@@ -364,14 +368,40 @@ void print_func(char* parent, struct NFunc* func)
         fprintf(output,"%s", buffer1);
         print_func_name(buffer, func->name);
         buffer1 = (char*)malloc(sizeof(char)*33);
-        strcpy(buffer1, parent);
+        strcpy(buffer1, current_node);
         strcat(buffer1, "--");
         strcat(buffer1, buffer);
-        strcat(buffer1, "name;\n");
+        strcat(buffer1, ";\n");
         fprintf(output,"%s", buffer1);
     }
-    print_expr_list(current_node,func->args);
-    print_stmt_list(current_node, func->body);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "args[label = \" args \"];\n");
+    fprintf(output,"%s", buffer);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1, current_node);
+    strcat(buffer1, " -- ");
+    strcat(buffer1, current_node);
+    strcat(buffer1, "args;\n");
+    fprintf(output,"%s", buffer1);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "args");
+    print_expr_list(buffer,func->args);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "body[label = \" body \"];\n");
+    fprintf(output,"%s", buffer);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1, current_node);
+    strcat(buffer1, " -- ");
+    strcat(buffer1, current_node);
+    strcat(buffer1, "body;\n");
+    fprintf(output,"%s", buffer1);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "body");
+    print_stmt_list(buffer, func->body);
 }
 
 void print_expr_list(char* parent, struct NExprList* exprlist)
@@ -397,7 +427,7 @@ void print_func_name(char* parent, struct NExprList* exprlist)
 
 void print_if(char* parent, struct NIf* if_tree)
 {
-    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    char* current_node, * buffer = (char*)malloc(sizeof(char)*33), *buffer1;
     current_node = (char*)malloc(sizeof(char)*33);
     sprintf(buffer, "%d", if_count);
     strcpy(current_node, "if");
@@ -413,9 +443,71 @@ void print_if(char* parent, struct NIf* if_tree)
     strcat(buffer, ";");
     fprintf(output,"%s",buffer);
     if_count++;
-    print_expr(current_node,if_tree->condition);
-    print_if_list(current_node,if_tree->elseiflist);
-    print_stmt_list(current_node, if_tree->elsebody);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "condition[label = \" condition \"];\n");
+    fprintf(output,"%s", buffer);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1, current_node);
+    strcat(buffer1, " -- ");
+    strcat(buffer1, current_node);
+    strcat(buffer1, "condition;\n");
+    fprintf(output,"%s", buffer1);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "condition");
+    print_expr(buffer, if_tree->condition);
+    if (if_tree->body->first!=NULL)
+    {
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "body[label = \" body \"];\n");
+        fprintf(output,"%s", buffer);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, " -- ");
+        strcat(buffer1, current_node);
+        strcat(buffer1, "body;\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "body");
+        print_stmt_list(buffer, if_tree->body);
+    }
+    if(if_tree->elseiflist->first!=NULL) 
+    {
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "elseif[label = \" elseif_list \"];\n");
+        fprintf(output,"%s", buffer);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, " -- ");
+        strcat(buffer1, current_node);
+        strcat(buffer1, "elseif;\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "elseif");
+        print_if_list(buffer, if_tree->elseiflist);
+    }
+    if(if_tree->elsebody->first!=NULL)
+    {
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "elsebody[label = \" Else_body \"];\n");
+        fprintf(output,"%s", buffer);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, " -- ");
+        strcat(buffer1, current_node);
+        strcat(buffer1, "elsebody;\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "elsebody");
+        print_stmt_list(current_node, if_tree->elsebody);
+     }
 }
 
 void print_table(char* parent, struct NTable* table)
