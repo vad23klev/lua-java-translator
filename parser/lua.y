@@ -138,12 +138,12 @@ stmt:                 stmt_block                                                
 stmt_block:           DO stmt_list END opt_endl                                 { $$ = $2; }
 ;
 
-stmt_if:              IF expr THEN stmt_list elseif_list END opt_endl  { $$ = create_if($2, $4, $5, NULL); }
+stmt_if:              IF expr THEN stmt_list elseif_list END opt_endl  { $$ = create_if($2, $4, $5, create_stmt_list(NULL)); }
                     | IF expr THEN stmt_list elseif_list ELSE stmt_list END opt_endl { $$ = create_if($2, $4, $5, $7); }
 ;
 
 elseif_list:          /* empty */                                               { $$ = create_if_list(NULL); }
-                    | elseif_list ELSEIF expr THEN stmt_list                    { $$ = add_if_to_list($1, create_if($3, $5, NULL, NULL)); }
+                    | elseif_list ELSEIF expr THEN stmt_list                    { $$ = add_if_to_list($1, create_if($3, $5, create_if_list(NULL), create_stmt_list(NULL))); }
 ;
 
 stmt_while:           WHILE expr stmt_block                                     { $$ = create_while($2, $3); }

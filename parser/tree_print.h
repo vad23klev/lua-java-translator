@@ -127,7 +127,8 @@ char* print_expr(char* parent, struct NExpr* expr)
             strcpy(current,"%");
             break;
         case EXPR_ID:
-            current = expr->name;
+            current = (char*)malloc(sizeof(char)*33);
+            strcpy(current,expr->name);
             break;
         case EXPR_INT:
             current = (char*)malloc(sizeof(char)*33);
@@ -180,6 +181,7 @@ char* print_expr(char* parent, struct NExpr* expr)
             strcpy(current,"(-)");
             break;
     }
+    current_node = (char*)malloc(sizeof(char)*33);
     buffer = (char*)malloc(sizeof(char)*33);
     sprintf(buffer, "%d", expr_count);
     strcpy(current_node,"expr");
@@ -312,6 +314,9 @@ void print_stmt(char* parent, struct NStmt* stmt)
             strcat(buffer, ";");
             fprintf(output,"%s",buffer);
             stmt_count++;
+            break;
+        case STMT_IF:
+            print_if(parent, stmt->if_tree);
             break;
     }
 }
