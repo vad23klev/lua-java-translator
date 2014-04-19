@@ -206,10 +206,72 @@ char* print_expr(char* parent, struct NExpr* expr)
     expr_count++;
     if (expr->type == EXPR_EQ || expr->type == EXPR_NQ || expr->type == EXPR_PLUS || expr->type == EXPR_MINUS || expr->type == EXPR_DIV || expr->type == EXPR_MUL
         || expr->type == EXPR_LE || expr->type == EXPR_GE || expr->type == EXPR_LT || expr->type == EXPR_GT || expr->type == EXPR_MOD || expr->type == EXPR_CONC
-        || expr->type == EXPR_MET || expr->type == EXPR_AND || expr->type == EXPR_OR || expr->type == EXPR_MAS)
+        || expr->type == EXPR_AND || expr->type == EXPR_OR)
     {
         print_expr(current_node,expr->left);
         print_expr(current_node,expr->right);
+    } else if (expr->type == EXPR_MET)
+    {
+        char* buffer1;
+        buffer = (char*)malloc(sizeof(char)*33);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "name");
+        strcpy(buffer1, buffer);
+        strcat(buffer1, "[label = \"name\"];\n");
+        fprintf(output,"%s", buffer1);
+        print_func_name(buffer, expr->left->idlist);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, "--");
+        strcat(buffer1, buffer);
+        strcat(buffer1, ";\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "args[label = \" args \"];\n");
+        fprintf(output,"%s", buffer);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, " -- ");
+        strcat(buffer1, current_node);
+        strcat(buffer1, "args;\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "args");
+        print_expr_list(buffer,expr->right->idlist);
+    } else if (expr->type == EXPR_MAS)
+    {
+        char* buffer1;
+        buffer = (char*)malloc(sizeof(char)*33);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "name");
+        strcpy(buffer1, buffer);
+        strcat(buffer1, "[label = \"name\"];\n");
+        fprintf(output,"%s", buffer1);
+        print_func_name(buffer, expr->left->idlist);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, "--");
+        strcat(buffer1, buffer);
+        strcat(buffer1, ";\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "args[label = \" element \"];\n");
+        fprintf(output,"%s", buffer);
+        buffer1 = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer1, current_node);
+        strcat(buffer1, " -- ");
+        strcat(buffer1, current_node);
+        strcat(buffer1, "args;\n");
+        fprintf(output,"%s", buffer1);
+        buffer = (char*)malloc(sizeof(char)*33);
+        strcpy(buffer, current_node);
+        strcat(buffer, "args");
+        print_func_name(buffer,expr->right->idlist);
     } else if (expr->type == EXPR_NOT || expr->type == EXPR_UMIN)
     {
         print_expr(current_node,expr->left);
