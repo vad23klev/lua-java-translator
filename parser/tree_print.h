@@ -31,7 +31,8 @@ void print_func_name(char* parent, struct NExprList* exprlist);
 
 void print_while(char* parent, struct NWhile* while_loop)
 {
-    char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    char* current_node,  * buffer = (char*)malloc(sizeof(char)*33);
+    char* buffer1 = (char*)malloc(sizeof(char)*33);
     sprintf(buffer,"%d", while_count);
     current_node = (char*)malloc(sizeof(char)*33);
     strcpy(current_node, "while");
@@ -46,14 +47,39 @@ void print_while(char* parent, struct NWhile* while_loop)
     strcat(buffer, current_node);
     strcat(buffer, ";\n");
     fprintf(output,"%s",buffer);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "condition");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"condition\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
     while_count++;
-    print_expr(current_node, while_loop->condition);
-    print_stmt_list(current_node, while_loop->body);
+    print_expr(buffer, while_loop->condition);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "body");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"body\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_stmt_list(buffer, while_loop->body);
 }
 
 void print_for(char* parent, struct NFor* for_loop)
 {
     char* current_node, * buffer = (char*)malloc(sizeof(char)*33);
+    char* buffer1 = (char*)malloc(sizeof(char)*33);
     current_node = (char*)malloc(sizeof(char)*33);
     sprintf(buffer,"%d",for_count);
     strcpy(current_node, "for");
@@ -68,11 +94,71 @@ void print_for(char* parent, struct NFor* for_loop)
     strcat(buffer, ";\n");
     fprintf(output,"%s", buffer);
     for_count++;
-    print_stmt_list(current_node, for_loop->body);
-    print_expr(current_node, for_loop->name);
-    print_expr(current_node, for_loop->start);
-    print_expr(current_node, for_loop->end);
-    print_expr(current_node, for_loop->step);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "body");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"body\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_stmt_list(buffer, for_loop->body);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "varname");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"var\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_expr(buffer, for_loop->name);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "start");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"start\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_expr(buffer, for_loop->start);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "end");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"end\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_expr(buffer, for_loop->end);
+    buffer = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer, current_node);
+    strcat(buffer, "step");
+    strcpy(buffer1, buffer);
+    strcat(buffer1, "[label = \"step\"];\n");
+    fprintf(output, "%s", buffer1);
+    buffer1 = (char*)malloc(sizeof(char)*33);
+    strcpy(buffer1,current_node);
+    strcat(buffer1,"--");
+    strcat(buffer1,buffer);
+    strcat(buffer1,";");
+    fprintf(output, "%s", buffer1);
+    print_expr(buffer, for_loop->step);
 }
 
 char* print_expr(char* parent, struct NExpr* expr)
