@@ -64,6 +64,7 @@
 
 %type <Expr> expr
 %type <Expr> var
+%type <Expr> alone_id
 %type <Expr> func_call
 %type <SL> stmt_list
 %type <SL> root
@@ -151,8 +152,8 @@ elseif_list:          /* empty */                                               
 stmt_while:           WHILE expr stmt_block                                     { $$ = create_while($2, $3); }
 ;
 
-stmt_for:             FOR ID '=' expr ',' expr          stmt_block              { $$ = create_for(create_expr_id(yylval.Id), $4, $6, create_expr_int(yylval.Int), $7); }
-                    | FOR ID '=' expr ',' expr ',' expr stmt_block              { $$ = create_for(create_expr_id(yylval.Id), $4, $6, $8, $9); }
+stmt_for:             FOR alone_id '=' expr ',' expr          stmt_block        { $$ = create_for($2, $4, $6, create_expr_int(1), $7); }
+                    | FOR alone_id '=' expr ',' expr ',' expr stmt_block        { $$ = create_for($2, $4, $6, $8, $9); }
 ;
 
 stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      { $$ = create_while($4, $2); }
@@ -160,8 +161,11 @@ stmt_repeat:          REPEAT stmt_list UNTIL expr end_expr                      
 
 
 /* == Expressions == */
-id_chain:             ID                                                        { $$ = create_expr_list(create_expr_id(yylval.Id)); }
-                    | id_chain '.' ID                                           { $$ = add_expr_to_list($1, create_expr_id(yylval.Id)); }
+alone_id:             ID                                                        { $$ = create_expr_id(yylval.Id); }
+;
+
+id_chain:             alone_id                                                  { $$ = create_expr_list($1); }
+                    | id_chain '.' alone_id                                     { $$ = add_expr_to_list($1, $3); }
 ;
 
 var:                  id_chain                                                  { $$ = create_expr_exprlist($1); }
@@ -205,7 +209,7 @@ expr:                 var                                                       
 
 /* == Function call == */
 func_call:            var '(' arg_list ')'                                      { $$ = create_op_expr(EXPR_MET, $1, create_expr_exprlist($3)); }
-                    | var ':' ID '(' arg_list ')'                               { add_expr_to_list($1->idlist, create_expr_id(yylval.Id)); $$ = create_op_expr(EXPR_MET, $1, create_expr_exprlist($5)); }
+                    | var ':' alone_id '(' arg_list ')'                         { add_expr_to_list($1->idlist, $3); $$ = create_op_expr(EXPR_MET, $1, create_expr_exprlist($5)); }
 ;
 
 arg_list:             /* empty */                                               { $$ = create_expr_list(NULL); }
@@ -218,22 +222,22 @@ args:                 expr                                                      
 
 
 /* == Function declaration == */
-func_decl_anon:       FUNCTION func_body                               { $$ = $2; }
+func_decl_anon:       FUNCTION func_body                                       { $$ = $2; }
 ;
 
-func_decl_named:      FUNCTION id_chain func_body                      { $$ = set_func_name($2, $3); }
-                    | FUNCTION id_chain ':' ID func_body               { $$ = set_func_name(add_expr_to_list($2, create_expr_id(yylval.Id)), $5); }
+func_decl_named:      FUNCTION id_chain func_body                              { $$ = set_func_name($2, $3); }
+                    | FUNCTION id_chain ':' alone_id func_body                 { $$ = set_func_name(add_expr_to_list($2, $4), $5); }
 ;
 
-func_body:            '(' arg_list_decl ')' stmt_list END              { $$ = create_func($2, $4); }
+func_body:            '(' arg_list_decl ')' stmt_list END                      { $$ = create_func($2, $4); }
 ;
 
-arg_list_decl:        /* empty */                                               { $$ = create_expr_list(NULL); }
-                    | args_decl                                                 { $$ = $1; }
+arg_list_decl:        /* empty */                                              { $$ = create_expr_list(NULL); }
+                    | args_decl                                                { $$ = $1; }
 ;
 
-args_decl:            ID                                                        { $$ = create_expr_list(create_expr_id(yylval.Id)); }
-                    | args_decl ',' ID                                          { $$ = add_expr_to_list($1, create_expr_id(yylval.Id)); }
+args_decl:            alone_id                                                 { $$ = create_expr_list($1); }
+                    | args_decl ',' alone_id                                   { $$ = add_expr_to_list($1, $3); }
 ;
 
 
@@ -249,7 +253,7 @@ tbl_elems:            tbl_elem                                                  
                     | tbl_elems ',' tbl_elem                                    { $$ = add_elem_to_table($1, $3); }
 ;
 
-tbl_elem:             ID '=' expr                                               { $$ = create_tbl_elem(create_expr_id(yylval.Id), $3); }
+tbl_elem:             alone_id '=' expr                                         { $$ = create_tbl_elem($1, $3); }
                     | '[' expr ']' '=' expr                                     { $$ = create_tbl_elem($2, $5); }
                     | expr                                                      { $$ = create_tbl_elem(NULL, $1); }
 ;
