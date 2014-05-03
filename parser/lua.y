@@ -103,7 +103,7 @@
 %%
 
 end_expr:             ENDL
-                    | ';'
+                    | ';' opt_endl
 ;
 
 opt_endl:             /* empty */
