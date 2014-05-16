@@ -131,7 +131,7 @@
                                   return INT;
                               }
 
-([_]|[a-z])+[a-zA-Z0-9_]*     {
+([_]|[A-Za-z])+[a-zA-Z0-9_]*     {
                                   yylval.Id = (char *)malloc(sizeof(yytext)+1);
                                   strcpy(yylval.Id, yytext);
                                   return ID;
