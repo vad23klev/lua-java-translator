@@ -110,6 +110,8 @@ opt_endl:             /* empty */
                     | ENDL
 ;
 
+opt_endl_list:        opt_endl
+                    | opt_endl_list ',' opt_endl
 ;
 
 root:                 stmt_list                                                 { root=$1; $$=$1; }
@@ -242,7 +244,7 @@ args_decl:            alone_id                                                 {
 
 
 /* == Table declaration == */
-tableconstructor:     '{' tbl_elem_list '}'                                     { $$ = $2; }
+tableconstructor:     '{' opt_endl_list tbl_elem_list opt_endl_list '}'         { $$ = $3; }
 ;
 
 tbl_elem_list:        /* empty */                                               { $$ = create_table(NULL); }
@@ -250,7 +252,7 @@ tbl_elem_list:        /* empty */                                               
 ;
 
 tbl_elems:            tbl_elem                                                  { $$ = create_table($1); }
-                    | tbl_elems ',' tbl_elem                                    { $$ = add_elem_to_table($1, $3); }
+                    | tbl_elems opt_endl_list ',' opt_endl_list tbl_elem        { $$ = add_elem_to_table($1, $5); }
 ;
 
 tbl_elem:             alone_id '=' expr                                         { $$ = create_tbl_elem($1, $3); }

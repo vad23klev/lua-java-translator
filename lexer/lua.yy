@@ -126,7 +126,7 @@
                                   return INT;
                               }
 
-[+-]?[0-9]+                   {
+[0-9]+                        {
                                   yylval.Int = atoi(yytext);
                                   return INT;
                               }
@@ -147,7 +147,7 @@
 .|[\r\t\f\v]                  ;
 \n                            return ENDL;
 
-<<EOF>>                       return 0;
+<<EOF>>                       return EOF1;
 
 %%
 
