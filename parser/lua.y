@@ -61,17 +61,21 @@
 %token FALSE
 %token NIL
 %token ENDL
+%token EOF1
 
 %type <Expr> expr
 %type <Expr> var
 %type <Expr> alone_id
 %type <Expr> func_call
 %type <SL> stmt_list
+%type <SL> stmt_list_n
 %type <SL> root
 %type <SL> stmt_block
 %type <While> stmt_while
 %type <While> stmt_repeat
 %type <Stmt> stmt
+%type <Stmt> stmt_type
+%type <Stmt> stmt_control
 %type <If> stmt_if
 %type <For> stmt_for
 %type <Func> func_decl_named
@@ -102,7 +106,8 @@
 
 %%
 
-end_expr:             ENDL
+end_expr:             EOF1
+	            | ENDL
                     | ';' opt_endl
 ;
 
@@ -110,41 +115,49 @@ opt_endl:             /* empty */
                     | ENDL
 ;
 
-opt_endl_list:        opt_endl
-                    | opt_endl_list ',' opt_endl
-;
 
 root:                 stmt_list                                                 { root=$1; $$=$1; }
 ;
 
 
 /* == Statements == */
-stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
-                    | stmt_list stmt                                            { $$ = add_stmt_to_list($1, $2); }
+stmt_type:            stmt                                                      { $$ = $1; }
+                    | stmt_control                                              { $$ = $1; }
 ;
 
-stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
+stmt_list_n:          stmt_type                                                 { $$ = create_stmt_list($1); }
+                    | stmt_list_n end_expr stmt                                 { $$ = add_stmt_to_list($1,$3); }
+                    | stmt_list_n stmt_control stmt_type                        { $$ = add_stmt_to_list(add_stmt_to_list($1,$2),$3); }
+;
+
+stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
+                    | stmt_list_n                                               { $$ = $1; }
+;
+
+stmt_control:         stmt_block                                                { $$ = create_stmt_block($1); }
                     | stmt_if                                                   { $$ = create_stmt_if($1); }
                     | stmt_while                                                { $$ = create_stmt_while($1, 0); }
                     | stmt_for                                                  { $$ = create_stmt_for($1); }
                     | stmt_repeat                                               { $$ = create_stmt_while($1, 1); }
-                    | BREAK end_expr                                            { $$ = create_stmt_spec(0); }
-                    | RETURN end_expr                                           { $$ = create_stmt_spec(1); }
-                    | RETURN expr end_expr                                      { $$ = create_stmt_return($2); }
-                    | expr end_expr                                             { $$ = create_stmt_expr($1); }
-                    | var '=' expr end_expr                                     { $$ = create_stmt_assign($1, $3, 0); }
-                    | LOCAL var '=' expr end_expr                               { $$ = create_stmt_assign($2, $4, 1); }
+;
+
+stmt:                 BREAK                                                     { $$ = create_stmt_spec(0); }
+                    | RETURN                                                    { $$ = create_stmt_spec(1); }
+                    | RETURN expr                                               { $$ = create_stmt_return($2); }
+                    | expr                                                      { $$ = create_stmt_expr($1); }
+                    | var '=' expr                                              { $$ = create_stmt_assign($1, $3, 0); }
+                    | LOCAL var '=' expr                                        { $$ = create_stmt_assign($2, $4, 1); }
                     | func_decl_named                                           { $$ = create_stmt_func($1, 0); }
                     | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
-                    | ENDL                                                      { $$ = create_stmt_spec(2); }
+                    | end_expr                                                  { $$ = create_stmt_spec(2); }
                     | var_list '=' args                                         { $$ = create_stmt_assign(create_expr_exprlist($1), create_expr_exprlist($3), 0); }
 ;
 
-stmt_block:           DO stmt_list END opt_endl                                 { $$ = $2; }
+stmt_block:           DO stmt_list opt_endl END                                 { $$ = $2; }
 ;
 
-stmt_if:              IF expr THEN stmt_list elseif_list END opt_endl  { $$ = create_if($2, $4, $5, create_stmt_list(NULL)); }
-                    | IF expr THEN stmt_list elseif_list ELSE stmt_list END opt_endl { $$ = create_if($2, $4, $5, $7); }
+stmt_if:              IF expr THEN stmt_list elseif_list opt_endl END opt_endl           { $$ = create_if($2, $4, $5, create_stmt_list(NULL)); }
+                    | IF expr THEN stmt_list elseif_list ELSE stmt_list opt_endl END opt_endl { $$ = create_if($2, $4, $5, $7); }
 ;
 
 elseif_list:          /* empty */                                               { $$ = create_if_list(NULL); }
@@ -231,7 +244,7 @@ func_decl_named:      FUNCTION id_chain func_body                              {
                     | FUNCTION id_chain ':' alone_id func_body                 { $$ = set_func_name(add_expr_to_list($2, $4), $5); }
 ;
 
-func_body:            '(' arg_list_decl ')' stmt_list END                      { $$ = create_func($2, $4); }
+func_body:            '(' arg_list_decl ')' stmt_list opt_endl END             { $$ = create_func($2, $4); }
 ;
 
 arg_list_decl:        /* empty */                                              { $$ = create_expr_list(NULL); }
@@ -244,15 +257,15 @@ args_decl:            alone_id                                                 {
 
 
 /* == Table declaration == */
-tableconstructor:     '{' opt_endl_list tbl_elem_list opt_endl_list '}'         { $$ = $3; }
+tableconstructor:     '{' opt_endl tbl_elem_list '}'                            { $$ = $3; }
 ;
 
 tbl_elem_list:        /* empty */                                               { $$ = create_table(NULL); }
-                    | tbl_elems                                                 { $$ = $1; }
+                    | tbl_elems  opt_endl                                       { $$ = $1; }
 ;
 
 tbl_elems:            tbl_elem                                                  { $$ = create_table($1); }
-                    | tbl_elems opt_endl_list ',' opt_endl_list tbl_elem        { $$ = add_elem_to_table($1, $5); }
+                    | tbl_elems opt_endl ',' opt_endl tbl_elem                  { $$ = add_elem_to_table($1, $5); }
 ;
 
 tbl_elem:             alone_id '=' expr                                         { $$ = create_tbl_elem($1, $3); }
