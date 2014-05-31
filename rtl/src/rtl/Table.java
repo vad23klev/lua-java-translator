@@ -8,30 +8,21 @@ import java.util.Hashtable;
 public class Table extends Mixed {
 	private Hashtable<Mixed, Mixed> value = new Hashtable<>();
 	
-	/**
-	 * Returns a value associated with the given key.
-	 * @param key Pair key.
-	 * @return Value or null if no value associated with the given key.
-	 */
+	@Override
 	public Mixed get(Mixed key) {
 		return value.get(key);
 	}
 	
-	/**
-	 * Adds a key-value pair to this table.
-	 * @param key Pair key.
-	 * @param val Pair value.
-	 */
-	public void put(Mixed key, Mixed val) {
+	@Override
+	public Mixed put(Mixed key, Mixed val) {
 		value.put(key, val);
+		return this;
 	}
 	
-	/**
-	 * Removes a key-value pair by the given key.
-	 * @param key Pair key.
-	 */
-	public void remove(Mixed key) {
+	@Override
+	public Mixed remove(Mixed key) {
 		value.remove(key);
+		return this;
 	}
 
 	@Override
@@ -46,31 +37,6 @@ public class Table extends Mixed {
 
 	@Override
 	public Mixed clone() {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed add(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed sub(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mul(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed div(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mod(Mixed other) {
 		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 	}
 

@@ -29,15 +29,6 @@ public class String extends Mixed {
 	}
 	
 	/**
-	 * Concatenates this string with other string.
-	 * @param other String to concatenate with (second operand).
-	 * @return Concatenated string.
-	 */
-	public Mixed add(String other) {
-		return new String(value + other.value);
-	}
-	
-	/**
 	 * Concatenates this string with numeric value.
 	 * @param other Number to concatenate with (second operand).
 	 * @return Concatenated string.
@@ -46,8 +37,15 @@ public class String extends Mixed {
 	public Mixed add(Mixed other) {
 		if (other instanceof Integer) {
 			return new String(value + ((Integer)other).value);
-		} else {
+		
+		} else if (other instanceof Float) {
 			return new String(value + ((Float)other).value);
+		
+		} else if (other instanceof String) {
+			return new String(value + ((String)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 
@@ -68,26 +66,6 @@ public class String extends Mixed {
 	@Override
 	public Mixed clone() {
 		return new String(value);
-	}
-
-	@Override
-	public Mixed sub(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mul(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed div(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mod(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 	}
 
 	@Override
