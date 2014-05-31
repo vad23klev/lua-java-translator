@@ -2,9 +2,9 @@
     #include <stdio.h>
     #include "lua.tab.h"
     #include "tree_nodes_funcs.h"
-    
+
     extern int yylex(void);
-    
+
     void yyerror(const char *s)
     {
         fprintf(stderr, "Line %d: %s\n", yylloc.first_line, s);
@@ -118,7 +118,7 @@ root:                 stmt_list                                                 
 
 /* == Statements == */
 stmt_list:            /* empty */                                               { $$ = create_stmt_list(NULL); }
-                    | stmt_list stmt                                            { $$ = add_stmt_to_list($1, $2); }
+                    | stmt_list stmt opt_endl                                   { $$ = add_stmt_to_list($1, $2); }
 ;
 
 stmt:                 stmt_block                                                { $$ = create_stmt_block($1); }
@@ -134,7 +134,7 @@ stmt:                 stmt_block                                                
                     | LOCAL var '=' expr end_expr                               { $$ = create_stmt_assign($2, $4, 1); }
                     | func_decl_named                                           { $$ = create_stmt_func($1, 0); }
                     | LOCAL func_decl_named                                     { $$ = create_stmt_func($2, 1); }
-                    | ENDL                                                      { $$ = create_stmt_spec(2); }
+                    | end_expr                                                      { $$ = create_stmt_spec(2); }
                     | var_list '=' args                                         { $$ = create_stmt_assign(create_expr_exprlist($1), create_expr_exprlist($3), 0); }
 ;
 
@@ -242,7 +242,7 @@ args_decl:            alone_id                                                 {
 
 
 /* == Table declaration == */
-tableconstructor:     '{' tbl_elem_list '}'                                     { $$ = $2; }
+tableconstructor:     '{' opt_endl tbl_elem_list opt_endl '}'                    { $$ = $3; }
 ;
 
 tbl_elem_list:        /* empty */                                               { $$ = create_table(NULL); }
@@ -250,7 +250,7 @@ tbl_elem_list:        /* empty */                                               
 ;
 
 tbl_elems:            tbl_elem                                                  { $$ = create_table($1); }
-                    | tbl_elems ',' tbl_elem                                    { $$ = add_elem_to_table($1, $3); }
+                    | tbl_elems ',' opt_endl tbl_elem opt_endl                  { $$ = add_elem_to_table($1, $4); }
 ;
 
 tbl_elem:             alone_id '=' expr                                         { $$ = create_tbl_elem($1, $3); }
