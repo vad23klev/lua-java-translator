@@ -22,6 +22,17 @@ public class Integer extends Numeric {
 	}
 
 	@Override
+	public Mixed gr(Mixed other) {
+		if (other instanceof Integer) {
+			return new Boolean(this.value > ((Integer)other).value);
+		} else if (other instanceof Float) {
+			return new Boolean(this.value > ((Float)other).value);
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
+		}
+	}
+	
+	@Override
 	public java.lang.String toString() {
 		return "" + value;
 	}
@@ -35,8 +46,12 @@ public class Integer extends Numeric {
 	public Mixed add(Mixed other) {
 		if (other instanceof Float) {
 			return new Float(value + ((Float)other).value);
-		} else {
+		
+		} else if (other instanceof Integer) {
 			return new Integer(value + ((Integer)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 
@@ -44,8 +59,12 @@ public class Integer extends Numeric {
 	public Mixed sub(Mixed other) {
 		if (other instanceof Float) {
 			return new Float(value - ((Float)other).value);
-		} else {
+		
+		} else if (other instanceof Integer) {
 			return new Integer(value - ((Integer)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 
@@ -53,8 +72,12 @@ public class Integer extends Numeric {
 	public Mixed mul(Mixed other) {
 		if (other instanceof Float) {
 			return new Float(value * ((Float)other).value);
-		} else {
+		
+		} else if (other instanceof Integer) {
 			return new Integer(value * ((Integer)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 
@@ -62,8 +85,12 @@ public class Integer extends Numeric {
 	public Mixed div(Mixed other) {
 		if (other instanceof Float) {
 			return new Float(value / ((Float)other).value);
-		} else {
+		
+		} else if (other instanceof Integer) {
 			return new Integer(value / ((Integer)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 
@@ -71,8 +98,12 @@ public class Integer extends Numeric {
 	public Mixed mod(Mixed other) {
 		if (other instanceof Float) {
 			return new Float(value % ((Float)other).value);
-		} else {
+		
+		} else if (other instanceof Integer) {
 			return new Integer(value % ((Integer)other).value);
+		
+		} else {
+			throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
 		}
 	}
 

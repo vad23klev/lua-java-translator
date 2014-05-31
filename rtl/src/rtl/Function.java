@@ -21,31 +21,6 @@ public class Function extends Mixed {
 	}
 
 	@Override
-	public Mixed add(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed sub(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mul(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed div(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
-	public Mixed mod(Mixed other) {
-		throw new Error(Mixed.EXCEPTION_TYPE_NOT_ALLOWED);
-	}
-
-	@Override
 	public int hashCode() {
 		return 0;
 	}

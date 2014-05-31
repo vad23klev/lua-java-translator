@@ -24,6 +24,9 @@ import rtl.Function;
 	f2('lua')
 	
 	print(f2)
+	
+	tbl = { a = 1 }
+	print(tbl.a)  -- preprocessed to print(tbl["a"]) 
  */
 
 public class Main {
@@ -35,5 +38,7 @@ public class Main {
 		_G.put(  new String("f2"), ( (Func1)_G.get(new String("f")) ).value( new String("test") )  );
 		((Func2)_G.get(new String("f2"))).value(new String("lua"));
 		Lib.print(_G.get(new String("f2")));
+		_G.put(new String("tbl"), new Table().put(new String("a"), new Integer(1)));
+		Lib.print( _G.get(new String("tbl")).get(new String("a")) );
 	}
 }

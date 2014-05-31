@@ -2,6 +2,7 @@ package test;
 
 import rtl.Lib;
 import rtl.Mixed;
+import rtl.Nil;
 import rtl.Numeric;
 import rtl.Integer;
 import rtl.Float;
@@ -19,7 +20,7 @@ public class Func2 extends Function {
 	}
 	
 	public Mixed value(Mixed arg1) {
-		Lib.print( ((String) new String(((String)cv1).value).add(new String(" "))).add((String)arg1) );
-		return null; // TODO Should return nil
+		Lib.print( cv1.clone().add(new String(" ")).add(arg1) );
+		return new Nil();
 	}
 }
