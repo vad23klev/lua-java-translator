@@ -271,6 +271,10 @@ char* print_expr(char* parent, struct NExpr* expr)
             current = (char*)malloc(sizeof(char)*3);
             strcpy(current,"id");
             break;
+        case EXPR_TABLE:
+            current = (char*)malloc(sizeof(char)*3);
+            strcpy(current,"tableconstruct");
+            break;
     }
     current_node = (char*)malloc(sizeof(char)*33);
     buffer = (char*)malloc(sizeof(char)*33);
@@ -622,7 +626,7 @@ void print_if(char* parent, struct NIf* if_tree)
         strcat(buffer, "body");
         print_stmt_list(buffer, if_tree->body);
     }
-    if(if_tree->elseiflist->first!=NULL) 
+    if(if_tree->elseiflist->first!=NULL)
     {
         buffer = (char*)malloc(sizeof(char)*33);
         strcpy(buffer, current_node);
@@ -654,7 +658,7 @@ void print_if(char* parent, struct NIf* if_tree)
         buffer = (char*)malloc(sizeof(char)*33);
         strcpy(buffer, current_node);
         strcat(buffer, "elsebody");
-        print_stmt_list(current_node, if_tree->elsebody);
+        print_stmt_list(buffer, if_tree->elsebody);
      }
 }
 
@@ -681,6 +685,7 @@ void print_table(char* parent, struct NTable* table)
     while (current != NULL)
     {
         print_table_elem(current_node,current, i);
+        i++;
         current = current->next;
     }
 }
