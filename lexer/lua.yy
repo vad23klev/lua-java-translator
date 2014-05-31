@@ -36,7 +36,7 @@
 
 \"                            { BEGIN(STRING_Q); strcpy(strconst, ""); }
 <STRING_Q>\\\"                strcat(strconst, "\"");
-<STRING_Q>\\n                 strcat(strconst, "\n"); 
+<STRING_Q>\\n                 strcat(strconst, "\n");
 <STRING_Q>\\\\                strcat(strconst, "\\");
 <STRING_Q>[^\\\n\"]+          strcat(strconst,yytext);
 <STRING_Q>\"                  {
@@ -49,7 +49,7 @@
 
 \'                            { BEGIN(STRING_A); strcpy(strconst, ""); }
 <STRING_A>\\\"                strcat(strconst, "\"");
-<STRING_A>\\n                 strcat(strconst, "\n"); 
+<STRING_A>\\n                 strcat(strconst, "\n");
 <STRING_A>\\\\                strcat(strconst, "\\");
 <STRING_A>[^\\\n\']+          strcat(strconst,yytext);
 <STRING_A>\'                  {
@@ -126,7 +126,7 @@
                                   return INT;
                               }
 
-[+-]?[0-9]+                   {
+[0-9]+                        {
                                   yylval.Int = atoi(yytext);
                                   return INT;
                               }
@@ -153,7 +153,7 @@
 
 int main(int argc,char* argv[])
 {
-    if (argc > 1) 
+    if (argc > 1)
     {
         yyin = fopen(argv[1], "r");
         yyparse();
