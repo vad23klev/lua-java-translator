@@ -9,6 +9,8 @@ enum NStmtType {
     STMT_BREAK,
     STMT_RETURN,
     STMT_ASSIGN,
+    STMT_ASSIGN_MAS,
+    STMT_LASSIGN_MAS,
     STMT_LASSIGN,
     STMT_IF,
     STMT_ENDL

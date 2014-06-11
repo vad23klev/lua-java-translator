@@ -3,6 +3,165 @@
 /*
  * Function definition
  */
+void update_tree(struct NStmt* current, NStmt* prev, NStmtList* root, NStmtList* list, bool first_in_list, bool last_in_list);
+void update_tree_if(struct NIf* current, struct NStmtList* root);
+
+void update_tree_stmtlist(struct NStmtList* list, struct NStmtList* root)
+{
+    struct NStmt* current = list->first, * prev = NULL, * next = NULL;
+    bool start = true, end = false;
+    struct NStmtList* body = list;
+    while(current!=NULL)
+    {
+        next = current->next;
+        if (current->next == NULL)
+        {
+            body = list;
+            end = true;
+        }
+        update_tree(current,prev,root,body,start,end);
+        prev = current;
+        start = false;
+        body = NULL;
+        current = next;
+    }
+}
+
+void update_tree(struct NStmt* current, NStmt* prev, NStmtList* root, NStmtList* list, bool first_in_list, bool last_in_list)
+{
+    bool start = true, end = false;
+    struct NStmtList* body = NULL;
+    switch(current->type)
+    {
+        case STMT_WHILE:
+            body = current->while_loop->body;
+            update_tree_stmtlist(body,root);
+            break;
+        case STMT_FOR:
+            body = current->for_loop->body;
+            update_tree_stmtlist(body,root);
+            break;
+        case STMT_FUNC:
+            body = current->func->body;
+            update_tree_stmtlist(body,root);
+            if(current != root->first)
+            {
+                if (prev != NULL)
+                {
+                    prev->next = current->next;
+                }
+                if (last_in_list)
+                {
+                    list->last = prev;
+                }
+                if (first_in_list)
+                {
+                    list->first = current->next;
+                }
+                current->next = root->first;
+                root->first = current;
+            }
+            break;
+        case STMT_BLOCK:
+            body = current->list;
+            update_tree_stmtlist(body,root);
+            break;
+        case STMT_LFUNC:
+            body = current->func->body;
+            update_tree_stmtlist(body,root);
+            if(current != root->first)
+            {
+                if (prev != NULL)
+                {
+                    prev->next = current->next;
+                }
+                if (last_in_list)
+                {
+                    list->last = prev;
+                }
+                if (first_in_list)
+                {
+                    list->first = current->next;
+                }
+                current->next = root->first;
+                root->first = current;
+            }
+            break;
+        case STMT_REPEAT:
+            body = current->while_loop->body;
+            update_tree_stmtlist(body,root);
+            break;
+        case STMT_ASSIGN:
+            if (current->expr->type == EXPR_FUNC_DEC_ANON)
+            {
+                body = current->expr->func->body;
+                update_tree_stmtlist(body,root);
+                if (current != root->first)
+                {
+                    if (prev != NULL)
+                    {
+                        prev->next = current->next;
+                    }
+                    if (last_in_list)
+                    {
+                        list->last = prev;
+                    }
+                    if (first_in_list)
+                    {
+                        list->first = current->next;
+                    }
+                    current->next = root->first;
+                    root->first = current;
+                }
+            }
+            if(current->var->type == EXPR_MAS)
+                current->type = STMT_ASSIGN_MAS;
+            break;
+        case STMT_LASSIGN:
+            if (current->expr->type == EXPR_FUNC_DEC_ANON)
+            {
+                body = current->expr->func->body;
+                update_tree_stmtlist(body,root);
+                if (current != root->first)
+                {
+                    if (prev != NULL)
+                    {
+                        prev->next = current->next;
+                    }
+                    if (last_in_list)
+                    {
+                        list->last = prev;
+                    }
+                    if (first_in_list)
+                    {
+                        list->first = current->next;
+                    }
+                    current->next = root->first;
+                    root->first = current;
+                }
+            }
+            if(current->var->type == EXPR_MAS)
+                current->type = STMT_LASSIGN_MAS;
+            break;
+        case STMT_IF:
+            update_tree_if(current->if_tree, root);
+            break;
+    }
+}
+
+void update_tree_if(struct NIf* current, struct NStmtList* root)
+{
+            struct NStmtList* body = current->body;
+            update_tree_stmtlist(body,root);
+            body = current->elsebody;
+            update_tree_stmtlist(body,root);
+            struct NIf* elseif = current->elseiflist->first;
+            while(elseif != NULL)
+            {
+                update_tree_if(elseif, root);
+                elseif = elseif->next;
+            }
+}
 
 void set_null_field_expr(struct NExpr* expr)
 {
