@@ -1,3 +1,8 @@
+#ifndef _H_TREE_NODES_
+#define _H_TREE_NODES_
+
+typedef struct st_const STConst;
+
 enum NStmtType {
     STMT_WHILE,
     STMT_FOR,
@@ -27,7 +32,7 @@ enum NExprType {
     EXPR_LE,
     EXPR_GE,
     EXPR_LT,
-    EXPR_GT,
+    EXPR_GT, //10
     EXPR_MOD,
     EXPR_ID,
     EXPR_INT,
@@ -37,7 +42,7 @@ enum NExprType {
     EXPR_MET,
     EXPR_AND,
     EXPR_NOT,
-    EXPR_OR,
+    EXPR_OR, //20
     EXPR_MAS,
     EXPR_BOOL,
     EXPR_NIL,
@@ -74,6 +79,9 @@ struct NExpr
     struct NExprList* idlist;
     struct NTable* table;
     struct NFunc* func;
+    
+    // Attributes
+    int constant_index;
 };
 
 struct NStmt
@@ -100,6 +108,10 @@ struct NFunc
     struct NExprList* name;
     struct NExprList* args;
     struct NStmtList* body;
+    
+    // Attributes
+    STConst * const_table;
+    STConst * const_last;
 };
 
 struct NExprList
@@ -135,3 +147,5 @@ struct NTblElem
     struct NExpr* value;
     struct NTblElem * next;
 };
+
+#endif
