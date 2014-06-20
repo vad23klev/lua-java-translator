@@ -341,7 +341,7 @@ char* print_expr(char* parent, struct NExpr* expr)
         strcpy(buffer1, buffer);
         strcat(buffer1, "[label = \"name\"];\n");
         fprintf(output,"%s", buffer1);
-        print_func_name(buffer, expr->left->idlist);
+        print_expr(buffer, expr->left);
         buffer1 = (char*)malloc(sizeof(char)*33);
         strcpy(buffer1, current_node);
         strcat(buffer1, "--");
@@ -361,7 +361,7 @@ char* print_expr(char* parent, struct NExpr* expr)
         buffer = (char*)malloc(sizeof(char)*33);
         strcpy(buffer, current_node);
         strcat(buffer, "args");
-        print_func_name(buffer,expr->right->idlist);
+        print_expr(buffer,expr->right);
     } else if (expr->type == EXPR_NOT || expr->type == EXPR_UMIN)
     {
         print_expr(current_node,expr->left);
