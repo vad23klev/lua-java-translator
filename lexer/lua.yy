@@ -4,6 +4,7 @@
     #include <string.h>
 
     #include "lua.tab.h"
+    #include "semantic_tables.h"
     #include "tree_print.h"
 
     #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
@@ -160,6 +161,21 @@ int main(int argc,char* argv[])
         yyparse();
         update_tree_stmtlist(root,root);
         print_tree(root);
+        
+        printf("Constant table:\n");
+        st_fill_tables(root);
+        st_print_const(st_const_table);
+        
+        struct NStmt * current = root->first;
+        while (current != NULL)
+        {
+            if (current->type == STMT_FUNC)
+            {
+                printf("Function constant table:\n");
+                st_print_const(current->func->const_table);
+            }
+            current = current->next;
+        }
     }
     return 0;
 }

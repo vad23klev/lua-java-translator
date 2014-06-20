@@ -1,3 +1,6 @@
+#ifndef _H_TREE_PRINT_
+#define _H_TREE_PRINT_
+
 #include "tree_nodes.h"
 #include <string.h>
 #include <stdlib.h>
@@ -777,3 +780,5 @@ void print_tree(struct NStmtList* stmtlist)
     fprintf(output, "%s\n", "}");
     fclose(output);
 }
+
+#endif
