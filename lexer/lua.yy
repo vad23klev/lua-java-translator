@@ -176,6 +176,17 @@ int main(int argc,char* argv[])
             }
             current = current->next;
         }
+
+        printf("Function list:\n");
+        SList * cur = func_list;
+        while (cur != NULL)
+        {
+            printf("function %s\n", ((NFunc *)(cur->data))->name->last->name );
+            cur = cur->next;
+        }
+
+        printf("Function methodrefs:\n");
+        st_print_const(st_func_handles);
     }
     return 0;
 }

@@ -112,6 +112,7 @@ struct NFunc
     // Attributes
     STConst * const_table;
     STConst * const_last;
+    char * classname;
 };
 
 struct NExprList

@@ -37,9 +37,11 @@ struct st_const {
     enum st_const_types type;
     union {
         char * utf8;
-        int arg1;
-        int arg2;
-        
+        struct {
+            int arg1;
+            int arg2;
+        } args;
+
         int val_int;
         double val_float;
     } value;
@@ -47,14 +49,30 @@ struct st_const {
     STConst * next;
 };
 
+/**
+ * General purpose singly-linked list element.
+ */
+typedef struct slist SList;
+struct slist {
+    void  * data;
+    SList * next;
+};
+
 /*
  * Table declarations.
  */
-STConst * st_const_table = NULL;
-STConst * st_const_last  = NULL;
+STConst *  st_const_table = NULL;
+STConst *  st_const_last  = NULL;
 
 STConst ** st_current_const_table = NULL;
 STConst ** st_current_const_last  = NULL;
+
+SList   *  func_list = NULL;
+SList   *  func_last = NULL;
+int        funcnum   = 0;
+
+STConst *  st_func_handles = NULL;
+STConst *  st_func_hlast   = NULL;
 
 /*
  * Function declarations.
@@ -89,7 +107,7 @@ void st_stmt_expr(struct NExpr * node);
  *                   CONST_UTF8
  * @return Zero-based index or -1 when constant not found.
  */
-int st_constant_index(STConst * table, enum st_const_types type, void * value);
+int st_constant_index(STConst * table, enum st_const_types type, const void * value);
 
 /**
  * Prints the constants table.
@@ -105,6 +123,22 @@ void st_print_const();
  */
 char * st_type_name(enum st_const_types type, char name[10]);
 
+/**
+ * Returns the number of elements in given expr list.
+ * This function iterates over the list.
+ * @param [in] start List head.
+ * @return Number of elements.
+ */
+int    nexprlist_count(NExprList * start);
+
+/**
+ * Generates a function handle for the given function;
+ * @param [in] f      NFunc tree node.
+ * @param [in] buffer Text buffer.
+ * @return Text buffer with function handle.
+ */
+char * st_gen_func_handle(NFunc * f, char * buffer);
+
 
 //############################################################################//
 
@@ -118,6 +152,9 @@ STConst * st_new_const_table() {
 }
 
 void st_fill_tables(struct NStmtList * root) {
+    st_func_handles = st_new_const_table();
+    st_func_hlast   = st_func_handles;
+
     // Set current table
     st_current_const_table = &st_const_table;
     st_current_const_last  = &st_const_last;
@@ -144,6 +181,65 @@ void st_stmt(struct NStmt * node) {
         case STMT_FOR:    st_stmt_for(node->for_loop);                      break;
         case STMT_EXPR:   st_stmt_expr(node->expr);                         break;
         case STMT_FUNC: {
+            // Add function to list
+            SList * f = (SList *)malloc(sizeof(SList));
+            f->next = NULL;
+            f->data = (void *)(node->func);
+            if (func_list == NULL) {
+                func_list = f;
+                func_last = f;
+            } else {
+                func_last->next = f;
+                func_last = f;
+            }
+
+            // Set function classname
+            node->func->classname = (char *)malloc(10);
+            sprintf(node->func->classname, "func%d", funcnum);
+            funcnum++;
+
+            // Create methodref
+            // Class name UTF8
+            STConst * c = (STConst *)malloc(sizeof(STConst));
+            c->next = NULL;
+            c->type = CONST_UTF8;
+            c->value.utf8 = node->func->classname;
+            st_func_hlast->next = c;
+            st_func_hlast = c;
+            // Method name UTF8
+            if (st_constant_index(st_func_handles, CONST_UTF8, "value") == -1) {
+                c = (STConst *)malloc(sizeof(STConst));
+                c->next = NULL;
+                c->type = CONST_UTF8;
+                c->value.utf8 = (char *)malloc(6);
+                strcpy(c->value.utf8, "value");
+                st_func_hlast->next = c;
+                st_func_hlast = c;
+            }
+            // Function handle UTF8
+            c = (STConst *)malloc(sizeof(STConst));
+            c->next = NULL;
+            c->type = CONST_UTF8;
+            c->value.utf8 = (char *)malloc(1024);
+            char * fh = st_gen_func_handle(node->func, c->value.utf8);
+            st_func_hlast->next = c;
+            st_func_hlast = c;
+            // Class
+            c = (STConst *)malloc(sizeof(STConst));
+            c->next = NULL;
+            c->type = CONST_CLASS;
+            c->value.args.arg1 = st_constant_index(st_func_handles, CONST_UTF8, node->func->classname);
+            st_func_hlast->next = c;
+            st_func_hlast = c;
+            // Name and type
+            c = (STConst *)malloc(sizeof(STConst));
+            c->next = NULL;
+            c->type = CONST_NAMETYPE;
+            c->value.args.arg1 = st_constant_index(st_func_handles, CONST_UTF8, "value");
+            c->value.args.arg2 = st_constant_index(st_func_handles, CONST_UTF8, fh);
+            st_func_hlast->next = c;
+            st_func_hlast = c;
+
             // Switch to local constant table and initialize it.
             st_current_const_table  = &(node->func->const_table);
             st_current_const_last   = &(node->func->const_last);
@@ -248,7 +344,7 @@ void st_stmt_expr(struct NExpr * node) {
             cstr->next = NULL;
             
             cstr->type = CONST_STRING;
-            cstr->value.arg1 = st_constant_index(*st_current_const_table, CONST_UTF8, utf8->value.utf8);
+            cstr->value.args.arg1 = st_constant_index(*st_current_const_table, CONST_UTF8, utf8->value.utf8);
             
             (*st_current_const_last)->next = cstr;
             *st_current_const_last = cstr;
@@ -265,7 +361,7 @@ void st_stmt_expr(struct NExpr * node) {
     }
 }
 
-int st_constant_index(STConst * table, enum st_const_types type, void * value) {
+int st_constant_index(STConst * table, enum st_const_types type, const void * value) {
     STConst * cur = table;
     int index = 0;
     while (cur != 0) {
@@ -311,13 +407,13 @@ void st_print_const(STConst * table) {
             case CONST_UTF8:      printf("%s", cur->value.utf8);      break;
             case CONST_INT:       printf("%d", cur->value.val_int);   break;
             case CONST_FLOAT:     printf("%f", cur->value.val_float); break;
-            case CONST_STRING:    printf("%d", cur->value.arg1);      break;
+
+            case CONST_CLASS:
+            case CONST_STRING:    printf("%d", cur->value.args.arg1); break;
             
             case CONST_FIELDREF:
             case CONST_METHODREF:
-            case CONST_NAMETYPE:
-            case CONST_CLASS:     printf("%d %d", cur->value.arg1, cur->value.arg2); break;
-            
+            case CONST_NAMETYPE: printf("%d %d", cur->value.args.arg1, cur->value.args.arg2); break;
             
             default:              printf("==WTF?=="); break;
         }
@@ -341,6 +437,28 @@ char * st_type_name(enum st_const_types type, char name[10]) {
         default:              strcpy(name, "==WTF?==");  break;
     }
     return name;
+}
+
+int nexprlist_count(NExprList * start) {
+    int count = 0;
+    NExpr * cur = start->first;
+    while (cur != NULL) {
+        count++;
+        cur = cur->next;
+    }
+    return count;
+}
+
+char * st_gen_func_handle(NFunc * f, char * buffer) {
+    int i;
+
+    strcpy(buffer, "(");
+    for (i = 0; i < nexprlist_count(f->args); i++) {
+        strcat(buffer, "Lrtl/Mixed;");
+    }
+    strcat(buffer, ")Lrtl/Mixed;");
+
+    return buffer;
 }
 
 #endif
