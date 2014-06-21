@@ -8,6 +8,7 @@
     void yyerror(const char *s)
     {
         fprintf(stderr, "Line %d: %s\n", yylloc.first_line, s);
+        exit(1);
     }
 
     struct NStmtList* root;
