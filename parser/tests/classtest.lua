@@ -17,7 +17,9 @@ end
 
 --- Makes sound
 function Dog:makeSound()
-    if (self.voice == nil) then error('The dog is deaf') end
+    if (self.voice == nil) then
+        error('The dog is deaf')
+    end
     print(self.voice)
 end
 
@@ -25,7 +27,9 @@ end
 --- Changes dog's voice.
 -- @param sound A new voice
 function Dog:setVoice(sound)
-    if (sound == nil) then error('The dog cannot be stunned.') end
+    if (sound == nil) then
+        error('The dog cannot be stunned.')
+    end
     self.voice = sound
 end
 
