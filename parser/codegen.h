@@ -1,7 +1,6 @@
 /**
- * @file semantic_tables.h
- * Provides functions to create various tables (e. g. constants,
- * local variables) for .class files.
+ * @file codegen.h
+ * Provides functions to  execute file of programm.
  */
 
 #ifndef _H_CODEGEN_
