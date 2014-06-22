@@ -113,6 +113,7 @@ struct NFunc
     STConst * const_table;
     STConst * const_last;
     char * classname;
+    int methodref;
 };
 
 struct NExprList

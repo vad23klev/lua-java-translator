@@ -369,6 +369,9 @@ void st_stmt_func(struct NFunc * node) {
     st_func_hlast = c;
     fconstnum++;
 
+    // Set methodref attribute
+    node->methodref = fconstnum;
+
     st_stmt_list(node->body);
 }
 
