@@ -119,7 +119,7 @@ void st_stmt_if(struct NIf * node);
 void st_stmt_expr(struct NExpr * node);
 
 /**
- * Returns zero-based index of two-argument constant in table.
+ * Returns zero-based index of one-argument constant in table.
  * @param [in] table A constant table to search in
  * @param [in] type  Constant type. Supported types are:
  *                   CONST_INT
@@ -132,7 +132,7 @@ void st_stmt_expr(struct NExpr * node);
 int st_constant_index(STConst * table, enum st_const_types type, const void * value);
 
 /**
- * Returns zero-based index of constant in table.
+ * Returns zero-based index of two-argument constant in table.
  * @param [in] table A constant table to search in
  * @param [in] type  Constant type. Supported types are:
  *                   CONST_FIELDREF
