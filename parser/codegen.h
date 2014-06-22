@@ -32,6 +32,7 @@ enum cg_rtl_methodrefs {
     MIXED_GREQ = 62,
     MIXED_LOEQ = 66,
     MIXED_LO = 70,
+
     // Library functions
     LIB_LASSERT2 = 76,
     LIB_LASSERT = 80,
@@ -44,7 +45,7 @@ enum cg_rtl_methodrefs {
     LIB_IOREAD = 118
 };
 
-int    offset    = 1;
+int offset    = 1;
 
 /**
  * Calls perror(s) and exit(c);
@@ -71,31 +72,30 @@ int  swrite(int fd, void * ptr, int numbytes);
 void cg_generate_bytecode(struct NStmtList * root);
 
 /**
- * Append RTL functions metodref's to constant table in excute file.
+ * Append RTL functions metodref's to .class file.
  * @param [in] mc File descriptor.
- * @return count of written bytes.
+ * @return Number of bytes written.
  */
 int cg_lib_funcs(int mc);
 
 /**
- * Append Mixed type functions metodref's to constant table in excute file.
+ * Append Mixed type functions metodref's to .class file.
  * @param [in] mc File descriptor.
- * @return count of written bytes.
+ * @return Number of bytes written.
  */
 int cg_mixed_funcs(int mc);
 
 /**
- * Append RTL function metodref's to constant table in excute file.
+ * Append RTL function metodref's to .class file.
  * @param [in] mc File descriptor.
- * @param [in] name       Name of metod.
- * @param [in] arcgscount Argument count for method.
- * @param [in] rtype      Type of return value of metod.
- * @param [in] classnum   Table string number in Constant table.
- * @param [in] need_name  Need name flag.
- * @return count of written bytes. 
+ * @param [in] name       Method name.
+ * @param [in] arcgscount Number of method's arguments.
+ * @param [in] rtype      Java qualified name of return type.
+ * @param [in] classnum   Number of CONST_CLASS constant.
+ * @param [in] need_name  Also write CONST_UTF8 with function name.
+ * @return Number of bytes written.
  */
 int cg_lib_func(int mc,const char* name, int argscount, const char* rtype, int classnum, bool need_name);
-
 
 /***************************************************************************************************/
 
