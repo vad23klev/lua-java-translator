@@ -3,7 +3,7 @@ all: clean lualp
 lualp: lua.tab.o lex.yy.o
 	g++ lex.yy.o lua.tab.o -o lualp
 
-lua.tab.o: lua.tab.c tree_nodes.h tree_nodes_funcs.h tree_print.h semantic_tables.h
+lua.tab.o: lua.tab.c tree_nodes.h tree_nodes_funcs.h tree_print.h semantic_tables.h codegen.h
 	g++ -c lua.tab.c
 
 lex.yy.o: lex.yy.c
@@ -26,6 +26,9 @@ tree_print.h:
 
 semantic_tables.h:
 	cp ../parser/semantic_tables.h ./
+
+codegen.h:
+	cp ../parser/codegen.h ./
 
 clean:
 	rm -rf *.o *.h *.c lualp

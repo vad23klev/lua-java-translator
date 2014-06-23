@@ -17,7 +17,7 @@
  * Constant types.
  */
 enum st_const_types {
-    CONST_UTF8      = 2,
+    CONST_UTF8      = 1,
     
     CONST_INT       = 3,
     CONST_FLOAT     = 4,
@@ -103,6 +103,13 @@ STConst * st_new_const(enum st_const_types type, void * arg);
 * @return Created constant.
 */
 STConst * st_new_const2(enum st_const_types type, int arg1, int arg2);
+
+/**
+ * Returns the number of constants of given table.
+ * @param [in] table Constant table.
+ * @return Number of constants.
+ */
+int       st_const_count(STConst * table);
 
 /**
  * Fills tables according to given tree.
@@ -220,6 +227,18 @@ STConst * st_new_const2(enum st_const_types type, int arg1, int arg2) {
     c->value.args.arg1 = arg1;
     c->value.args.arg2 = arg2;
     return c;
+}
+
+int st_const_count(STConst * table) {
+    STConst * cur = table;
+    int count = 0;
+
+    while (cur != NULL) {
+        count++;
+        cur = cur->next;
+    }
+
+    return count;
 }
 
 void st_fill_tables(struct NStmtList * root) {

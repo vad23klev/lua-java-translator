@@ -2,9 +2,13 @@
 
     #include <stdio.h>
     #include <string.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+    #include <netinet/in.h>
 
     #include "lua.tab.h"
     #include "semantic_tables.h"
+    #include "codegen.h"
     #include "tree_print.h"
 
     #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
@@ -187,6 +191,8 @@ int main(int argc,char* argv[])
 
         printf("Function methodrefs:\n");
         st_print_const(st_func_handles);
+
+        cg_generate_bytecode(root);
     }
     return 0;
 }
