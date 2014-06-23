@@ -5,6 +5,8 @@
  */
 void update_tree(struct NStmt* current, NStmt* prev, NStmtList* root, NStmtList* list, bool first_in_list, bool last_in_list);
 void update_tree_if(struct NIf* current, struct NStmtList* root);
+void set_parent_func(struct NStmt* child, struct NFunc* parent);
+
 
 void update_tree_stmtlist(struct NStmtList* list, struct NStmtList* root)
 {
@@ -161,6 +163,99 @@ void update_tree_if(struct NIf* current, struct NStmtList* root)
                 update_tree_if(elseif, root);
                 elseif = elseif->next;
             }
+}
+
+void set_parent_func(struct NStmt* child, struct NFunc* parent)
+{
+    if(child->type == STMT_LFUNC || child->type == STMT_FUNC
+        || ((child->type == STMT_ASSIGN ||
+            child->type == STMT_LASSIGN ||
+            child->type == STMT_EXPR) &&
+        child->expr->type == EXPR_FUNC_DEC_ANON))
+    {
+        struct NStmt * cur;
+        struct NStmt * func;
+        if (child->type == STMT_LFUNC || child->type == STMT_FUNC)
+        {
+            child->func->pfunc = parent;
+            cur = child->func->body->first;
+            func = child->func;
+        }
+        else
+        {
+            child->expr->func->pfunc = parent;
+            cur = child->expr->func->body->first;
+            func = child->expr->func;
+        }
+        while (cur != NULL)
+        {
+            set_parent_func(cur,func);
+            cur = cur->next;
+        }
+    } 
+    else if (child->type == STMT_WHILE || child->type == STMT_REPEAT ||
+            child->type == STMT_FOR || child->type == STMT_IF || child->type == STMT_BLOCK)
+    {
+        struct NStmt * cur = NULL;
+        if(child->type == STMT_WHILE || child->type == STMT_REPEAT)
+        {
+            cur = child->while_loop->body->first;
+        }
+        else if (child->type == STMT_FOR)
+        {
+            cur = child->for_loop->body->first;
+        }
+        else if (child->type == STMT_BLOCK)
+        {
+            cur = child->list->body->first;
+        }
+        else
+        {
+            cur = child->if_tree->elsebody;
+            while (cur != NULL)
+            {
+                set_parent_func(cur,parent);
+                cur = cur->next;
+            }
+            
+            struct NIf * ift = child->if_tree->elseiflist->first;
+            while (ift != NULL)
+            {
+                cur = ift->body;
+                while (cur != NULL)
+                {
+                    set_parent_func(cur,parent);
+                    cur = cur->next;
+                }
+                ift = ift->next;
+            }
+            cur = child->if_tree->body;
+        }
+        while (cur != NULL)
+        {
+            set_parent_func(cur,parent);
+            cur = cur->next;
+        }
+    }
+    else if ((child->type == STMT_EXPR || child->type == STMT_LASSIGN || child->type == STMT_ASSIGN) && child->expr->type == EXPR_TABLE)
+    {
+        struct NTblElem* elem = child->expr->table->first;
+        while (elem != NULL)
+        {
+            if (elem->value->type == EXPR_FUNC_DEC_ANON)
+            {
+                elem->value->func->pfunc = parent;
+                cur = elem->value->body->first;
+
+            }
+            cur = cur->next;
+            while (cur != NULL)
+            {
+                set_parent_func(cur,elem->value->func);
+                cur = cur->next;
+            }
+        }
+    }
 }
 
 void set_null_field_expr(struct NExpr* expr)

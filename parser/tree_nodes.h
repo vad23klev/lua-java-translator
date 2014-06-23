@@ -114,6 +114,7 @@ struct NFunc
     STConst * const_last;
     char * classname;
     int methodref;
+    struct NFunc* pfunc;
 };
 
 struct NExprList
