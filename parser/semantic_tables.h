@@ -29,8 +29,19 @@ enum st_const_types {
 };
 
 /**
+ * Filed flags.
+ */
+enum st_filed_flags {
+    FIELD_ACCESS_PUBLIC    = 0x0001,
+    FIELD_ACCESS_PRIVATE   = 0x0002,
+    FIELD_ACCESS_PROTECTED = 0x0004,
+
+    FIELD_STATIC = 0x0008
+};
+
+/**
  * A record of constants table.
- * Singly-Linked list.
+ * Singly-Linked list element.
  */
 typedef struct st_const STConst;
 struct st_const {
@@ -47,6 +58,19 @@ struct st_const {
     } value;
     
     STConst * next;
+};
+
+/**
+ * Represents field record.
+ * Singly-linked list element.
+ */
+typedef struct st_field STField;
+struct st_field {
+    unsigned short int flags;
+    unsigned short int name;
+    unsigned short int descriptor;
+
+    STField * next;
 };
 
 /**
