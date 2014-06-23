@@ -82,6 +82,8 @@ struct NExpr
     
     // Attributes
     int constant_index;
+    bool clojure;
+    NExpr * origin;
 };
 
 struct NStmt
@@ -115,6 +117,7 @@ struct NFunc
     char * classname;
     int methodref;
     struct NFunc* pfunc;
+    struct NExprList* locals_list;
 };
 
 struct NExprList
