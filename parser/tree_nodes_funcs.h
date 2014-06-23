@@ -1,10 +1,284 @@
 #include <stdlib.h>
 #include "tree_nodes.h"
+#include <stdio.h>
+#include <string.h>
+
 /*
  * Function definition
  */
 void update_tree(struct NStmt* current, NStmt* prev, NStmtList* root, NStmtList* list, bool first_in_list, bool last_in_list);
 void update_tree_if(struct NIf* current, struct NStmtList* root);
+void set_parent_func(struct NStmt* child, struct NFunc* parent);
+void set_null_field_expr(struct NExpr* expr);
+
+struct NExpr * get_clone_for_clojure(struct NExpr * expr)
+{
+    struct NExpr * clone = (struct NExpr*)malloc(sizeof(struct NExpr));
+    set_null_field_expr(clone);
+    clone->type = expr->type;
+    clone->idlist = expr->idlist;
+    clone->origin = expr;
+    clone->left = expr->left;
+    clone->right = expr->right;
+    return clone;
+}
+
+bool compare_var_names(struct NExpr* first, struct NExpr * second)
+{
+    if( first->type == second->type)
+    {
+        if (first->type == EXPR_ID || first->type == EXPR_STR)
+        {
+            return strlen(first->name) == strlen(second->name) && strcmp(first->name,second->name) == 0;
+        }
+        else if (first->type == EXPR_ID_LIST)
+        {
+            struct NExpr * fcur, * scur;
+            bool eq = true;
+            fcur = first->idlist->first;
+            scur = second->idlist->first;
+            while(fcur!=NULL&&scur!=NULL&&eq)
+            {
+                eq = compare_var_names(fcur,scur);
+                fcur = fcur->next;
+                scur = scur->next;
+            }
+            if(eq && (fcur == NULL && scur != NULL) && (fcur != NULL && scur == NULL))
+                eq = false;
+            return eq;
+        }
+        else if (first->type == EXPR_MET || first->type == EXPR_MAS)
+        {
+            bool eq = false;
+            eq = compare_var_names(first->left,second->left);
+            if (eq)
+            {
+                eq = compare_var_names(first->right,second->right);
+            }
+            return eq;
+        }
+        else if (first->type == EXPR_INT)
+        {
+            return first->Int - second->Int == 0;
+        }
+        else if (first->type == EXPR_DOUBLE)
+        {
+            return abs(first->Double - second->Double) < 0.0000001;
+        }
+        else if (first->type == EXPR_UMIN)
+        {
+            return compare_var_names(first->right,second->right);
+        }
+        else
+            return false;
+
+    }
+    else
+        return false;
+}
+
+struct NExprList * get_vars(struct NStmt* stmt)
+{
+    struct NExprList* list = (NExprList *)malloc(sizeof(NExprList));
+    struct NExprList* list1;
+    if (stmt->type == STMT_WHILE || stmt->type == STMT_REPEAT ||
+        stmt->type == STMT_FOR || stmt->type == STMT_IF || stmt->type == STMT_BLOCK)
+    {
+        struct NStmt * cur = NULL;
+        if(stmt->type == STMT_WHILE || stmt->type == STMT_REPEAT)
+        {
+            cur = stmt->while_loop->body->first;
+        }
+        else if (stmt->type == STMT_FOR)
+        {
+            cur = stmt->for_loop->body->first;
+        }
+        else if (stmt->type == STMT_BLOCK)
+        {
+            cur = stmt->list->first;
+        }
+        else
+        {
+            cur = stmt->if_tree->elsebody->first;
+            while (cur != NULL)
+            {
+                list1 = get_vars(cur);
+                if (list->first == NULL && list1->first != NULL)
+                {
+                    list->first = list1->first;
+                    list->last = list1->last;
+                }
+                else if (list1->first != NULL)
+                {
+                    list->last->next = list1->first;
+                    list->last = list1->last;
+                }
+                cur = cur->next;
+                free(list1);
+            }
+            
+            struct NIf * ift = stmt->if_tree->elseiflist->first;
+            while (ift != NULL)
+            {
+                cur = ift->body->first;
+                while (cur != NULL)
+                {
+                    list1 = get_vars(cur);
+                    if (list->first == NULL && list1->first != NULL)
+                    {
+                        list->first = list1->first;
+                        list->last = list1->last;
+                    }
+                    else if (list1->first != NULL)
+                    {
+                        list->last->next = list1->first;
+                        list->last = list1->last;
+                    }
+                    cur = cur->next;
+                    free(list1);
+                }
+                ift = ift->next;
+            }
+            cur = stmt->if_tree->body->first;
+        }
+        while (cur != NULL)
+        {
+            list1 = get_vars(cur);
+            if (list->first == NULL && list1->first != NULL)
+            {
+                list->first = list1->first;
+                list->last = list1->last;
+            }
+            else if (list1->first != NULL)
+            {
+                list->last->next = list1->first;
+                list->last = list1->last;
+            }
+            cur = cur->next;
+            free(list1);
+        }
+    }
+    else if (stmt->type == STMT_EXPR && (stmt->expr->type == EXPR_ID_LIST && stmt->expr->type == EXPR_ID))
+    {
+        if(list->first == NULL)
+        {
+            list->first = get_clone_for_clojure(stmt->expr);
+            list->last = list->first;
+        }
+        else
+        {
+            list->last->next = get_clone_for_clojure(stmt->expr);
+            list->last = list->last->next;
+        }
+    }
+    else if(stmt->type == STMT_LASSIGN)
+    {
+    
+        if(list->first == NULL)
+        {
+            list->first = get_clone_for_clojure(stmt->var);
+            list->last = list->first;
+        }
+        else
+        {
+            list->last->next = get_clone_for_clojure(stmt->var);
+            list->last = list->last->next;
+        }
+    }
+    return list;
+}
+
+struct NExprList * get_local_var_table(struct NFunc * func)
+{
+
+    struct NExprList* list = (NExprList *)malloc(sizeof(NExprList));
+    list->first = NULL;
+    list->first = NULL;
+    struct NExprList* list1;
+    struct NStmt* cur = func->body->first;
+    while (cur != NULL)
+    {
+        list1 = get_vars(cur);
+        if(list->first == NULL)
+        {
+            list->first = list1->first;
+            list->last = list1->last;
+        }
+        else
+        {
+            list->last->next = list1->first;
+            list->last = list1->last;
+        }
+        free(list1);
+        cur = cur->next;
+    }
+    return list;
+}
+
+struct NExprList * compare_tables(struct NExprList * parent, struct NExprList * child)
+{
+    struct NExpr * pexpr;
+    struct NExpr * cexpr = child->first;
+    bool isFind;
+    struct NExprList* list = (NExprList *)malloc(sizeof(NExprList));
+    list->first = NULL;
+    list->first = NULL;
+    while (cexpr != NULL)
+    {
+        isFind = false;
+        pexpr = parent->first;
+        while (pexpr != NULL && !isFind) 
+        {
+            if(compare_var_names(pexpr,cexpr))
+            {
+                isFind = true;
+                if(list->first ==NULL)
+                {
+                    list->first = get_clone_for_clojure(cexpr);
+                    list->first->origin = cexpr->origin;
+                    list->last = list->first;
+                }
+                else
+                {
+                    list->last->next = get_clone_for_clojure(cexpr);
+                    list->last->next->origin = cexpr->origin;
+                    list->last = list->last->next;
+                }
+            }
+        }
+    }
+    return list;
+
+}
+void find_clojure_variables(struct NFunc* func)
+{
+    struct NFunc * pfunc = func->pfunc;
+    struct NExprList * clojure_vars;
+    struct NExpr * cur, *prev;
+    while (pfunc != NULL)
+    {
+        clojure_vars = compare_tables(pfunc->locals_list,func->locals_list);
+        cur = clojure_vars->first;
+        while (cur != NULL)
+        {
+            prev = cur;
+            cur->origin->clojure = true;
+            cur = cur->next;
+            free(prev);
+        }
+        free(clojure_vars);
+    }
+}
+
+void update_tree_parent_func(struct NStmtList* root)
+{
+    struct NStmt* current = root->first;
+    while(current!=NULL)
+    {
+        set_parent_func(current,NULL);
+        current = current->next;
+    }
+}
 
 void update_tree_stmtlist(struct NStmtList* list, struct NStmtList* root)
 {
@@ -163,6 +437,101 @@ void update_tree_if(struct NIf* current, struct NStmtList* root)
             }
 }
 
+void set_parent_func(struct NStmt* child, struct NFunc* parent)
+{
+    if(child->type == STMT_LFUNC || child->type == STMT_FUNC
+        || ((child->type == STMT_ASSIGN ||
+            child->type == STMT_LASSIGN ||
+            child->type == STMT_EXPR) &&
+        child->expr->type == EXPR_FUNC_DEC_ANON))
+    {
+        struct NStmt * cur;
+        struct NFunc * func;
+        if (child->type == STMT_LFUNC || child->type == STMT_FUNC)
+        {
+            child->func->pfunc = parent;
+            cur = child->func->body->first;
+            func = child->func;
+        }
+        else
+        {
+            child->expr->func->pfunc = parent;
+            cur = child->expr->func->body->first;
+            func = child->expr->func;
+        }
+        find_clojure_variables(func);
+        while (cur != NULL)
+        {
+            set_parent_func(cur,func);
+            cur = cur->next;
+        }
+    }
+    else if (child->type == STMT_WHILE || child->type == STMT_REPEAT ||
+            child->type == STMT_FOR || child->type == STMT_IF || child->type == STMT_BLOCK)
+    {
+        struct NStmt * cur = NULL;
+        if(child->type == STMT_WHILE || child->type == STMT_REPEAT)
+        {
+            cur = child->while_loop->body->first;
+        }
+        else if (child->type == STMT_FOR)
+        {
+            cur = child->for_loop->body->first;
+        }
+        else if (child->type == STMT_BLOCK)
+        {
+            cur = child->list->first;
+        }
+        else
+        {
+            cur = child->if_tree->elsebody->first;
+            while (cur != NULL)
+            {
+                set_parent_func(cur,parent);
+                cur = cur->next;
+            }
+            
+            struct NIf * ift = child->if_tree->elseiflist->first;
+            while (ift != NULL)
+            {
+                cur = ift->body->first;
+                while (cur != NULL)
+                {
+                    set_parent_func(cur,parent);
+                    cur = cur->next;
+                }
+                ift = ift->next;
+            }
+            cur = child->if_tree->body->first;
+        }
+        while (cur != NULL)
+        {
+            set_parent_func(cur,parent);
+            cur = cur->next;
+        }
+    }
+    else if ((child->type == STMT_EXPR || child->type == STMT_LASSIGN || child->type == STMT_ASSIGN) && child->expr->type == EXPR_TABLE)
+    {
+        struct NTblElem* elem = child->expr->table->first;
+        struct NStmt * cur = NULL;
+        while (elem != NULL)
+        {
+            if (elem->value->type == EXPR_FUNC_DEC_ANON)
+            {
+                elem->value->func->pfunc = parent;
+                find_clojure_variables(elem->value->func);
+                cur = elem->value->func->body->first;
+                cur = cur->next;
+                while (cur != NULL)
+                {
+                    set_parent_func(cur,elem->value->func);
+                    cur = cur->next;
+                }
+            }
+        }
+    }
+}
+
 void set_null_field_expr(struct NExpr* expr)
 {
     expr->Int = 0;
@@ -174,6 +543,8 @@ void set_null_field_expr(struct NExpr* expr)
     expr->idlist = NULL;
     expr->table = NULL;
     expr->func = NULL;
+    expr->clojure = false;
+    expr->origin = NULL;
 }
 
 struct NExpr* create_op_expr(NExprType type,NExpr* left,NExpr* right)
@@ -469,6 +840,8 @@ struct NFunc* create_func(struct NExprList* args, struct NStmtList* body)
     result->name = NULL;
     result->args = args;
     result->body = body;
+    result->locals_list = get_local_var_table(result);
+    return result;
 }
 
 struct NFunc* set_func_name(struct NExprList* name, struct NFunc* result)

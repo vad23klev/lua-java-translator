@@ -17,6 +17,7 @@
 
     extern int yyparse(void);
     extern void update_tree_stmtlist(NStmtList* list,NStmtList* root);
+    extern void update_tree_parent_func(struct NStmtList* root);
 %}
 
 %option noyywrap
@@ -163,6 +164,7 @@ int main(int argc,char* argv[])
     {
         yyin = fopen(argv[1], "r");
         yyparse();
+        update_tree_parent_func(root);
         update_tree_stmtlist(root,root);
         print_tree(root);
         
