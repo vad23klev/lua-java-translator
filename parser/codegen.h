@@ -170,10 +170,11 @@ void cg_generate_bytecode(struct NStmtList * root) {
 
 int cg_lib_funcs(int mc) {
     //class name UTF8
-    int s4;
-    unsigned int u4;
-    short int s2;
-    unsigned short int u2;
+    union u2 {
+        unsigned short int n;
+        char bytes[2];
+    }
+    unsigned short int ru2;
     unsigned char u1;
     int i,name;
     int count = 0;
@@ -181,8 +182,11 @@ int cg_lib_funcs(int mc) {
     u1 = 1;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = strlen("Lrtl/Lib");
-    swrite(mc,(void*)&u2,2);
+    u2.n = strlen("Lrtl/Lib");
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     strcpy(buf,"Lrtl/Lib");
     swrite(mc,(void*)&buff,strlen(buf));
@@ -193,8 +197,11 @@ int cg_lib_funcs(int mc) {
     u1 = 7;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = name;
-    swrite(mc,(void*)&u2,2);
+    u2.n = name;
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     int cn = offset;
     offset++;
@@ -222,10 +229,11 @@ int cg_lib_funcs(int mc) {
 
 int cg_mixed_funcs(int mc) {
     //class name UTF8
-    int s4;
-    unsigned int u4;
-    short int s2;
-    unsigned short int u2;
+    union u2 {
+        unsigned short int n;
+        char bytes[2];
+    }
+    unsigned short int ru2;
     unsigned char u1;
     int i,name;
     int count = 0;
@@ -233,8 +241,11 @@ int cg_mixed_funcs(int mc) {
     u1 = 1;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = strlen("Lrtl/Mixed");
-    swrite(mc,(void*)&u2,2);
+    u2.n = strlen("Lrtl/Mixed");
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     strcpy(buf,"Lrtl/Mixed");
     swrite(mc,(void*)&buff,strlen(buf));
@@ -245,8 +256,11 @@ int cg_mixed_funcs(int mc) {
     u1 = 7;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = name;
-    swrite(mc,(void*)&u2,2);
+    u2.n = name;
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     int cn = offset;
     offset++;
@@ -289,11 +303,11 @@ int cg_mixed_funcs(int mc) {
 }
 
 int cg_lib_func(int mc, const char* name, int argscount, const char* rtype, int classnum, bool need_name) {
-    int s4;
-    unsigned int u4;
-    short int s2;
-    unsigned short int u2;
-    unsigned char u1;
+    union u2 {
+        unsigned short int n;
+        char bytes[2];
+    }
+    unsigned short int ru2;
     int i,namen,handle;
     int count = 0;
     unsigned char* buf= (unsigned char*)malloc(sizeof(char)*1024);
@@ -303,8 +317,11 @@ int cg_lib_func(int mc, const char* name, int argscount, const char* rtype, int 
         swrite(mc,(void*)&u1,1);
         count++;
         strcpy(buf,name);
-        u2 = strlen(buf);
-        swrite(mc,(void*)&u2,2);
+        u2.n = strlen(buf);
+        ru2 = u2.bytes[0];
+        u2.bytes[0] = u2.bytes[1];
+        u2.bytes[1] = ru2;
+        swrite(mc,(void*)&u2.n,2);
         count+=2;
         swrite(mc,(void*)&buf,strlen(buf));
         count+=strlen(buf);
@@ -322,8 +339,11 @@ int cg_lib_func(int mc, const char* name, int argscount, const char* rtype, int 
     u1 = 1;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = strlen(buf);
-    swrite(mc,(void*)&u2,2);
+    u2.n = strlen(buf);
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     swrite(mc,(void*)&buf,strlen(buf));
     count+=strlen(buf);
@@ -333,11 +353,17 @@ int cg_lib_func(int mc, const char* name, int argscount, const char* rtype, int 
     u1 = 12;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = namen;
-    swrite(mc,(void*)&u2,2);
+    u2.n = namen;
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     u2 = handle;
-    swrite(mc,(void*)&u2,2);
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     int nt = offset;
     offset++;
@@ -345,11 +371,17 @@ int cg_lib_func(int mc, const char* name, int argscount, const char* rtype, int 
     u1 = 10;
     swrite(mc,(void*)&u1,1);
     count++;
-    u2 = classnum;
-    swrite(mc,(void*)&u2,2);
+    u2.n = classnum;
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
-    u2 = nt;
-    swrite(mc,(void*)&u2,2);
+    u2.n = nt;
+    ru2 = u2.bytes[0];
+    u2.bytes[0] = u2.bytes[1];
+    u2.bytes[1] = ru2;
+    swrite(mc,(void*)&u2.n,2);
     count+=2;
     offset++;
 
