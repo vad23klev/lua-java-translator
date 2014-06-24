@@ -40,6 +40,19 @@ enum st_filed_flags {
 };
 
 /**
+ * Method flags.
+ */
+enum st_method_flags {
+    METHOD_ACCESS_PUBLIC    = 0x001,
+    METHOD_ACCESS_PRIVATE   = 0x002,
+    METHOD_ACCESS_PROTECTED = 0x004,
+
+    METHOD_STATIC   = 0x0008,
+    METHOD_FINAL    = 0x0010,
+    METHOD_ABSTRACT = 0x0400
+};
+
+/**
  * A record of constants table.
  * Singly-Linked list element.
  */
@@ -69,6 +82,20 @@ struct st_field {
     unsigned short int flags;
     unsigned short int name;
     unsigned short int descriptor;
+
+    STField * next;
+};
+
+/**
+ * Represents method record.
+ * Singly-liked list element.
+ */
+typedef struct st_method STMethod;
+struct st_method {
+    unsigned short int flags;
+    unsigned short int name;
+    unsigned short int descriptor;
+    unsigned short int attr_num;
 
     STField * next;
 };

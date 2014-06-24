@@ -47,6 +47,16 @@ enum cg_rtl_methodrefs {
 
 int offset = 0;
 
+int field_value_boolean = 0;
+int field_value_float   = 0;
+int field_value_integer = 0;
+int field_value_string  = 0;
+
+int method_init_boolean = 0;
+int method_init_float   = 0;
+int method_init_integer = 0;
+int method_init_string  = 0;
+
 /**
  * Calls perror(s) and exit(c);
  * @param [in] c Exit code.
@@ -117,6 +127,20 @@ int cg_write_constant(int fd, STConst * c, int offset);
  */
 int cg_write_constants(int fd, STConst * table, int skip_first);
 
+/**
+ * Writes field record of fileds table.
+ * @param [in] fd    File descriptor.
+ * @param [in] field Filed to write.
+ */
+void cg_write_field(int fd, STField * field);
+
+/**
+ * Writes method record of methods table.
+ * @param [in] fd     File descriptor.
+ * @param [in] method Method to write.
+ */
+void cg_write_method(int fd, STMethod * method);
+
 /***************************************************************************************************/
 
 void crt_exception(int c, const char * s) {
@@ -141,6 +165,8 @@ void cg_generate_bytecode(struct NStmtList * root) {
     unsigned short int u2;
     int bytes_written, numconst;
     STConst tmpc;
+    STField tmpf;
+    STMethod tmpm;
     char buf[512];
 
     mc = open("Main.class", O_WRONLY | O_CREAT | O_TRUNC, 644);
@@ -162,7 +188,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
     u2 = 0;
     swrite(mc, (void *)&u2, 2);
 
-    // TODO Constants table
+    // Constants table
     bytes_written = 0;
     bytes_written += cg_write_mixed_constants(mc);
     bytes_written += cg_write_lib_constants(mc);
@@ -174,7 +200,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
     // UTF8
     tmpc.type = CONST_UTF8;
     tmpc.value.utf8 = buf;
-    strcpy(buf, "LMain");
+    strcpy(buf, "Main");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     // Class
@@ -182,6 +208,291 @@ void cg_generate_bytecode(struct NStmtList * root) {
     tmpc.value.args.arg1 = numconst;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
+    int current_class = numconst;
+
+    // _G field name
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "_G");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_G_name = numconst;
+
+    // _G field descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "Lrtl/Mixed;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_G_descriptor = numconst;
+
+    // _G Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = field_G_name;
+    tmpc.value.args.arg2 = field_G_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_G_nametype = numconst;
+
+    // _G fieldref
+    tmpc.type = CONST_FIELDREF;
+    tmpc.value.args.arg1 = current_class;
+    tmpc.value.args.arg2 = field_G_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_G_fieldref = numconst;
+
+    // <clinit> name UTF8
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "<clinit>");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int clinit_name = numconst;
+
+    // <init> name UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "<init>");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_name = numconst;
+
+    // main name UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "main");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int main_name = numconst;
+
+    // ()V descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "()V");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int vv_descriptor = numconst;
+
+    // main method descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "([Ljava/lang/String;)V");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int main_descriptor = numconst;
+
+    // Boolean UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "rtl/Boolean");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_boolean = numconst;
+
+    // Integer UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "rtl/Integer");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_integer = numconst;
+
+    // Float UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "rtl/Float");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_float = numconst;
+
+    // String UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "rtl/String");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_string = numconst;
+
+    // Boolean Class
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_boolean;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int class_boolean = numconst;
+
+    // Integer Class
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_integer;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int class_integer = numconst;
+
+    // Float Class
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_float;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int class_float = numconst;
+
+    // String Class
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_string;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int class_string = numconst;
+
+    // value field name
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "value");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_value_name = numconst;
+
+    // boolean field descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "Z");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_boolean_descriptor = numconst;
+
+    // int field descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "I");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_integer_descriptor = numconst;
+
+    // double field descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "D");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_double_descriptor = numconst;
+
+    // string field descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "Ljava/lang/String;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_string_descriptor = numconst;
+
+    // boolean Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = field_value_name;
+    tmpc.value.args.arg2 = field_boolean_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_boolean_nametype = numconst;
+
+    // Integer Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = field_value_name;
+    tmpc.value.args.arg2 = field_integer_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_integer_nametype = numconst;
+
+    // Float Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = field_value_name;
+    tmpc.value.args.arg2 = field_double_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_double_nametype = numconst;
+
+    // String Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = field_value_name;
+    tmpc.value.args.arg2 = field_string_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int field_string_nametype = numconst;
+
+    // boolean value fieldref
+    tmpc.type = CONST_FIELDREF;
+    tmpc.value.args.arg1 = class_boolean;
+    tmpc.value.args.arg2 = field_boolean_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    field_value_boolean = numconst;
+
+    // Integer value fieldref
+    tmpc.type = CONST_FIELDREF;
+    tmpc.value.args.arg1 = class_integer;
+    tmpc.value.args.arg2 = field_integer_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    field_value_integer = numconst;
+
+    // Float value fieldref
+    tmpc.type = CONST_FIELDREF;
+    tmpc.value.args.arg1 = class_float;
+    tmpc.value.args.arg2 = field_double_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    field_value_float = numconst;
+
+    // String value fieldref
+    tmpc.type = CONST_FIELDREF;
+    tmpc.value.args.arg1 = class_string;
+    tmpc.value.args.arg2 = field_string_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    field_value_string = numconst;
+
+    // boolean <init> descriptor
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "(Z)Lrtl/Mixed;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_boolean_descriptor = numconst;
+
+    // integer <init> descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "(I)Lrtl/Mixed;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_integer_descriptor = numconst;
+
+    // float <init> descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "(D)Lrtl/Mixed;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_float_descriptor = numconst;
+
+    // string <init> descriptor
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "(Ljava/lang/String;)Lrtl/Mixed;");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_string_descriptor = numconst;
+
+    // boolean <init> methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_boolean;
+    tmpc.value.args.arg2 = init_boolean_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    method_init_boolean = numconst;
+
+    // integer <init> methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_integer;
+    tmpc.value.args.arg2 = init_integer_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    method_init_integer = numconst;
+
+    // float <init> methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_float;
+    tmpc.value.args.arg2 = init_float_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    method_init_float = numconst;
+
+    // string <init> methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_string;
+    tmpc.value.args.arg2 = init_string_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    method_init_string = numconst;
 
     // Actual number of constants
     lseek(mc, -bytes_written - 2, SEEK_CUR);
@@ -194,10 +505,10 @@ void cg_generate_bytecode(struct NStmtList * root) {
     swrite(mc, (void *)&u2, 2);
 
     // Current class (CONST_CLASS)
-    u2 = htons(numconst);
+    u2 = htons(current_class);
     swrite(mc, (void *)&u2, 2);
 
-    // TODO Parent class (CONST_CLASS)
+    // Parent class (CONST_CLASS)
     u2 = 0;
     swrite(mc, (void *)&u2, 2);
 
@@ -205,17 +516,42 @@ void cg_generate_bytecode(struct NStmtList * root) {
     u2 = 0;
     swrite(mc, (void *)&u2, 2);
 
-    // TODO Number of fields
+    // Number of fields
+    u2 = htons(1);
     swrite(mc, (void *)&u2, 2);
 
-    // TODO Fields table
-    
+    // Fields table
+    tmpf.flags = FIELD_ACCESS_PUBLIC | FIELD_STATIC;
+    tmpf.name = field_G_name;
+    tmpf.descriptor = field_G_descriptor;
+    cg_write_field(mc, &tmpf);
 
-    // TODO Number of methods
+    // Number of methods
+    u2 = htons(3);
     swrite(mc, (void *)&u2, 2);
 
-    // TODO Methods table
-    
+    // Methods table
+
+    // <clinit>
+    tmpm.flags      = METHOD_STATIC;
+    tmpm.name       = clinit_name;
+    tmpm.descriptor = vv_descriptor;
+    tmpm.attr_num   = 0;
+    cg_write_method(mc, &tmpm);
+
+    // <init>
+    tmpm.flags      = METHOD_STATIC;
+    tmpm.name       = init_name;
+    tmpm.descriptor = vv_descriptor;
+    tmpm.attr_num   = 0;
+    cg_write_method(mc, &tmpm);
+
+    // main
+    tmpm.flags      = METHOD_ACCESS_PUBLIC | METHOD_STATIC;
+    tmpm.name       = main_name;
+    tmpm.descriptor = main_descriptor;
+    tmpm.attr_num   = 0;
+    cg_write_method(mc, &tmpm);
 
     // Number of attributes
     u2 = 0;
@@ -236,12 +572,12 @@ int cg_write_lib_constants(int fd) {
 
     bytes_written = 0;
 
-    strcpy(buf,"Lrtl/Lib");
+    strcpy(buf,"rtl/Lib");
     u1 = 1;
     bytes_written += swrite(fd, (void *)&u1, 1);
-    u2 = htons(strlen("Lrtl/Lib"));
+    u2 = htons(strlen("rtl/Lib"));
     bytes_written += swrite(fd, (void *)&u2, 2);
-    bytes_written += swrite(fd, (void *)&buf, 8);
+    bytes_written += swrite(fd, (void *)&buf, 7);
     offset++;
     name = offset;
 
@@ -288,7 +624,7 @@ int cg_write_mixed_constants(int fd) {
     bytes_written = 0;
 
     // Class name UTF8
-    strcpy(buf, "Lrtl/Mixed");
+    strcpy(buf, "rtl/Mixed");
     u1 = 1;
     bytes_written += swrite(fd, (void *)&u1, 1);
     u2 = htons(strlen(buf));
@@ -474,6 +810,46 @@ int cg_write_constants(int fd, STConst * table, int skip_first) {
     }
 
     return bytes_written;
+}
+
+void cg_write_field(int fd, STField * field) {
+    static unsigned short int u2;
+
+    // Flags
+    u2 = htons(field->flags);
+    swrite(fd, (void *)&u2, 2);
+
+    // Field name
+    u2 = htons(field->name);
+    swrite(fd, (void *)&u2, 2);
+
+    // Descriptor
+    u2 = htons(field->descriptor);
+    swrite(fd, (void *)&u2, 2);
+
+    // Number of attributes
+    u2 = 0;
+    swrite(fd, (void *)&u2, 2);
+}
+
+void cg_write_method(int fd, STMethod * method) {
+    static unsigned short int u2;
+
+    // Flags
+    u2 = htons(method->flags);
+    swrite(fd, (void *)&u2, 2);
+
+    // Field name
+    u2 = htons(method->name);
+    swrite(fd, (void *)&u2, 2);
+
+    // Descriptor
+    u2 = htons(method->descriptor);
+    swrite(fd, (void *)&u2, 2);
+
+    // Number of attributes
+    u2 = 0;
+    swrite(fd, (void *)&u2, 2);
 }
 
 #endif
