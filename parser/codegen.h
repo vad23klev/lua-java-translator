@@ -190,6 +190,7 @@ int swrite(int fd, void * ptr, int numbytes) {
 
 void cg_generate_bytecode(struct NStmtList * root) {
     int mc;
+    unsigned char u1;
     int s4;
     unsigned int u4;
     short int s2;
@@ -251,7 +252,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
 
     // _G field descriptor
     tmpc.type = CONST_UTF8;
-    strcpy(buf, "Lrtl/Mixed;");
+    strcpy(buf, "Lrtl/Table;");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int field_G_descriptor = numconst;
@@ -587,6 +588,37 @@ void cg_generate_bytecode(struct NStmtList * root) {
     numconst++;
     method_init_table = numconst;
 
+    // Object UTF8
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "java/lang/Object");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_object = numconst;
+
+    // Class Object
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_object;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int class_object = numconst;
+
+    // object <init>()V methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_object;
+    tmpc.value.args.arg2 = init_vv_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int method_init_object = numconst;
+
+    // Code UTF8
+    tmpc.type = CONST_UTF8;
+    tmpc.value.utf8 = buf;
+    strcpy(buf, "Code");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int code_attribute = numconst;
+
     // Actual number of constants
     lseek(mc, -bytes_written - 2, SEEK_CUR);
     u2 = htons((unsigned short int)numconst + 1);
@@ -629,15 +661,89 @@ void cg_generate_bytecode(struct NStmtList * root) {
     tmpm.flags      = METHOD_STATIC;
     tmpm.name       = clinit_name;
     tmpm.descriptor = vv_descriptor;
-    tmpm.attr_num   = 0;
+    tmpm.attr_num   = 1;
     cg_write_method(mc, &tmpm);
+
+    // Attribute name
+    u2 = htons(code_attribute);
+    swrite(mc, (void *)&u2, 2);
+    // Attribute length
+    u4 = htonl(23);
+    swrite(mc, (void *)&u4, 4);
+    // Stack size
+    u2 = htons(2);
+    swrite(mc, (void *)&u2, 2);
+    // Locals number
+    u2 = 0;
+    swrite(mc, (void *)&u2, 2);
+    // Actual code length
+    u4 = htonl(11);
+    swrite(mc, (void *)&u4, 4);
+    // Code
+    u1 = 0xBB; // new
+    swrite(mc, (void *)&u1, 1);
+    u2 = htons(class_table);
+    swrite(mc, (void *)&u2, 2);
+    u1 = 0x59; // dup
+    swrite(mc, (void *)&u1, 1);
+    u1 = 0xB7; // invokespecial
+    swrite(mc, (void *)&u1, 1);
+    u2 = htons(method_init_table);
+    swrite(mc, (void *)&u2, 2);
+    u1 = 0xB3; // putstatic
+    swrite(mc, (void *)&u1, 1);
+    u2 = htons(field_G_fieldref);
+    swrite(mc, (void *)&u2, 2);
+    u1 = 0xB1; // return
+    swrite(mc, (void *)&u1, 1);
+
+    // Exceptions number
+    u2 = 0;
+    swrite(mc, (void *)&u2, 2);
+
+    // Attributes of attribute number
+    u2 = 0;
+    swrite(mc, (void *)&u2, 2);
 
     // <init>
     tmpm.flags      = METHOD_STATIC;
     tmpm.name       = init_name;
     tmpm.descriptor = vv_descriptor;
-    tmpm.attr_num   = 0;
+    tmpm.attr_num   = 1;
     cg_write_method(mc, &tmpm);
+
+    // Attribute name
+    u2 = htons(code_attribute);
+    swrite(mc, (void *)&u2, 2);
+    // Attribute length
+    u4 = htonl(17);
+    swrite(mc, (void *)&u4, 4);
+    // Stack size
+    u2 = htons(1);
+    swrite(mc, (void *)&u2, 2);
+    // Locals number
+    u2 = htons(1);
+    swrite(mc, (void *)&u2, 2);
+    // Actual code length
+    u4 = htonl(5);
+    swrite(mc, (void *)&u4, 4);
+    // Code
+    u1 = 0x2A; // aload_0
+    swrite(mc, (void *)&u1, 1);
+    u1 = 0xB7; // invokespecial
+    swrite(mc, (void *)&u1, 1);
+    u2 = htons(method_init_object);
+    swrite(mc, (void *)&u2, 2);
+    u1 = 0xB1; // return
+    swrite(mc, (void *)&u1, 1);
+
+    // Exceptions number
+    u2 = 0;
+    swrite(mc, (void *)&u2, 2);
+
+    // Attributes of attribute number
+    u2 = 0;
+    swrite(mc, (void *)&u2, 2);
 
     // main
     tmpm.flags      = METHOD_ACCESS_PUBLIC | METHOD_STATIC;
@@ -941,7 +1047,7 @@ void cg_write_method(int fd, STMethod * method) {
     swrite(fd, (void *)&u2, 2);
 
     // Number of attributes
-    u2 = 0;
+    u2 = htons(method->attr_num);
     swrite(fd, (void *)&u2, 2);
 }
 
