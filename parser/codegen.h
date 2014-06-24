@@ -14,6 +14,8 @@
  * Provides numbers of `methodref` constants on RTL functions and methods.
  */
 enum cg_rtl_methodrefs {
+    CLASS_MIXED = 2,
+
     // Mixed type methods
     MIXED_ADD = 6,
     MIXED_SUB = 10,
@@ -47,6 +49,12 @@ enum cg_rtl_methodrefs {
 
 int offset = 0;
 
+int class_boolean = 0;
+int class_integer = 0;
+int class_float   = 0;
+int class_string  = 0;
+int class_table   = 0;
+
 int field_value_boolean = 0;
 int field_value_float   = 0;
 int field_value_integer = 0;
@@ -56,6 +64,7 @@ int method_init_boolean = 0;
 int method_init_float   = 0;
 int method_init_integer = 0;
 int method_init_string  = 0;
+int method_init_table   = 0;
 
 /**
  * Calls perror(s) and exit(c);
@@ -325,33 +334,47 @@ void cg_generate_bytecode(struct NStmtList * root) {
     numconst++;
     int utf8_string = numconst;
 
+    // Table UTF8
+    tmpc.type = CONST_UTF8;
+    strcpy(buf, "rtl/Table");
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int utf8_table = numconst;
+
     // Boolean Class
     tmpc.type = CONST_CLASS;
     tmpc.value.args.arg1 = utf8_boolean;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
-    int class_boolean = numconst;
+    class_boolean = numconst;
 
     // Integer Class
     tmpc.type = CONST_CLASS;
     tmpc.value.args.arg1 = utf8_integer;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
-    int class_integer = numconst;
+    class_integer = numconst;
 
     // Float Class
     tmpc.type = CONST_CLASS;
     tmpc.value.args.arg1 = utf8_float;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
-    int class_float = numconst;
+    class_float = numconst;
 
     // String Class
     tmpc.type = CONST_CLASS;
     tmpc.value.args.arg1 = utf8_string;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
-    int class_string = numconst;
+    class_string = numconst;
+
+    // Table Class
+    tmpc.type = CONST_CLASS;
+    tmpc.value.args.arg1 = utf8_table;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    class_table = numconst;
 
     // value field name
     tmpc.type = CONST_UTF8;
@@ -384,7 +407,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
 
     // string field descriptor
     tmpc.type = CONST_UTF8;
-    strcpy(buf, "Ljava/lang/String;");
+    strcpy(buf, "java/lang/String");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int field_string_descriptor = numconst;
@@ -456,36 +479,76 @@ void cg_generate_bytecode(struct NStmtList * root) {
     // boolean <init> descriptor
     tmpc.type = CONST_UTF8;
     tmpc.value.utf8 = buf;
-    strcpy(buf, "(Z)Lrtl/Mixed;");
+    strcpy(buf, "(Z)V");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int init_boolean_descriptor = numconst;
 
     // integer <init> descriptor
     tmpc.type = CONST_UTF8;
-    strcpy(buf, "(I)Lrtl/Mixed;");
+    strcpy(buf, "(I)V");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int init_integer_descriptor = numconst;
 
     // float <init> descriptor
     tmpc.type = CONST_UTF8;
-    strcpy(buf, "(D)Lrtl/Mixed;");
+    strcpy(buf, "(D)V");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int init_float_descriptor = numconst;
 
     // string <init> descriptor
     tmpc.type = CONST_UTF8;
-    strcpy(buf, "(Ljava/lang/String;)Lrtl/Mixed;");
+    strcpy(buf, "(Ljava/lang/String;)V");
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     int init_string_descriptor = numconst;
 
+    // <init>()V Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = init_name;
+    tmpc.value.args.arg2 = vv_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_vv_nametype = numconst;
+
+    // Boolean <init>(Z)V Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = init_name;
+    tmpc.value.args.arg2 = init_boolean_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_boolean_nametype = numconst;
+
+    // Integer <init>(I)V Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = init_name;
+    tmpc.value.args.arg2 = init_integer_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_integer_nametype = numconst;
+
+    // Float <init>(D)V Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = init_name;
+    tmpc.value.args.arg2 = init_float_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_float_nametype = numconst;
+
+    // String <init>(Ljava/lang/Object;)V Name and type
+    tmpc.type = CONST_NAMETYPE;
+    tmpc.value.args.arg1 = init_name;
+    tmpc.value.args.arg2 = init_string_descriptor;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    int init_string_nametype = numconst;
+
     // boolean <init> methodref
     tmpc.type = CONST_METHODREF;
     tmpc.value.args.arg1 = class_boolean;
-    tmpc.value.args.arg2 = init_boolean_descriptor;
+    tmpc.value.args.arg2 = init_boolean_nametype;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     method_init_boolean = numconst;
@@ -493,7 +556,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
     // integer <init> methodref
     tmpc.type = CONST_METHODREF;
     tmpc.value.args.arg1 = class_integer;
-    tmpc.value.args.arg2 = init_integer_descriptor;
+    tmpc.value.args.arg2 = init_integer_nametype;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     method_init_integer = numconst;
@@ -501,7 +564,7 @@ void cg_generate_bytecode(struct NStmtList * root) {
     // float <init> methodref
     tmpc.type = CONST_METHODREF;
     tmpc.value.args.arg1 = class_float;
-    tmpc.value.args.arg2 = init_float_descriptor;
+    tmpc.value.args.arg2 = init_float_nametype;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     method_init_float = numconst;
@@ -509,10 +572,18 @@ void cg_generate_bytecode(struct NStmtList * root) {
     // string <init> methodref
     tmpc.type = CONST_METHODREF;
     tmpc.value.args.arg1 = class_string;
-    tmpc.value.args.arg2 = init_string_descriptor;
+    tmpc.value.args.arg2 = init_string_nametype;
     bytes_written += cg_write_constant(mc, &tmpc, 0);
     numconst++;
     method_init_string = numconst;
+
+    // table <init> methodref
+    tmpc.type = CONST_METHODREF;
+    tmpc.value.args.arg1 = class_table;
+    tmpc.value.args.arg2 = init_vv_nametype;
+    bytes_written += cg_write_constant(mc, &tmpc, 0);
+    numconst++;
+    method_init_table = numconst;
 
     // Actual number of constants
     lseek(mc, -bytes_written - 2, SEEK_CUR);
