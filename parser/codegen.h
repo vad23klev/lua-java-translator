@@ -141,6 +141,18 @@ void cg_write_field(int fd, STField * field);
  */
 void cg_write_method(int fd, STMethod * method);
 
+int cg_code_for_stmtlist(struct NStmtList * list, int file);
+
+int cg_code_for_stmt(struct NStmt * stmt, int file);
+
+int cg_code_for_expr(struct NExpr * expr, int file);
+
+int cg_calculate_offset_stmt(struct NStmt* stmt);
+
+int cg_calculate_offset_stmtlist(struct NStmtList* stmtlist);
+
+int cg_calculate_offset_expr(struct NExpr);
+
 /***************************************************************************************************/
 
 void crt_exception(int c, const char * s) {
@@ -850,6 +862,242 @@ void cg_write_method(int fd, STMethod * method) {
     // Number of attributes
     u2 = 0;
     swrite(fd, (void *)&u2, 2);
+}
+
+int cg_code_for_stmtlist(struct NStmtList * list, int file) {
+    struct NStmt * cur = list->first;
+    int count = 0;
+    while (cur!=NULL) {
+        count += cg_code_for_stmt(cur, file);
+    }
+    return count;
+}
+
+int cg_code_for_stmt(struct NStmt * stmt, int file) {
+    int bytes_written = 0;
+    static float sf4;
+    static int s4;
+    static unsigned int u4;
+    static short int s2;
+    static unsigned short int u2;
+    static unsigned char u1;
+    int offset = 0;
+    switch(stmt->type)
+    {
+        case STMT_WHILE:
+            bytes_written = cg_code_for_expr(stmt->while_loop->condition,file);
+            offset = cg_code_for_stmtlist(stmt->while_loop->body,file);
+            offest +=3;
+            u1 = 167;
+            bytes_written += swrite(fd, (void *)&u1, 1);
+            u2 = htons(strlen(c->value.utf8));
+            bytes_written += swrite(fd, (void *)&u2, 2);
+            break;
+        case ,j:
+            break;
+        case STMT_EXPR:
+            bytes_written += cg_code_for_expr(stmt->expr,file);
+            break;
+        case STMT_FUNC:
+            break;
+        case STMT_BLOCK:
+            break;
+        case STMT_LFUNC:
+            break;
+        case STMT_REPEAT:
+            break;
+        case STMT_ASSIGN:
+            break;
+        case STMT_LASSIGN:
+            break;
+        case STMT_ASSIGN_MAS:
+            break;
+        case STMT_LASSIGN_MAS:
+            break;
+        case STMT_RETURN:
+            break;
+        case STMT_BREAK:
+            break;
+        case STMT_IF:
+            break;
+    }
+    return count;
+}
+
+int cg_code_for_expr(struct NExpr * expr, int file) {
+    static float sf4;
+    static int s4;
+    static unsigned int u4;
+    static short int s2;
+    static unsigned short int u2;
+    static unsigned char u1;
+    int count = 0;
+    switch (expr->type)
+    {
+        case EXPR_EQ:
+            break;
+        case EXPR_NQ:
+            break;
+        case EXPR_PLUS:
+            break;
+        case EXPR_MINUS:
+            break;
+        case EXPR_DIV:
+            break;
+        case EXPR_MUL:
+            break;
+        case EXPR_LE:
+            if (expr->left->type == EXPR_STR || expr->left->type == EXPR_INT || expr->left->type == EXPR_DOUBLE || expr->left->type == EXPR_BOOL)
+                cg_code_for_expr(expr->left);
+            else
+                cg_push(expr->left);
+            if (expr->right->type == EXPR_STR || expr->right->type == EXPR_INT || expr->right->type == EXPR_DOUBLE || expr->right->type == EXPR_BOOL)
+                cg_code_for_expr(expr->right);
+            else 
+                cg_push(expr->right);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(MIXED_LOEQ);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            break;
+        case EXPR_GE:
+            break;
+        case EXPR_LT:
+            break;
+        case EXPR_GT:
+            break;
+        case EXPR_MOD:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            sf4 = htonl(expr->Double);
+            bytes_written += swrite(file, (void *)&sf4, 4);
+            u2 = htons(method_init_integer);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            break;
+        case EXPR_ID:
+            break;
+        case EXPR_INT:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            u1 = 17;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            s4 = htonl(expr->Int);
+            bytes_written += swrite(file, (void *)&s4, 4);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(method_init_integer);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            break;
+        case EXPR_DOUBLE:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            u1 = 17;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            sf4 = htonl(expr->Double);
+            bytes_written += swrite(file, (void *)&sf4, 4);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(method_init_float);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            break;
+        case EXPR_CONC:
+            break;
+        case EXPR_STR:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(method_init_string);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            sf4 = htonl(expr->name);
+            bytes_written += swrite(file, (void *)&sf4, 4);
+            break;
+        case EXPR_MET:
+            break;
+        case EXPR_AND:
+            break;
+        case EXPR_NOT:
+            break;
+        case EXPR_OR:
+            break;
+        case EXPR_MAS:
+            break;
+        case EXPR_BOOL:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            u1 = 17;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            s4 = htonl(expr->Int);
+            bytes_written += swrite(file, (void *)&s4, 4);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(method_init_boolean);
+            bytes_written += swrite(file, (void *)&u2, 2);
+            new
+            break;
+        case EXPR_NIL:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(file, (void *)&u2, 2);
+            break;
+        case EXPR_UMIN:
+            break;
+        case EXPR_ID_LIST:
+            break;
+        case EXPR_TABLE:
+            u1 = 187;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(fd, (void *)&u2, 2);
+            u1 = 183;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons("класс реф");
+            bytes_written += swrite(fd, (void *)&u2, 2);
+            break;
+    }
+    return count;
+}
+
+int cg_calculate_offset_stmt(struct NStmt* stmt) {
+    static float sf4;
+    static int s4;
+    static unsigned int u4;
+    static short int s2;
+    static unsigned short int u2;
+    static unsigned char u1;
+}
+
+int cg_calculate_offset_stmtlist(struct NStmtList* stmtlist) {
+    static float sf4;
+    static int s4;
+    static unsigned int u4;
+    static short int s2;
+    static unsigned short int u2;
+    static unsigned char u1;
+}
+
+int cg_calculate_offset_expr(struct NExpr) {
+    static float sf4;
+    static int s4;
+    static unsigned int u4;
+    static short int s2;
+    static unsigned short int u2;
+    static unsigned char u1;
 }
 
 #endif
