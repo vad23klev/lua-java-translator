@@ -162,13 +162,15 @@ int cg_calculate_offset_stmtlist(struct NStmtList* stmtlist);
 
 int cg_calculate_offset_expr(struct NExpr);
 
-int cg_astore_var(struct NExpr* expr);
+int cg_astore_var(struct NExpr* expr,int file);
 
-int cg_push(struct NExpr* expr);
+int cg_push(struct NExpr* expr,bool first_call,int file);
 
 int cg_calculate_offset_push(struct NExpr * expr);
 
 int cg_calculate_offset_astore_var(struct NExpr* expr);
+
+int cg_push_withoutlast(struct NExpr* expr, bool first_call, int file);
 
 /***************************************************************************************************/
 
@@ -966,13 +968,8 @@ int cg_code_for_stmt(struct NStmt * stmt, int file) {
         case STMT_WHILE:
             bytes_written = cg_code_for_expr(stmt->while_loop->condition,file);
             offset = cg_code_for_stmtlist(stmt->while_loop->body,file);
-            offest +=3;
+            offset +=3;
             u1 = 167;
-            bytes_written += swrite(fd, (void *)&u1, 1);
-            u2 = htons(strlen(c->value.utf8));
-            bytes_written += swrite(fd, (void *)&u2, 2);
-            break;
-        case ,j:
             break;
         case STMT_EXPR:
             bytes_written += cg_code_for_expr(stmt->expr,file);
@@ -988,19 +985,19 @@ int cg_code_for_stmt(struct NStmt * stmt, int file) {
             break;
         case STMT_ASSIGN:
             bytes_written += cg_code_for_expr(stmt->expr,file);
-            bytes_written += cg_astore_var(stmt->var);
+            bytes_written += cg_astore_var(stmt->var,file);
             break;
         case STMT_LASSIGN:
             bytes_written += cg_code_for_expr(stmt->expr,file);
-            bytes_written += cg_astore_var(stmt->var);
+            bytes_written += cg_astore_var(stmt->var,file);
             break;
         case STMT_ASSIGN_MAS:
             bytes_written += cg_code_for_expr(stmt->expr,file);
-            bytes_written += cg_astore_var(stmt->var);
+            bytes_written += cg_astore_var(stmt->var,file);
             break;
         case STMT_LASSIGN_MAS:
             bytes_written += cg_code_for_expr(stmt->expr,file);
-            bytes_written += cg_astore_var(stmt->var);
+            bytes_written += cg_astore_var(stmt->var,file);
             break;
         case STMT_RETURN:
             break;
@@ -1009,7 +1006,7 @@ int cg_code_for_stmt(struct NStmt * stmt, int file) {
         case STMT_IF:
             break;
     }
-    return count;
+    return bytes_written;
 }
 
 int cg_code_for_expr(struct NExpr * expr, int file) {
@@ -1023,88 +1020,88 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
     switch (expr->type)
     {
         case EXPR_EQ:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_EQ);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_NQ:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_NEQ);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_PLUS:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_ADD);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_MINUS:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_SUB);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_DIV:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_DIV);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_MUL:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_MUL);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_LE:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_LOEQ);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_GE:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_GREQ);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_LT:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_LO);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_GT:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_GR);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_MOD:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_MOD);
@@ -1115,7 +1112,7 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
         case EXPR_INT:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*class ref int*/);
+            u2 = htons(class_integer);
             bytes_written += swrite(file, (void *)&u2, 2);
             u1 = 17;
             bytes_written += swrite(file, (void *)&u1, 1);
@@ -1129,7 +1126,7 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
         case EXPR_DOUBLE:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*class ref double*/);
+            u2 = htons(class_float);
             bytes_written += swrite(file, (void *)&u2, 2);
             u1 = 17;
             bytes_written += swrite(file, (void *)&u1, 1);
@@ -1141,8 +1138,8 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_CONC:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_ADD);
@@ -1151,48 +1148,48 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
         case EXPR_STR:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*clas ref str*/);
+            u2 = htons(class_string);
             bytes_written += swrite(file, (void *)&u2, 2);
             u1 = 183;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(method_init_string);
             bytes_written += swrite(file, (void *)&u2, 2);
-            sf4 = htonl(expr->name);
-            bytes_written += swrite(file, (void *)&sf4, 4);
+            u2 = htons(expr->constant_index + offset);
+            bytes_written += swrite(file, (void *)&u2, 2);
             break;
-        case EXPR_MET:
-            break;
+        //case EXPR_MET:
+        //    break;
         case EXPR_AND:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_AND);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_NOT:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_NOT);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_OR:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_OR);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_MAS:
-            bytes_written = cg_push(expr);
+            bytes_written = cg_push(expr,true,file);
             break;
         case EXPR_BOOL:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*class ref bool*/);
+            u2 = htons(class_boolean);
             bytes_written += swrite(file, (void *)&u2, 2);
             u1 = 17;
             bytes_written += swrite(file, (void *)&u1, 1);
@@ -1202,17 +1199,16 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(method_init_boolean);
             bytes_written += swrite(file, (void *)&u2, 2);
-            new
             break;
         case EXPR_NIL:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*class ref nil*/);
+            u2 = htons(class_nil);
             bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_UMIN:
-            bytes_written += cg_code_for_expr(expr->left);
-            bytes_written += cg_code_for_expr(expr->right);
+            bytes_written += cg_code_for_expr(expr->left,file);
+            bytes_written += cg_code_for_expr(expr->right,file);
             u1 = 182;
             bytes_written += swrite(file, (void *)&u1, 1);
             u2 = htons(MIXED_LOEQ);
@@ -1221,15 +1217,15 @@ int cg_code_for_expr(struct NExpr * expr, int file) {
         case EXPR_TABLE:
             u1 = 187;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(/*class ref table*/);
-            bytes_written += swrite(fd, (void *)&u2, 2);
+            u2 = htons(class_table);
+            bytes_written += swrite(file, (void *)&u2, 2);
             u1 = 183;
             bytes_written += swrite(file, (void *)&u1, 1);
-            u2 = htons(method_init_string);
-            bytes_written += swrite(fd, (void *)&u2, 2);
+            u2 = htons(method_init_table);
+            bytes_written += swrite(file, (void *)&u2, 2);
             break;
         case EXPR_ID_LIST:
-            bytes_written = cg_push(expr);
+            bytes_written = cg_push(expr,true,file);
             break;
     }
     return bytes_written;
@@ -1262,10 +1258,79 @@ int cg_calculate_offset_expr(struct NExpr* expr) {
     static unsigned char u1;
 }
 
-int cg_astore_var(struct NExpr* expr) {
+int cg_astore_var(struct NExpr* expr,int file) {
+    static unsigned short int u2;
+    static unsigned char u1;
+    int bytes_written = cg_push_withoutlast(expr,true,file);
+    if(expr->idlist->first == expr->idlist->last && expr->idlist->first->type != EXPR_MAS)
+        bytes_written += cg_push(expr->idlist->first,true,file);//astore
+    else
+        bytes_written += cg_push(expr->idlist->last,true,file);
+        u1 = 182;
+        bytes_written += swrite(file, (void *)&u1, 1);
+        u2 = htons(MIXED_PUT);
+        bytes_written += swrite(file, (void *)&u2, 2);
+    return bytes_written;
 }
 
-int cg_push(struct NExpr* expr) {
+int cg_push_withoutlast(struct NExpr* expr, bool first_call, int file) {
+    int bytes_written = 0;
+    switch (expr->type) {
+        case EXPR_ID:
+            bytes_written = cg_push(expr,first_call,file);
+            break;
+        case EXPR_MAS:
+            bytes_written = cg_push(expr,first_call,file);
+            bytes_written += cg_push(expr,false,file);
+            break;
+        default:
+            struct NExpr * end = NULL, * cur = expr->idlist->first;
+            if(first_call)
+                end = expr->idlist->last;
+            while (cur!=end) {
+                bytes_written += cg_push(cur,first_call,file);
+                first_call = false;
+                cur = cur->next;
+            }
+            break;
+    }
+    return bytes_written;
+}
+int cg_push(struct NExpr* expr, bool first_call,int file) {
+    int bytes_written = 0;
+    static unsigned short int u2;
+    static unsigned char u1;
+    if (expr->type = EXPR_ID_LIST)
+        bytes_written += cg_push_withoutlast(expr,first_call,file);
+    if(expr->type == EXPR_ID_LIST && expr->idlist->first == expr->idlist->last)
+    {
+        //astore
+        bytes_written += cg_push(expr->idlist->first,first_call,file);
+    }
+    else if (expr->type == EXPR_MAS)
+    {
+        bytes_written = cg_push(expr,first_call,file);
+        bytes_written += cg_push(expr,false,file);
+        u1 = 182;
+        bytes_written += swrite(file, (void *)&u1, 1);
+        u2 = htons(MIXED_GET);
+        bytes_written += swrite(file, (void *)&u2, 2);
+    }
+    else if (expr->type == EXPR_ID)
+    {
+        u1 = 58;
+        bytes_written += swrite(file, (void *)&u1, 1);
+        u1 = expr->constant_index + offset;
+        bytes_written += swrite(file, (void *)&u1, 1);
+        if(!first_call)
+        {
+            u1 = 182;
+            bytes_written += swrite(file, (void *)&u1, 1);
+            u2 = htons(MIXED_GET);
+            bytes_written += swrite(file, (void *)&u2, 2);
+        }
+    }
+    return bytes_written;
 }
 
 int cg_calculate_offset_push(struct NExpr * expr) {
