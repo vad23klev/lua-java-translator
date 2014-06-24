@@ -153,6 +153,14 @@ int cg_calculate_offset_stmtlist(struct NStmtList* stmtlist);
 
 int cg_calculate_offset_expr(struct NExpr);
 
+int cg_astore_var(struct NExpr* expr);
+
+int cg_push(struct NExpr* expr);
+
+int cg_calculate_offset_push(struct NExpr * expr);
+
+int cg_calculate_offset_astore_var(struct NExpr* expr);
+
 /***************************************************************************************************/
 
 void crt_exception(int c, const char * s) {
@@ -901,18 +909,27 @@ int cg_code_for_stmt(struct NStmt * stmt, int file) {
         case STMT_FUNC:
             break;
         case STMT_BLOCK:
+            bytes_written += cg_code_for_stmtlist(stmt->list,file);
             break;
         case STMT_LFUNC:
             break;
         case STMT_REPEAT:
             break;
         case STMT_ASSIGN:
+            bytes_written += cg_code_for_expr(stmt->expr,file);
+            bytes_written += cg_astore_var(stmt->var);
             break;
         case STMT_LASSIGN:
+            bytes_written += cg_code_for_expr(stmt->expr,file);
+            bytes_written += cg_astore_var(stmt->var);
             break;
         case STMT_ASSIGN_MAS:
+            bytes_written += cg_code_for_expr(stmt->expr,file);
+            bytes_written += cg_astore_var(stmt->var);
             break;
         case STMT_LASSIGN_MAS:
+            bytes_written += cg_code_for_expr(stmt->expr,file);
+            bytes_written += cg_astore_var(stmt->var);
             break;
         case STMT_RETURN:
             break;
@@ -1165,13 +1182,25 @@ int cg_calculate_offset_stmtlist(struct NStmtList* stmtlist) {
     static unsigned char u1;
 }
 
-int cg_calculate_offset_expr(struct NExpr) {
+int cg_calculate_offset_expr(struct NExpr* expr) {
     static float sf4;
     static int s4;
     static unsigned int u4;
     static short int s2;
     static unsigned short int u2;
     static unsigned char u1;
+}
+
+int cg_astore_var(struct NExpr* expr) {
+}
+
+int cg_push(struct NExpr* expr) {
+}
+
+int cg_calculate_offset_push(struct NExpr * expr) {
+}
+
+int cg_calculate_offset_astore_var(struct NExpr* expr) {
 }
 
 #endif
